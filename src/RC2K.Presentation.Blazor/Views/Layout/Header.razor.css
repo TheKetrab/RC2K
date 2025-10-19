@@ -1,0 +1,80 @@
+﻿
+header {
+    --nav-height: 3em;
+    padding: 0;
+    margin: 0;
+    margin-top: .5em;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: -1px;
+    height: var(--nav-height);
+    width: 100vw;
+    transition: all .5s ease;
+    z-index: 1;
+}
+
+header * {
+    transition: all .5s ease;
+}
+
+header.sticked {
+    box-shadow: 1px 1px 3px black;
+}
+
+
+.header-main-box {
+    max-width: 1200px;
+    display: flex;
+    width: 100%;
+}
+
+.header-main-box > img {
+    height: 7rem;
+    overflow: hidden;
+    border-bottom-right-radius: .5em;
+    border-bottom-left-radius: .5em;
+    overflow-y: visible;
+}
+
+.sticked .header-main-box > img {
+    height: 100%;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    overflow-y: visible;
+}
+
+.header-nav-box {
+    flex-grow: 1;
+}
+
+.header-pre-box {
+    background-color: #333aa2;
+    content: '';
+    height: 100%;
+    flex-grow: 1;
+}
+
+.header-post-box {
+    background-color: white;
+    content: '';
+    height: 100%;
+    flex-grow: 1;
+}
+
+
+.header-nav-fake-gradient {
+    background: linear-gradient(90deg, #333aa2, #ffffff);
+    height: 100%;
+    content: '';
+    min-width: 50px;
+    flex-grow: 1;
+}
+
+.header-nav-menu {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    flex-grow: 1;
+    justify-content: flex-end;
+}

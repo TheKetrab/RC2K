@@ -1,0 +1,60 @@
+﻿@page "/cars/bonus"
+@page "/cars/a{class:int}"
+@page "/cars"
+
+@using RC2K.DataAccess.Interfaces
+@using RC2K.DataAccess.Interfaces.Repositories
+@using RC2K.DomainModel
+@using RC2K.Presentation.Blazor.ViewModels;
+@inject IRallyUoW RallyUoW
+@inject NavigationManager NavManager
+
+<h3>Cars</h3>
+
+<p>@Header</p>
+
+<ul style="display: grid; gap: 1em; grid-template-columns: 1fr 1fr;">
+    @foreach (var car in CarsList)
+    {
+        <li>
+            <div style="display: flex;">
+                <div class="car-big" data-car-id="@(car.Id-1)"></div>
+                <p>@car.Name</p>
+            </div>
+        </li>
+    }
+</ul>
+
+
+@code {
+
+    [Parameter]
+    public int? Class { get; set; }
+
+    public List<Car> CarsList { get; set; } = [];
+
+    private bool _isBonus;
+
+    public string Header => (_isBonus, Class) switch
+    {
+        (true, _) => "Bonus cars",
+        (false, null) => "All cars",
+        _ => $"Cars from A{Class.Value} class"
+    };
+
+    protected override async Task OnInitializedAsync() 
+    {
+        _isBonus = NavManager.Uri.EndsWith("/cars/bonus");
+
+        var cars = (_isBonus, Class) switch
+        {
+            (true, _) => await RallyUoW.Cars.GetBonusCars(),
+            (false, null) => await RallyUoW.Cars.GetAll(),
+            _ => await RallyUoW.Cars.GetAllByClass(Class.Value)
+        };
+
+        CarsList.Clear();
+        CarsList.AddRange(cars);
+    }
+
+}

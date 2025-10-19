@@ -1,0 +1,25 @@
+﻿@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime;
+@code {
+    [Parameter] public double OriginLat { get; set; }
+    [Parameter] public double OriginLng { get; set; }
+    [Parameter] public double DestinationLat { get; set; }
+    [Parameter] public double DestinationLng { get; set; }
+    [Parameter] public IList<double[]> Waypoints { get; set; }
+    [Parameter] public bool ShowWaypoints { get; set; }
+
+    private readonly string mapElementId = "map";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var origin = new { lat = OriginLat, lng = OriginLng };
+            var destination = new { lat = DestinationLat, lng = DestinationLng };
+            var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
+
+            await JSRuntime.InvokeVoidAsync("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints);
+        }
+    }
+}
+<div id="@mapElementId" style="width: 100%; height: 500px;"></div>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RC2K.DataAccess.Fake\RC2K.DataAccess.Fake.csproj" />
+    <ProjectReference Include="..\RC2K.DataAccess.Interfaces\RC2K.DataAccess.Interfaces.csproj" />
+    <ProjectReference Include="..\RC2K.DataAccess.Database\RC2K.DataAccess.Database.csproj" />
+    <ProjectReference Include="..\RC2K.DataAccess\RC2K.DataAccess.csproj" />
+    <ProjectReference Include="..\RC2K.DomainModel\RC2K.DomainModel.csproj" />
+    <ProjectReference Include="..\RC2K.Resources\RC2K.Resources.csproj" />
+  </ItemGroup>
+
+</Project>

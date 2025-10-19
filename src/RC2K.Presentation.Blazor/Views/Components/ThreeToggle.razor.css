@@ -1,0 +1,49 @@
+﻿.three-toggle {
+
+    --toggle-width: attr(data-toggle-width px);
+    --toggle-height: 20px;
+
+    position: relative;
+    width: var(--toggle-width);
+    height: var(--toggle-height);
+    display: block;
+    background-color: var(--mud-palette-primary-lighten);
+    border-radius: calc(var(--toggle-height) / 2);
+    cursor: pointer;
+    box-shadow: inset 0px 5px 15px rgba(0,0,0,0.3), inset 0px -5px 15px rgba(255,255,255,0.3);
+    padding: 3px;
+
+    margin: auto 10px;
+}
+
+.three-toggle-thumb {
+    --thumb-extra: 6px;
+    --thumb-height: calc(var(--toggle-height) + var(--thumb-extra));
+    --thumb-width: var(--thumb-height);
+
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--mud-palette-white);
+    content: attr(data-content);
+    position: absolute;
+    top: calc(-1 * var(--thumb-extra) / 2);
+    left: calc(-1 * var(--thumb-width) / 2);
+    height: var(--thumb-height);
+    width: var(--thumb-width);
+    background-color: var(--mud-palette-primary-darken);
+    border-radius: 100%;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    transition: left .2s ease;
+}
+
+.mid.three-toggle .three-toggle-thumb {
+    left: calc(50% - (var(--thumb-width) / 2))
+}
+
+.full.three-toggle .three-toggle-thumb {
+    left: calc(100% - (var(--thumb-width) / 2));
+}

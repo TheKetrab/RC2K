@@ -1,0 +1,36 @@
+﻿nav {
+    background-color: #f2f2f3;
+    color: green;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    margin-top: 10px;
+}
+
+ol {
+    margin-left: 12rem;
+    display: flex;
+    list-style: none;
+
+}
+
+ol li {
+    position: relative;
+    margin-left: calc(.5em * 1.41 + 1em);
+}
+
+ol li:before {
+    position: absolute;
+    left: -1em;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    content: '';
+    width: .5em;
+    height: .5em;
+    border-right: .15em solid black;
+    border-top: .15em solid black;
+    display: block;
+    transform: rotate(45deg);
+}

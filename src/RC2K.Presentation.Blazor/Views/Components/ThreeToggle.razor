@@ -1,0 +1,36 @@
+﻿@using RC2K.Presentation.Blazor.ViewModels
+@rendermode InteractiveServer
+
+<button class="three-toggle @className" onclick="@Click" data-toggle-width="40">
+    <div class="three-toggle-thumb">
+        <MudIcon Icon="@icon" Size="Size.Small" Style="font-size: 0.9rem;" />
+    </div>
+</button>
+
+@code {
+
+    private int _state = 0;
+    private void Click() {
+
+        _state = (_state + 1) % 3;
+        StateHasChanged();
+    }
+
+    private string icon => _state switch
+    {
+        0 => IconMapper.Thin(Icon.ModeLight),
+        1 => IconMapper.Thin(Icon.ModeAuto),
+        2 => IconMapper.Thin(Icon.ModeDark)
+    };
+
+    public string className => _state switch
+    {
+        0 => "",
+        1 => "mid",
+        2 => "full"
+    };
+
+
+
+
+}

@@ -1,0 +1,71 @@
+﻿@using RC2K.Presentation.Blazor.ViewModels;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+
+@page "/login"
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+        <EditForm Model="@Model" OnValidSubmit="Authenticate" FormName="LoginForm">
+            <DataAnnotationsValidator />
+            <div class="mb-3 text-center flex-column">
+                <h3>LOGIN</h3>
+            </div>
+            <div class="mb-3">
+                <label>User Name</label>
+                <InputText @bind-Value="Model.UserName" class="form-control" placeholder="Username" />
+                <ValidationMessage For="() => Model.UserName" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <InputText @bind-Value="Model.Password" class="form-control" placeholder="Password" typeof="password" />
+                <ValidationMessage For="() => Model.Password" />
+            </div>
+            <div class="mb-3 text-center">
+                <span class="text-danger">@errorMessage</span>
+            </div>
+            <div class="mb-3 d-grid gap-2">
+                <button type="submit" class="btn btn-primary"></button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    [SupplyParameterFromForm]
+    public LoginViewModel Model { get; set; } = new();
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; }
+
+    private string? errorMessage;
+
+    private async Task Authenticate()
+    {
+        if (Model.UserName == Model.Password)
+        {
+            List<Claim> claims = [
+                new Claim(ClaimTypes.Name, Model.UserName),
+                new Claim(ClaimTypes.Role, "User"),
+            ];
+
+            if (Model.UserName == "admin")
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
+            }
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext!.SignInAsync(principal);
+
+
+            return;
+        }
+        else
+        {
+            errorMessage = "Invalid User Name or Password";
+        }
+
+    }
+}

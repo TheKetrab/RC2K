@@ -1,0 +1,64 @@
+﻿@using RC2K.Presentation.Blazor.ViewModels.Layout
+@rendermode InteractiveServer
+@inject HeaderViewModel viewModel
+
+<header @ref=headerElement class="@(NavClass)">
+    <div class="header-pre-box"></div>
+    <div class="header-main-box">
+        <img src="/img/Logo2.png" />
+        <div class="header-nav-menu">
+            <div class="header-nav-fake-gradient" />
+            <NavMenu MenuItems="viewModel.MenuItems" />
+        </div>
+    </div>
+    <div class="header-post-box"></div>
+</header>
+
+<script>
+
+    function observeHeader(element, dotNetObjRef) {
+
+        const observer = new IntersectionObserver(
+            async ([e]) => {
+                let isSticked = e.intersectionRatio < 0.99;
+                await dotNetObjRef.invokeMethodAsync('@nameof(SetIsSticked)', isSticked);
+            },
+            { threshold: [0.99] });
+
+        observer.observe(element);
+    }
+
+</script>
+
+@code {
+
+    @inject IJSRuntime JSRuntime;
+    public ElementReference headerElement;
+
+    [JSInvokable]
+    public Task SetIsSticked(bool sticked)
+    {
+        viewModel.NavIsSticked = sticked;
+        return Task.CompletedTask;
+    }
+
+    protected override void OnInitialized()
+    {
+        viewModel.PropertyChanged += (s, e) =>
+        {
+            InvokeAsync(() => StateHasChanged());
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var reference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("observeHeader", headerElement, reference);
+        }
+    }
+
+    private string NavClass => viewModel.NavIsSticked ? "sticked" : string.Empty;
+
+}

@@ -1,0 +1,44 @@
+﻿@rendermode InteractiveServer
+@using RC2K.Presentation.Blazor.ViewModels
+
+<nav>
+    @foreach (var menuItem in MenuItems)
+    {
+        <div class="menu-item">
+            <MudButton Link="@menuItem.ItemLink"
+             StartIcon="@(IconMapper.IsMudBlazor(menuItem.Icon) ? IconMapper.Thin(menuItem.Icon) : string.Empty)"
+             Href="@menuItem.ItemLink">
+                @{
+                    if (!IconMapper.IsMudBlazor(menuItem.Icon))
+                    {
+                        <i class="@IconMapper.Thin(menuItem.Icon)" aria-hidden="true"></i>
+                    }
+                }
+                @menuItem.Item
+            </MudButton>
+            @if (menuItem.Subitems.Any())
+            {
+                <ul>
+                    @foreach (var subitem in menuItem.Subitems)
+                    {
+                        <li class="menu-item-li">
+                            <MudButton Href="@subitem.link">
+                                <MudText Style="font-size: 10pt;">@subitem.label</MudText>
+                            </MudButton>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+    
+    <Profile />
+
+</nav>
+
+@code {
+
+    [Parameter]
+    public List<MenuItem> MenuItems { get; set; }
+
+}

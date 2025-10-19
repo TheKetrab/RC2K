@@ -1,0 +1,76 @@
+﻿@using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.ViewModels.Layout;
+@using RC2K.Presentation.Blazor.Views.Components;
+@rendermode InteractiveServer
+
+<div class="profile">
+    <AuthorizeView>
+        <NotAuthorized>
+            <MudButton Href="login" Color="Color.Primary" Variant="Variant.Filled" 
+             Style="border-radius: 5em;
+                    margin: 10px;
+                    transition: transform .2s ease;
+                    padding: 0;
+                    margin: 0;
+                    height: auto;
+                    border-radius: 20px 10px 10px 20px;">
+                Login
+            </MudButton>
+        </NotAuthorized>
+        <Authorized>
+
+            <div class="profile-content @visible @allowOverflowVisible">
+                <div class="profile-content-wrapper">
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <span>@context.User.Identity?.Name</span>
+                    </div>
+                    <MudIconButton Icon="@IconMapper.Thin(Icon.Score)"
+                                   Href="score"
+                                   Style="padding: 0; margin: auto 10px;" />
+                    <MudIconButton Icon="@IconMapper.Thin(Icon.Settings)"
+                                   Href="settings"
+                                   Style="padding: 0; margin: auto 10px;" />
+                    <div style="display:flex; flex-direction: column; justify-content: center; align-content: center;" class="tooltip">
+                        <ThreeToggle />
+                        <span class="tooltiptext">@mode</span>
+                    </div>
+                    <MudIconButton Icon="@IconMapper.Thin(Icon.Logout)"
+                                   Color="Color.Error"
+                                   Href="logout" 
+                                   Style="padding: 0; margin: auto 10px;"/>
+                </div>
+            </div>
+            <button class="profile-btn" @onclick="ToggleProfileVisible">
+                <ion-icon name="person-circle-outline" class="btn-svg"/>
+            </button>
+
+
+        </Authorized>
+    </AuthorizeView>
+
+</div>
+
+@code {
+
+    bool profileContentIsVisible = false;
+    bool allowOverflowVisibleBool = false;
+    string mode = "Light/Auto/Dark";
+
+    private async Task ToggleProfileVisible() 
+    {
+        profileContentIsVisible = !profileContentIsVisible;
+        if (profileContentIsVisible)
+        {
+            await Task.Delay(500);
+            allowOverflowVisibleBool = true;
+        }
+        else
+        {
+            allowOverflowVisibleBool = false;
+        }
+        StateHasChanged();
+    }
+
+    string allowOverflowVisible => allowOverflowVisibleBool ? "allow-overflow-visible" : "";
+    string visible => profileContentIsVisible ? "visible" : "";
+}

@@ -1,0 +1,220 @@
+﻿@rendermode InteractiveServer
+@page "/stages/{raceName}/{id:int}"
+
+@using RC2K.DataAccess.Interfaces
+@using RC2K.DataAccess.Interfaces.Repositories
+@using RC2K.DomainModel
+@using RC2K.Extensions
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.Views.Components;
+@using RC2K.Presentation.Blazor.ViewModels;
+@inject IRallyUoW RallyUoW
+@inject IStageService StageService
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+<h3></h3>
+
+
+@page "/map"
+@using System.Collections.Generic
+
+<div class="MAIN">
+    <h1>@_raceName</h1>
+    <div class="container" id="containerId" accesskey="">
+
+        <div class="item stage-info">
+            <div class="card" style="position: relative;">
+                <div class="card-header">Stage details</div>
+                <div class="card-body">
+                    <div style="position: absolute; top: 0; right: 0;">
+                        @if (IsArcade)
+                        {
+                            <a href="@NavigationManager.GetUriWithQueryParameter("IsArcade","False")">Not arcade version</a>
+                        }
+                        else
+                        {
+                            <a href="@NavigationManager.GetUriWithQueryParameter("IsArcade","True")">Arcade version</a>
+                        }
+                    </div>
+                    <h2>@($"{_name}{(IsArcade ? " - Arcade version" : "")}")</h2>
+                    <br />
+                    <p>Length: @_stageDetails.Length</p>
+                    <br />
+                    <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
+                    <br />
+                    <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <div class="item stage-img">
+            <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
+                <img src="img/maps/@_imgName" style="width: 100%;" />
+            </div>
+        </div>
+        <div class="item stage-description">
+            <div class="card">
+                <div class="card-header">Description</div>
+                <div class="card-body">
+                    @_description
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <div class="item stage-times">
+            <div class="card" >
+                <div class="card-header">Records</div>
+                <div class="card-body times-table" style="display: grid; grid-template-columns: .5fr 1.5fr 1.5fr 1fr 1fr .5fr;">
+                    <p class="th-header">#</p>
+                    <p class="th-header">Time</p>
+                    <p class="th-header">Driver</p>
+                    <p class="th-header">Car</p>
+                    <p class="th-header">Uploaded</p>
+                    <p class="th-header">Verified?</p>
+
+                    @{
+                        int cnt = 0;
+                    }
+                    @foreach (var timeEntry in _timeEntries.OrderBy(x => x.Time).Select((x, i) => new { Place = i + 1, Data = x }))
+                    {
+                        cnt++;
+                        <p>@timeEntry.Place</p>
+                        <p>@timeEntry.Data.Time</p>
+                        <p>@timeEntry.Data.Driver.Name</p>
+                        <p>@timeEntry.Data.Car.Name</p>
+                        <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
+                        <p>@(timeEntry.Data.VerifyInfo is null ? "nv" : "v")</p>
+                    }
+                    @for (int i = 10 - cnt; i >= 0; i--)
+                    {
+                        <p>@(10 - i)</p>
+                        <p>---</p>
+                        <p>---</p>
+                        <p>---</p>
+                        <p>---</p>
+                        <p>---</p>
+                    }
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <div class="item stage-map">
+            <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
+                <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" />
+            </div>
+        </div>
+        <div class="break"></div>
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string RaceName { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private IList<double[]> _waypoints;
+
+    private string _name;
+    private string _raceName;
+    private string _description;
+
+    private string _imgName;
+
+    private DomainModel.StageDetails _stageDetails;
+
+    private List<DomainModel.TimeEntry> _timeEntries = new();
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public bool IsArcade { get; set; }
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public bool ShowWaypoints { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var stage = await RallyUoW.Stages.TryGetByCode(Id.ToString(), IsArcade);
+        _waypoints = await StageService.GetWaypoints(Id, stage.IsArcade);
+
+        _waypoints = [
+
+            // 3
+            // [54.29253295499861, -4.579339902049274],
+            // [54.30265086676041, -4.5788249179351235],
+            // [54.30295136077201, -4.5659503150813565],
+            // [54.307859119142925, -4.564233701367521],
+            // [54.320476382533734, -4.560972135311233],
+            // [54.3307232966048, -4.554744836672707],
+            // [54.326006235180714, -4.551070299954774],
+            // [54.319547298860584, -4.549386137257926],
+            // [54.322241125944736, -4.542113616832573],
+            // [54.319190093065146, -4.535606624544357],
+            // [54.32398234577499, -4.533999014722241],
+            // [54.32822347019929, -4.530630689451079],
+            // [54.32651219194549, -4.547191622135444],
+            // [54.33219633750549, -4.552856533005277],
+            // [54.339426863496904, -4.552091004491429],
+            // [54.33759399830894, -4.538857384438502],
+            // [54.335097817595965, -4.531941701181015],
+            // [54.32978526277602, -4.515645150190689],
+            // [54.332156347338504, -4.4954348940484685],
+            // [54.33249343343847, -4.483012521723894],
+            // [54.32362051650159, -4.47872888813221],
+
+            //4
+            [54.226579739732415, -4.673749615000498],
+            [54.22818458602751, -4.661017940090035],
+            [54.22814239561909, -4.6519600129345156],
+            [54.2180779014014, -4.644719561936783],
+            [54.21909937171477, -4.639659223723253],
+            [54.22909303283995, -4.633488566982392],
+            [54.2370374861316, -4.622648223250316],
+            [54.24410335243077, -4.618312086081063],
+            [54.24751402724155, -4.6278182329521185],
+            [54.24868333654983, -4.638491801368741],
+            [54.25578256047404, -4.6251965555201195],
+            [54.26951250347477, -4.60850020281429],
+            [54.27297180609658, -4.600854470506195],
+            [54.26805813811809, -4.591177904663292],
+            [54.261587581828, -4.582483019413147],
+
+
+        ];
+
+        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
+        _name = stage.StageData.Name;
+        _imgName = stage.StageData.ImgName;
+        _description = stage.StageData.Description;
+        _stageDetails = stage.StageData.StageDetails;
+
+        int cnt = Random.Shared.Next(5, 20);
+        for (int i=0; i<cnt; i++)
+        {
+            _timeEntries.Add(new DomainModel.TimeEntry()
+                {
+                    Id = 1,
+                    Car = new DomainModel.Car() { Id = 1, Class = 5, Name = "car" },
+                    StageId = 1,
+                    DriverId = 1,
+                    Driver = new DomainModel.Driver() { Id = 1, Known = true, Name = "driver" },
+                    CarId = 1,
+                    Time = TimeOnly.FromTimeSpan(TimeSpan.FromSeconds(45)),
+                    UploadTime = DateTime.Now
+                });
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
+    }
+
+}
