@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic", "RC2K.Logic\RC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.Interfaces", "RC2K.Logic.Interfaces\RC2K.Logic.Interfaces.csproj", "{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.UnitTests", "..\test\RC2K.Logic.UnitTests\RC2K.Logic.UnitTests.csproj", "{A2761582-ED03-4D58-973B-290C58FB5457}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,10 @@ Global
 		{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2761582-ED03-4D58-973B-290C58FB5457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2761582-ED03-4D58-973B-290C58FB5457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2761582-ED03-4D58-973B-290C58FB5457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2761582-ED03-4D58-973B-290C58FB5457}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +105,7 @@ Global
 		{88BE8AF6-B965-4B46-A81C-B5F4E861542B} = {C927C1DB-39F8-4C1A-A6A8-992ED59F2ABE}
 		{69CE7946-1376-4C44-B603-46BF3202D325} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{A2761582-ED03-4D58-973B-290C58FB5457} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2480C222-5570-494B-B3BA-70770ECED63E}
