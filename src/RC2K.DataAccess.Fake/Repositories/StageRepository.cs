@@ -17,4 +17,9 @@ public class StageRepository(IDataContext context)
 
     public Task<Stage?> TryGetByCode(string code) =>
         Task.FromResult(DataSet.FirstOrDefault(x => x.Code == int.Parse(code)));
+
+    public Task<Stage?> TryGetByCode(string code, bool arcade)
+    {
+        throw new NotImplementedException();
+    }
 }

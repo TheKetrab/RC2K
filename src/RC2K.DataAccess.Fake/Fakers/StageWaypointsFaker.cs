@@ -6,11 +6,8 @@ namespace RC2K.DataAccess.Fake.Fakers;
 
 public class StageWaypointsFaker : Faker<StageWaypoints>
 {
-    private int _id = 1;
-
     public StageWaypointsFaker()
     {
-        RuleFor(x => x.Id, f => _id++);
         RuleFor(x => x.Waypoints, RandomCoord);
     }
 
