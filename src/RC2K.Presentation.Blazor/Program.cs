@@ -1,3 +1,5 @@
+using RC2K.Presentation.Blazor;
+
 var builder = WebApplication.CreateBuilder(args)
     .ConfigureRazor()
     .ConfigureAuthentication()
@@ -9,4 +11,4 @@ var app = builder.Build()
     .ConfigureExceptionHandler()
     .ConfigureApplication();
 
-app.Run();
+await app.RunAsync();

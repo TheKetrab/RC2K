@@ -22,7 +22,7 @@ public enum Icon
 
 public static class IconMapper
 {
-    public static readonly Dictionary<Icon, (bool, string, string)> _icon2classMap;
+    private static readonly Dictionary<Icon, (bool, string, string)> _icon2classMap;
 
     static IconMapper()
     {

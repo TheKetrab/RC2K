@@ -1,5 +1,7 @@
 using RC2K.Presentation.Blazor.Views;
 
+namespace RC2K.Presentation.Blazor;
+
 public static class AppConfiguration
 {
     public static WebApplication ConfigureExceptionHandler(this WebApplication app)

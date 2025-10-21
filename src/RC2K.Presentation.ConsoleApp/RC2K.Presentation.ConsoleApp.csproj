@@ -20,4 +20,10 @@
     <ProjectReference Include="..\RC2K.Resources\RC2K.Resources.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.coverage.exclusions">
+      <Value>**</Value>
+    </SonarQubeSetting>
+  </ItemGroup>
+	
 </Project>
