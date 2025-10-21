@@ -14,7 +14,7 @@ namespace RC2K.DataAccess.Fake
             Users = new UsersDataSet(this).Generate(usersCnt);
             Drivers = new DriversDataSet(this).Generate(driversCnt);
             Stages = new StagesDataSet(this).Generate(0);
-            StagesData = new StagesDataDataSet(this).Generate(stagesCnt);
+            StagesData = new StagesDataDataSet().Generate(0);
             TimeEntries = new TimeEntriesDataSet(this).Generate(timeEntriesCnt);
             StageWaypoints = new StagesWaypointsDataSet().Generate(0);
             VerifyInfos = new VerifyInfosDataSet(this).Generate(verifyInfosCnt);
