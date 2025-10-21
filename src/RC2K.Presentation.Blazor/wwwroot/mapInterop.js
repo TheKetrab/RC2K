@@ -1,14 +1,14 @@
 ﻿window.mapInterop = {
-    initMap: function (mapElementId, waypoints, showWaypoints) {
+    initMap: async function (mapElementId, waypoints, showWaypoints, path) {
         
         if (waypoints.length < 2)
-            return;
+            throw new Error("Start and Finish required.");
 
+        // Initialize the map centered at the origin
         let origin = {
             lat: waypoints.reduce((acc, x) => acc + x.lat, 0) / waypoints.length,
             lng: waypoints.reduce((acc, x) => acc + x.lng, 0) / waypoints.length
         }
-        // Initialize the map centered at the origin
         const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
 
         // Set up the OpenStreetMap tile layer
@@ -17,7 +17,7 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // markers
+        // Markers
         L.marker(waypoints[0], { icon: this.startMarker }).addTo(map)
         debugger;
         if (showWaypoints) {
@@ -25,32 +25,44 @@
         }
         L.marker(waypoints[waypoints.length - 1], { icon: this.endMarker }).addTo(map)
 
-        const coordinates = waypoints.map(p => `${p.lng},${p.lat}`).join(';');
-        const osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordinates}?overview=full&geometries=geojson&generate_hints=false&alternatives=true`;
+        // Path
+        var routeCoordinates;
+        var result;
+        if (!path) {
+            const coordinates = waypoints.map(p => `${p.lng},${p.lat}`).join(';');
+            routeCoordinates = await this.getRoute(coordinates);
+            result = routeCoordinates.map(x => x.join(',')).join(';');
+        } else {
+            routeCoordinates = path.split(';').flatMap(x => x.split(',').map(y => parseInt(y)));
+            result = null;
+        }
 
-        // Fetch the route from OSRM
-        fetch(osrmUrl)
-            .then(response => response.json())
-            .then(data => {
-                debugger;
-                if (data.routes && data.routes.length > 0) {
-                    // Extract the coordinates from the GeoJSON route geometry
-                    const routeCoordinates = data.routes[0].geometry.coordinates;
+        const latLngs = routeCoordinates.map(coord => L.latLng(coord[1], coord[0]));
+        const polyline = L.polyline(latLngs, { color: 'blue', weight: 5 });
+        polyline.addTo(map);
+        map.fitBounds(polyline.getBounds());
 
-                    // Map coordinates to Leaflet lat-lng objects
-                    const latLngs = routeCoordinates.map(coord => L.latLng(coord[1], coord[0]));
+        return result; // returns newly calculated path or null it was previously cached
+    },
 
-                    // Draw the route as a polyline
-                    const polyline = L.polyline(latLngs, { color: 'blue', weight: 5 });
-                    polyline.addTo(map);
+    getRoute:
+    /**
+     * @param {string} coordinates - x1,y1;x2,y2
+     * @returns {number[][]}
+     */
+    async function (coordinates) {
+        //const osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordinates}?overview=full&geometries=geojson&generate_hints=false&alternatives=true`;
+        const osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordinates}?overview=full&geometries=geojson&generate_hints=false&alternatives=true`
 
-                    // Fit the map view to the polyline
-                    map.fitBounds(polyline.getBounds());
-                } else {
-                    console.error("No route found");
-                }
-            })
-            .catch(error => console.error("Error fetching route from OSRM:", error));
+        const osrmData = await fetch(osrmUrl)
+            .then(response => response.json());
+
+        if (!osrmData.routes || osrmData.routes.length == 0) {
+            throw new Error("No route found.");
+        }
+
+        const routeCoordinates = osrmData.routes[0].geometry.coordinates;
+        return routeCoordinates;
     },
 
     startMarker: L.AwesomeMarkers.icon({
@@ -67,7 +79,6 @@
     }),
 
 };
-
 
 
 window.calculateContainerHeight = (containerId) => {

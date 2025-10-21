@@ -18,7 +18,16 @@
             var destination = new { lat = DestinationLat, lng = DestinationLng };
             var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
 
-            await JSRuntime.InvokeVoidAsync("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints);
+            string? res = await JSRuntime.InvokeAsync<string?>("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints);
+            if (res is null)
+            {
+                // do nothing
+            }
+            else
+            {
+                // TODO cache
+            }
+
         }
     }
 }
