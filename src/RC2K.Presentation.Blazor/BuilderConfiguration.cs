@@ -1,4 +1,3 @@
-using MudBlazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using RC2K.DataAccess;
@@ -10,6 +9,8 @@ using RC2K.Logic.Interfaces;
 using RC2K.Logic;
 using MudBlazor.Services;
 using RC2K.Presentation.Blazor.ViewModels.Layout;
+
+namespace RC2K.Presentation.Blazor;
 
 public static class BuilderConfiguration
 {
