@@ -123,6 +123,7 @@ public class RallyDbContext : DbContext, IDataContext
         IEnumerable<StageWaypoints> stageWaypoints =
             resourceWaypoints.Select(x => new StageWaypoints()
             {
+                ApiHint = x.ApiHint,
                 StageCode = int.Parse(x.Code),
                 Waypoints = x.Waypoints
             });

@@ -1,25 +1,36 @@
 ﻿@rendermode InteractiveServer
 @inject IJSRuntime JSRuntime;
 @code {
-    [Parameter] public double OriginLat { get; set; }
-    [Parameter] public double OriginLng { get; set; }
-    [Parameter] public double DestinationLat { get; set; }
-    [Parameter] public double DestinationLng { get; set; }
-    [Parameter] public IList<double[]> Waypoints { get; set; }
-    [Parameter] public bool ShowWaypoints { get; set; }
 
-    private readonly string mapElementId = "map";
+    [Parameter] public IList<double[]> Waypoints { get; set; } = [];
+    [Parameter] public bool ShowWaypoints { get; set; }
+    [Parameter] public string? Path { get; set; }
+    [Parameter] public string? Api { get; set; } // bike/car
+
+    private const string mapElementId = "map";
+
+    [Parameter]
+    public EventCallback<string> NewPathCached { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender)
         {
-            var origin = new { lat = OriginLat, lng = OriginLng };
-            var destination = new { lat = DestinationLat, lng = DestinationLng };
-            var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
-
-            await JSRuntime.InvokeVoidAsync("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints);
+            return;
         }
+
+        var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
+
+        string? res = await JSRuntime.InvokeAsync<string?>("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints, Api, Path);
+        if (res is null)
+        {
+            // do nothing
+        }
+        else
+        {
+            await NewPathCached.InvokeAsync(res);
+        }
+
     }
 }
 <div id="@mapElementId" style="width: 100%; height: 500px;"></div>

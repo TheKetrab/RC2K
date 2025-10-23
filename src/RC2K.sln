@@ -35,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BD62259-4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.UnitTests", "..\test\RC2K.Logic.UnitTests\RC2K.Logic.UnitTests.csproj", "{A2761582-ED03-4D58-973B-290C58FB5457}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Resources.UnitTests", "..\test\RC2K.Resources.UnitTests\RC2K.Resources.UnitTests.csproj", "{78AF4B80-8E86-4934-88C4-996687C692DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{A2761582-ED03-4D58-973B-290C58FB5457}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2761582-ED03-4D58-973B-290C58FB5457}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2761582-ED03-4D58-973B-290C58FB5457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78AF4B80-8E86-4934-88C4-996687C692DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78AF4B80-8E86-4934-88C4-996687C692DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78AF4B80-8E86-4934-88C4-996687C692DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78AF4B80-8E86-4934-88C4-996687C692DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{69CE7946-1376-4C44-B603-46BF3202D325} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A2761582-ED03-4D58-973B-290C58FB5457} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
+		{78AF4B80-8E86-4934-88C4-996687C692DF} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2480C222-5570-494B-B3BA-70770ECED63E}
