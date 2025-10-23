@@ -57,4 +57,30 @@ public class StageServiceTests
         //Arrange-Act-Assert
         Assert.Throws<Exception>(() => _sut.GetAllFilledByRallyCode((RallyCode)(-1)));
 
+    [Test]
+    public async Task GetPath_CallsStageRepositoryAndReturnsItsResult()
+    {
+        //Arrange
+        int stageCode = 42;
+        string path = "path";
+        _stageRepositoryMock.Setup(x => x.GetPathByStageCode(stageCode)).Returns(Task.FromResult<string?>(path));
+
+        //Act
+        var result = await _sut.GetPath(stageCode);
+
+        //Assert
+        Assert.That(result, Is.EqualTo(path));
+        _stageRepositoryMock.Verify(x => x.GetPathByStageCode(stageCode), Times.Once());
+    }
+
+    [Test]
+    public async Task SetPath_CallsStageRepositoryToUpdatePath()
+    {
+        //Arrange-Act
+        await _sut.SetPath(10, "path");
+
+        //Assert
+        _stageRepositoryMock.Verify(x => x.UpdatePath(10, "path"), Times.Once());
+    }
+
 }
