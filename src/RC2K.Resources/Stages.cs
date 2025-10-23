@@ -46,15 +46,23 @@ namespace RC2K.Resources
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                int comma = line.IndexOf(',');
+                int comma1 = line.IndexOf(',');
+                int comma2 = line.IndexOf(',', comma1 + 1);
 
-                string code = line[..comma];
+                string code = line[..comma1];
+                if (comma2 == -1)
+                {
+                    _waypoints.Add(new(code, "", ""));
+                    continue;
+                }
 
-                string coords = line.Length > comma + 1
-                    ? line[(comma + 2)..^1]
+                string apiHint = line[(comma1+1)..comma2];
+
+                string coords = line.Length > comma2 + 1
+                    ? line[(comma2 + 2)..^1] // skip quotes
                     : "";
 
-                _waypoints.Add(new(code, coords));
+                _waypoints.Add(new(code, apiHint, coords));
             }
         }
 

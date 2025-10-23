@@ -11,7 +11,11 @@ public class StageRepository(IDataContext context)
     protected override IQueryable<Stage> DataSet => _context.Stages;
 
     public Task<Stage?> TryGetByCode(string code, bool arcade) =>
-        DataSet.Include(x => x.StageData).ThenInclude(x => x.StageDetails).FirstOrDefaultAsync(x => x.Code == int.Parse(code) && x.IsArcade == arcade);
+        DataSet
+            .Include(x => x.StageData)
+                .ThenInclude(x => x.StageDetails)
+            .Include(x => x.StageWaypoints)
+        .FirstOrDefaultAsync(x => x.Code == int.Parse(code) && x.IsArcade == arcade);
 
     public Task<List<Stage>> GetAllByRallyCodeBetween(int min, int max)
     {
@@ -24,6 +28,18 @@ public class StageRepository(IDataContext context)
 
     public async Task<string> GetWaypointsByStageCode(int stageCode) =>
         (await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Waypoints;
+
+    public async Task<string?> GetPathByStageCode(int stageCode) =>
+        (await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Path;
+
+    public async Task UpdatePath(int stageCode, string path)
+    {
+        var stageWaypoints = await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode);
+        stageWaypoints.Path = path;
+
+        int affectedRows = _context.SaveChanges();   
+    }
+
 
     public Task<List<Stage>> GetAll()
     {

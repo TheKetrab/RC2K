@@ -12,4 +12,6 @@ public interface IDataContext
     IQueryable<TimeEntry> TimeEntries { get; }
     IQueryable<User> Users { get; }
     IQueryable<VerifyInfo> VerifyInfos { get; }
+
+    int SaveChanges();
 }

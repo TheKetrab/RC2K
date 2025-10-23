@@ -48,4 +48,13 @@ public class StageService : IStageService
 
         return waypoints.ToList();
     }
+
+    public async Task<string?> GetPath(int stageCode)
+    {
+        var stagePath = await _stageRepository.GetPathByStageCode(stageCode);
+        return stagePath;
+    }
+
+    public Task SetPath(int stageCode, string path) =>
+        _stageRepository.UpdatePath(stageCode, path);
 }

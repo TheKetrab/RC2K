@@ -7,4 +7,6 @@ public interface IStageService
     Task<List<Stage>> GetAllFilled();
     Task<List<Stage>> GetAllFilledByRallyCode(RallyCode rallyCode);
     Task<List<double[]>> GetWaypoints(int stageCode, bool arcade);
+    Task SetPath(int stageCode,  string path);
+    Task<string?> GetPath(int stageCode);
 }

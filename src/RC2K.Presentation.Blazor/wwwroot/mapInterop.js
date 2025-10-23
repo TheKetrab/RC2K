@@ -1,5 +1,5 @@
 ﻿window.mapInterop = {
-    initMap: async function (mapElementId, waypoints, showWaypoints, path) {
+    initMap: async function (mapElementId, waypoints, showWaypoints, api, path) {
         
         if (waypoints.length < 2)
             throw new Error("Start and Finish required.");
@@ -30,10 +30,10 @@
         var result;
         if (!path) {
             const coordinates = waypoints.map(p => `${p.lng},${p.lat}`).join(';');
-            routeCoordinates = await this.getRoute(coordinates);
+            routeCoordinates = await this.getRoute(coordinates, api);
             result = routeCoordinates.map(x => x.join(',')).join(';');
         } else {
-            routeCoordinates = path.split(';').flatMap(x => x.split(',').map(y => parseInt(y)));
+            routeCoordinates = path.split(';').map(x => x.split(',').map(y => parseFloat(y)));
             result = null;
         }
 
@@ -50,9 +50,15 @@
      * @param {string} coordinates - x1,y1;x2,y2
      * @returns {number[][]}
      */
-    async function (coordinates) {
-        //const osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordinates}?overview=full&geometries=geojson&generate_hints=false&alternatives=true`;
-        const osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordinates}?overview=full&geometries=geojson&generate_hints=false&alternatives=true`
+    async function (coordinates, api) {
+
+        var osrmUrl;
+        const osrmApiQueryParams = 'overview=full&geometries=geojson&generate_hints=false&alternatives=true'; 
+        if (api == 'bike') {
+            osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordinates}?${osrmApiQueryParams}`;
+        } else {
+            osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordinates}?${osrmApiQueryParams}`;
+        }
 
         const osrmData = await fetch(osrmUrl)
             .then(response => response.json());
