@@ -11,6 +11,7 @@ public class RallyUoW : IRallyUoW
                     ICarRepository carRepository,
                     IStageRepository stageRepository)
     {
+        _dbContext = dbContext;
         Cars = carRepository;
         Stages = stageRepository;
     }

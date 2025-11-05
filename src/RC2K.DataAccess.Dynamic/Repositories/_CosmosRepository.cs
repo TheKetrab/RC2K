@@ -26,8 +26,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         string key = id.ToString();
         var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(key));
         
-        var charge = response.RequestCharge;
-
         var model = response.Resource;
 
         return Mapper.ToDomainModel(model);
@@ -46,7 +44,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         while (it.HasMoreResults)
         {
             var response = await it.ReadNextAsync();
-            var charge = response.RequestCharge;
 
             foreach (var v in response)
             {

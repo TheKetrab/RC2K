@@ -5,8 +5,8 @@ using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Database.Repositories;
 
-public class CarRepository(RallyDbContext dbContext, ICarCache cache) 
-    : GenericRepository<Car, ICarCache>(dbContext, cache), ICarRepository
+public class CarRepository(RallyDbContext dbContext, ICarCache cache)
+        : GenericRepository<Car, ICarCache>(dbContext, cache), ICarRepository
 {
     private const string AllCarsKey = "AllCarsKey";
     private const string AllCarsByClassKey = "AllCarsByClassKey";
@@ -19,7 +19,7 @@ public class CarRepository(RallyDbContext dbContext, ICarCache cache)
             return cacheValue;
         }
 
-        var dbValue = await dbContext.Cars.ToListAsync();
+        var dbValue = await _dbContext.Cars.ToListAsync();
         _cache.Set(AllCarsKey, dbValue);
         return dbValue;
     }

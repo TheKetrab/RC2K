@@ -13,7 +13,7 @@ public abstract class GenericRepository<TEntity, TCache> : IGenericRepository<TE
     protected DbSet<TEntity> _dbSet;
     protected TCache _cache;
 
-    public GenericRepository(RallyDbContext dbContext, TCache cache)
+    protected GenericRepository(RallyDbContext dbContext, TCache cache)
     {
         _dbContext = dbContext;
         _dbSet = _dbContext.Set<TEntity>();

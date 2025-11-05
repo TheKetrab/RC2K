@@ -1,6 +1,7 @@
 ﻿using RC2K.DomainModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,13 +33,13 @@ internal static class Utils
         dt.ToString("dd/MM/yyyy");
 
     public static DateTime StringToDateTime(string str) =>
-        DateTime.ParseExact(str, "dd/MM/yyyy", null);
+        DateTime.ParseExact(str, "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
     public static char DirectionToChar(Direction direction) => direction switch
     {
         Direction.Simulation => 's',
         Direction.Arcade => 'a',
-        _ => throw new Exception()
+        _ => throw new ArgumentException()
     };
 
 
@@ -46,7 +47,7 @@ internal static class Utils
     {
         's' => Direction.Simulation,
         'a' => Direction.Arcade,
-        _ => throw new Exception()
+        _ => throw new ArgumentException()
     };
 
 }
