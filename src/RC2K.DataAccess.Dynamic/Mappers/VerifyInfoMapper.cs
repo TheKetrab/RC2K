@@ -1,0 +1,33 @@
+﻿using RC2K.DataAccess.Dynamic.Models;
+using RC2K.DomainModel;
+
+namespace RC2K.DataAccess.Dynamic.Mappers;
+
+public class VerifyInfoMapper : IModelMapper<VerifyInfo, VerifyInfoModel>
+{
+    public VerifyInfoModel ToCosmosModel(VerifyInfo verifyInfo)
+    {
+        VerifyInfoModel model = new VerifyInfoModel()
+        {
+            Id = verifyInfo.Id,
+            VerifierId = verifyInfo.VerifierId,
+            Comment = verifyInfo.Comment,
+            VerifyDate = Utils.DateTimeToString(verifyInfo.VerifyDate),
+        };
+
+        return model;
+    }
+
+    public VerifyInfo ToDomainModel(VerifyInfoModel model)
+    {
+        VerifyInfo verifyInfo = new VerifyInfo()
+        {
+            Id = model.Id,
+            VerifierId = model.VerifierId,
+            Comment = model.Comment,
+            VerifyDate = Utils.StringToDateTime(model.VerifyDate),
+        };
+
+        return verifyInfo;
+    }
+}

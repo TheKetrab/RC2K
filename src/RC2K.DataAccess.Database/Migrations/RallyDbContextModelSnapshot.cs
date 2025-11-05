@@ -177,9 +177,9 @@ namespace RC2K.DataAccess.Database.Migrations
 
             modelBuilder.Entity("RC2K.DomainModel.Driver", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Key")
                         .HasColumnType("TEXT");
@@ -190,8 +190,11 @@ namespace RC2K.DataAccess.Database.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Nationality")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -210,7 +213,7 @@ namespace RC2K.DataAccess.Database.Migrations
                     b.Property<int>("Code")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsArcade")
+                    b.Property<int>("Direction")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -224,433 +227,433 @@ namespace RC2K.DataAccess.Database.Migrations
                         {
                             Id = 1,
                             Code = 21,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 2,
                             Code = 21,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 3,
                             Code = 22,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 4,
                             Code = 22,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 5,
                             Code = 23,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 6,
                             Code = 23,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 7,
                             Code = 24,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 8,
                             Code = 24,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 9,
                             Code = 25,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 10,
                             Code = 25,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 11,
                             Code = 26,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 12,
                             Code = 26,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 13,
                             Code = 31,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 14,
                             Code = 31,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 15,
                             Code = 32,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 16,
                             Code = 32,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 17,
                             Code = 33,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 18,
                             Code = 33,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 19,
                             Code = 34,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 20,
                             Code = 34,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 21,
                             Code = 35,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 22,
                             Code = 35,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 23,
                             Code = 36,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 24,
                             Code = 36,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 25,
                             Code = 41,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 26,
                             Code = 41,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 27,
                             Code = 42,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 28,
                             Code = 42,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 29,
                             Code = 43,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 30,
                             Code = 43,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 31,
                             Code = 44,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 32,
                             Code = 44,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 33,
                             Code = 45,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 34,
                             Code = 45,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 35,
                             Code = 46,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 36,
                             Code = 46,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 37,
                             Code = 51,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 38,
                             Code = 51,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 39,
                             Code = 52,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 40,
                             Code = 52,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 41,
                             Code = 53,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 42,
                             Code = 53,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 43,
                             Code = 54,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 44,
                             Code = 54,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 45,
                             Code = 55,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 46,
                             Code = 55,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 47,
                             Code = 56,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 48,
                             Code = 56,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 49,
                             Code = 61,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 50,
                             Code = 61,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 51,
                             Code = 62,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 52,
                             Code = 62,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 53,
                             Code = 63,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 54,
                             Code = 63,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 55,
                             Code = 64,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 56,
                             Code = 64,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 57,
                             Code = 65,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 58,
                             Code = 65,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 59,
                             Code = 66,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 60,
                             Code = 66,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 61,
                             Code = 71,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 62,
                             Code = 71,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 63,
                             Code = 72,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 64,
                             Code = 72,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 65,
                             Code = 73,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 66,
                             Code = 73,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 67,
                             Code = 74,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 68,
                             Code = 74,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 69,
                             Code = 75,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 70,
                             Code = 75,
-                            IsArcade = false
+                            Direction = 0
                         },
                         new
                         {
                             Id = 71,
                             Code = 76,
-                            IsArcade = true
+                            Direction = 1
                         },
                         new
                         {
                             Id = 72,
                             Code = 76,
-                            IsArcade = false
+                            Direction = 0
                         });
                 });
 
@@ -1638,15 +1641,15 @@ namespace RC2K.DataAccess.Database.Migrations
 
             modelBuilder.Entity("RC2K.DomainModel.TimeEntry", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("CarId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DriverId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("DriverId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("StageId")
                         .HasColumnType("INTEGER");
@@ -1657,8 +1660,8 @@ namespace RC2K.DataAccess.Database.Migrations
                     b.Property<DateTime>("UploadTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("VerifyInfoId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid?>("VerifyInfoId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -1670,17 +1673,17 @@ namespace RC2K.DataAccess.Database.Migrations
 
                     b.HasIndex("VerifyInfoId");
 
-                    b.ToTable("TimeEntries");
+                    b.ToTable("TimeEntry");
                 });
 
             modelBuilder.Entity("RC2K.DomainModel.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("DriverId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("DriverId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1696,20 +1699,20 @@ namespace RC2K.DataAccess.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("RC2K.DomainModel.VerifyInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("VerifierId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("VerifierId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("VerifyDate")
                         .HasColumnType("TEXT");
@@ -1718,7 +1721,7 @@ namespace RC2K.DataAccess.Database.Migrations
 
                     b.HasIndex("VerifierId");
 
-                    b.ToTable("VerifyInfos");
+                    b.ToTable("VerifyInfo");
                 });
 
             modelBuilder.Entity("RC2K.DomainModel.Driver", b =>

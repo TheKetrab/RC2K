@@ -1,9 +1,9 @@
 ﻿namespace RC2K.DomainModel;
 
-public class VerifyInfo : IEntity
+public class VerifyInfo
 {
-    public required int Id { get; init; }
-    public required int VerifierId { get; init; }
+    public required Guid Id { get; init; }
+    public required Guid VerifierId { get; init; }
     public string? Comment { get; set; }
     public DateTime VerifyDate { get; init; }
 

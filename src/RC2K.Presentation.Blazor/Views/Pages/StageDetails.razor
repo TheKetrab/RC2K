@@ -1,4 +1,4 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 @page "/stages/{raceName}/{id:int}"
 
 @using RC2K.DataAccess.Interfaces
@@ -6,10 +6,10 @@
 @using RC2K.DomainModel
 @using RC2K.Extensions
 @using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.Views.Components;
-@using RC2K.Presentation.Blazor.ViewModels;
-@inject IRallyUoW RallyUoW
+@using RC2K.Presentation.Blazor.Views.Components
+@using RC2K.Presentation.Blazor.ViewModels
 @inject IStageService StageService
+@inject ITimeEntryService TimeEntryService
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 <h3></h3>
@@ -29,14 +29,14 @@
                     <div style="position: absolute; top: 0; right: 0;">
                         @if (IsArcade)
                         {
-                            <a href="@NavigationManager.GetUriWithQueryParameter("IsArcade","False")">Not arcade version</a>
+                            <a href="@NavigationManager.GetUriWithQueryParameter("direction","simulation")">Not arcade version</a>
                         }
                         else
                         {
-                            <a href="@NavigationManager.GetUriWithQueryParameter("IsArcade","True")">Arcade version</a>
+                            <a href="@NavigationManager.GetUriWithQueryParameter("direction","arcade")">Arcade version</a>
                         }
                     </div>
-                    <h2>@($"{_name}{(IsArcade ? " - Arcade version" : "")}")</h2>
+                    <h2>@($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")</h2>
                     <br />
                     <p>Length: @_stageDetails.Length</p>
                     <br />
@@ -80,7 +80,7 @@
                         cnt++;
                         <p>@timeEntry.Place</p>
                         <p>@timeEntry.Data.Time</p>
-                        <p>@timeEntry.Data.Driver.Name</p>
+                        <p>@(timeEntry.Data.Driver.Name ?? timeEntry.Data.Driver.User.Name)</p>
                         <p>@timeEntry.Data.Car.Name</p>
                         <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
                         <p>@(timeEntry.Data.VerifyInfo is null ? "nv" : "v")</p>
@@ -113,7 +113,7 @@
     private string _api;
     private async Task HandleNewPathCachedEvent(string path)
     {
-        var stage = await RallyUoW.Stages.TryGetByCode(Id.ToString(), IsArcade);
+        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
         int stageCode = stage.Code;
         await StageService.SetPath(stageCode, path);
     }
@@ -136,9 +136,21 @@
 
     private List<DomainModel.TimeEntry> _timeEntries = new();
 
-    [SupplyParameterFromQuery]
-    [Parameter]
-    public bool IsArcade { get; set; }
+    private string _directionParameter;
+    [SupplyParameterFromQuery(Name = "direction")]
+    public string DirectionParameter 
+    { 
+        get => _directionParameter; 
+        set
+        {
+            _directionParameter = value;
+            Direction = value == "arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
+        }
+    }
+
+    public DomainModel.Direction Direction { get; set; }
+
+    public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
     [SupplyParameterFromQuery]
     [Parameter]
@@ -148,7 +160,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        var stage = await RallyUoW.Stages.TryGetByCode(Id.ToString(), IsArcade);
+        var stage = await StageService.GetByCode(Id, Direction);
         _api = stage.StageWaypoints.ApiHint;
         _waypoints = await StageService.GetWaypoints(Id, stage.IsArcade);
         
@@ -163,22 +175,24 @@
         _description = stage.StageData.Description;
         _stageDetails = stage.StageData.StageDetails;
 
-        int cnt = Random.Shared.Next(5, 20);
-        for (int i=0; i<cnt; i++)
-        {
-            _timeEntries.Add(new DomainModel.TimeEntry()
-                {
-                    Id = 1,
-                    Car = new DomainModel.Car() { Id = 1, Class = 5, Name = "car" },
-                    StageId = 1,
-                    DriverId = 1,
-                    Driver = new DomainModel.Driver() { Id = 1, Known = true, Name = "driver" },
-                    CarId = 1,
-                    Time = TimeOnly.FromTimeSpan(TimeSpan.FromSeconds(45)),
-                    UploadTime = DateTime.Now
-                });
-        }
+        var timeEntries = await TimeEntryService.Get(stage.Id);
+        // int cnt = Random.Shared.Next(5, 20);
+        // for (int i=0; i<cnt; i++)
+        // {
+        //     _timeEntries.Add(new DomainModel.TimeEntry()
+        //         {
+        //             Id = Guid.NewGuid(),
+        //             Car = new DomainModel.Car() { Id = 1, Class = 5, Name = "car" },
+        //             StageId = 1,
+        //             DriverId = Guid.NewGuid(),
+        //             Driver = new DomainModel.Driver() { Id = Guid.NewGuid(), Known = true, Name = "driver" },
+        //             CarId = 1,
+        //             Time = TimeOnly.FromTimeSpan(TimeSpan.FromSeconds(45)),
+        //             UploadTime = DateTime.Now
+        //         });
+        // }
 
+        _timeEntries.AddRange(timeEntries);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

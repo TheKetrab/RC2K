@@ -1,4 +1,4 @@
-﻿using RC2K.DataAccess.Interfaces.Repositories;
+﻿using RC2K.DataAccess.Interfaces;
 using RC2K.DomainModel;
 using RC2K.Extensions;
 using RC2K.Logic.Interfaces;
@@ -7,17 +7,22 @@ namespace RC2K.Logic;
 
 public class StageService : IStageService
 {
-    public readonly IStageRepository _stageRepository;
+    public readonly IRallyUoW _rallyUoW;
 
-    public StageService(IStageRepository stageRepository)
+    public StageService(IRallyUoW rallyUoW)
     {
-        _stageRepository = stageRepository;
+        _rallyUoW = rallyUoW;
     }
 
-    public Task<List<Stage>> GetAllFilled() =>
-        _stageRepository.GetAll();
+    public async Task<Stage?> GetByCode(int stageCode, Direction direction) =>
+        (await _rallyUoW.Stages.Get(
+            x => x.Code == stageCode && x.Direction == direction, full: true))
+        .FirstOrDefault();
 
-    public Task<List<Stage>> GetAllFilledByRallyCode(RallyCode rallyCode)
+    public Task<List<Stage>> GetAll() =>
+        _rallyUoW.Stages.GetAll();
+
+    public Task<List<Stage>> GetAllByRallyCode(RallyCode rallyCode)
     {
         (int from, int to) = rallyCode switch
         {
@@ -30,12 +35,15 @@ public class StageService : IStageService
             _ => throw new Exception()
         };
 
-        return _stageRepository.GetAllByRallyCodeBetween(from, to);
+        return _rallyUoW.Stages.Get(
+            x => x.Code >= from && x.Code <= to,
+            x => Queryable.OrderBy(x, stage => stage.Code),
+            full: true);
     }
 
     public async Task<List<double[]>> GetWaypoints(int stageCode, bool arcade)
     {
-        var stageWaypoints = await _stageRepository.GetWaypointsByStageCode(stageCode);
+        var stageWaypoints = await _rallyUoW.Stages.GetWaypointsByStageCode(stageCode);
 
         if (stageWaypoints is null)
             return [];
@@ -51,10 +59,13 @@ public class StageService : IStageService
 
     public async Task<string?> GetPath(int stageCode)
     {
-        var stagePath = await _stageRepository.GetPathByStageCode(stageCode);
+        var stagePath = await _rallyUoW.Stages.GetPathByStageCode(stageCode);
         return stagePath;
     }
 
-    public Task SetPath(int stageCode, string path) =>
-        _stageRepository.UpdatePath(stageCode, path);
+    public async Task SetPath(int stageCode, string path)
+    {
+        await _rallyUoW.Stages.UpdatePath(stageCode, path);
+        await _rallyUoW.Save();
+    }
 }

@@ -15,7 +15,6 @@
     <ProjectReference Include="..\RC2K.DataAccess.Fake\RC2K.DataAccess.Fake.csproj" />
     <ProjectReference Include="..\RC2K.DataAccess.Interfaces\RC2K.DataAccess.Interfaces.csproj" />
     <ProjectReference Include="..\RC2K.DataAccess.Database\RC2K.DataAccess.Database.csproj" />
-    <ProjectReference Include="..\RC2K.DataAccess\RC2K.DataAccess.csproj" />
     <ProjectReference Include="..\RC2K.DomainModel\RC2K.DomainModel.csproj" />
     <ProjectReference Include="..\RC2K.Resources\RC2K.Resources.csproj" />
   </ItemGroup>

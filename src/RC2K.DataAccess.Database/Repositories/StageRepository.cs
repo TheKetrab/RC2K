@@ -1,52 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RC2K.DataAccess.Interfaces;
+using RC2K.DataAccess.Interfaces.Cache;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Database.Repositories;
 
-public class StageRepository(IDataContext context)
-    : AbstractRepository<Stage>(context), IStageRepository
+public class StageRepository(RallyDbContext dbContext, IStageCache cache) : GenericRepository<Stage, IStageCache>(dbContext, cache), IStageRepository
 {
-    protected override IQueryable<Stage> DataSet => _context.Stages;
+    public Task<Stage?> TryGetByCode(string code, Direction direction) =>
+        dbContext.Stages.FillFullData()
+            .FirstOrDefaultAsync(x => x.Code == int.Parse(code) && x.Direction == direction);
 
-    public Task<Stage?> TryGetByCode(string code, bool arcade) =>
-        DataSet
-            .Include(x => x.StageData)
-                .ThenInclude(x => x.StageDetails)
-            .Include(x => x.StageWaypoints)
-        .FirstOrDefaultAsync(x => x.Code == int.Parse(code) && x.IsArcade == arcade);
-
-    public Task<List<Stage>> GetAllByRallyCodeBetween(int min, int max)
-    {
-        var query = DataSet.Where(x => x.Code >= min && x.Code <= max);
-
-        query = query.Include(x => x.StageData).ThenInclude(x => x.StageDetails);
-
-        return query.ToListAsync();
-    }
+    public Task<List<Stage>> GetAllByRallyCodeBetween(int min, int max) =>
+        dbContext.Stages.FillFullData()
+            .Where(x => x.Code >= min && x.Code <= max)
+            .ToListAsync();
 
     public async Task<string> GetWaypointsByStageCode(int stageCode) =>
-        (await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Waypoints;
+        (await dbContext.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Waypoints;
 
     public async Task<string?> GetPathByStageCode(int stageCode) =>
-        (await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Path;
+        (await dbContext.StageWaypoints.FirstAsync(x => x.StageCode == stageCode)).Path;
 
     public async Task UpdatePath(int stageCode, string path)
     {
-        var stageWaypoints = await _context.StageWaypoints.FirstAsync(x => x.StageCode == stageCode);
-        stageWaypoints.Path = path;
-
-        int affectedRows = _context.SaveChanges();   
+        var stageWaypoints = await dbContext.StageWaypoints.FirstAsync(x => x.StageCode == stageCode);
+        stageWaypoints.Path = path; 
     }
 
+    public Task<List<Stage>> GetAll() =>
+        dbContext.Stages.FillFullData().ToListAsync();
 
-    public Task<List<Stage>> GetAll()
+    protected override IQueryable<Stage> Full(IQueryable<Stage> query)
     {
-        var query = DataSet;
-
-        query = query.Include(x => x.StageData).ThenInclude(x => x.StageDetails);
-
-        return query.ToListAsync();
+        return query.FillFullData();
     }
+}
+
+public static class StageRepositoryExtensions
+{
+    public static IQueryable<Stage> FillFullData(this IQueryable<Stage> query) =>
+        query
+            .Include(x => x.StageData)
+                .ThenInclude(x => x.StageDetails)
+            .Include(x => x.StageWaypoints);
 }

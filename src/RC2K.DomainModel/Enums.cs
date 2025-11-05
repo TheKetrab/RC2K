@@ -22,3 +22,9 @@ public enum Mood
     Snow        = 1 << 10,
     Fog         = 1 << 11
 }
+
+public enum Direction
+{
+    Simulation,
+    Arcade
+}

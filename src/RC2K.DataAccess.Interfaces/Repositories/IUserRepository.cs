@@ -5,5 +5,5 @@ namespace RC2K.DataAccess.Interfaces.Repositories;
 public interface IUserRepository
 {
     Task<List<User>> GetAll();
-    Task<User> GetById(int id);
+    Task<User?> GetById(Guid id);
 }

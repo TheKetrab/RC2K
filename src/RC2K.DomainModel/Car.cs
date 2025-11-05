@@ -1,6 +1,6 @@
 ﻿namespace RC2K.DomainModel;
 
-public class Car : IEntity
+public class Car
 {
     public required int Id { get; init; }
     public required string Name { get; init; }
