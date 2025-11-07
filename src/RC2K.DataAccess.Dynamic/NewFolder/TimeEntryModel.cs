@@ -33,4 +33,8 @@ public class TimeEntryModel
 
     [JsonPropertyName("verifyInfoId")]
     public Guid? VerifyInfoId { get; set; }
+
+    [JsonPropertyName("labels")]
+    public string? Labels { get; set; }
+
 }

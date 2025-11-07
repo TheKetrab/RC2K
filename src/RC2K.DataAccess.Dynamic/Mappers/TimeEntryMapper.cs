@@ -16,6 +16,7 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             Time = Utils.CentisecondsToTimeOnly(model.Time),
             UploadTime = Utils.StringToDateTime(model.UploadTime),
             VerifyInfoId = model.VerifyInfoId,
+            Labels = model.Labels
         };
 
         return timeEntry;
@@ -33,6 +34,7 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             Time = Utils.TimeOnlyToCentiseconds(timeEntry.Time),
             UploadTime = Utils.DateTimeToString(timeEntry.UploadTime),
             VerifyInfoId = timeEntry.VerifyInfoId,
+            Labels = timeEntry.Labels
         };
 
         return model;
