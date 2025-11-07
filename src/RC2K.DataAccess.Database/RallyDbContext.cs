@@ -1,41 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RC2K.DataAccess.Interfaces;
 using RC2K.DomainModel;
 using RC2K.Extensions;
 
 namespace RC2K.DataAccess.Database;
 
-public class RallyDbContext : DbContext, IDataContext
+public class RallyDbContext : DbContext
 {
     public RallyDbContext(DbContextOptions opt) : base(opt)
     {
         Cars = Set<Car>();
-        Drivers = Set<Driver>();
         Stages = Set<Stage>();
         StagesData = Set<StageData>();
         StageWaypoints = Set<StageWaypoints>();
-        TimeEntries = Set<TimeEntry>();
-        Users = Set<User>();
-        VerifyInfos = Set<VerifyInfo>();
     }
 
     public DbSet<Car> Cars { get; set; }
-    public DbSet<Driver> Drivers { get; set; }
     public DbSet<Stage> Stages { get; set; }
     public DbSet<StageData> StagesData { get; set; }
     public DbSet<StageWaypoints> StageWaypoints { get; set; }
-    public DbSet<TimeEntry> TimeEntries { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<VerifyInfo> VerifyInfos { get; set; }
-
-    IQueryable<Car> IDataContext.Cars => Cars;
-    IQueryable<Driver> IDataContext.Drivers => Drivers;
-    IQueryable<Stage> IDataContext.Stages => Stages;
-    IQueryable<StageData> IDataContext.StagesData => StagesData;
-    IQueryable<StageWaypoints> IDataContext.StageWaypoints => StageWaypoints;
-    IQueryable<TimeEntry> IDataContext.TimeEntries => TimeEntries;
-    IQueryable<User> IDataContext.Users => Users;
-    IQueryable<VerifyInfo> IDataContext.VerifyInfos => VerifyInfos;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -64,7 +46,7 @@ public class RallyDbContext : DbContext, IDataContext
              {
                  Id = i + 1,
                  Code = int.Parse(x.Code),
-                 IsArcade = x.Arcade
+                 Direction = x.Arcade ? Direction.Arcade : Direction.Simulation
              }).ToList();
 
         modelBuilder.Entity<Stage>()

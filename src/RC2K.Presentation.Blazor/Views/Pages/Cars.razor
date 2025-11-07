@@ -5,8 +5,9 @@
 @using RC2K.DataAccess.Interfaces
 @using RC2K.DataAccess.Interfaces.Repositories
 @using RC2K.DomainModel
+@using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels;
-@inject IRallyUoW RallyUoW
+@inject ICarService CarService
 @inject NavigationManager NavManager
 
 <h3>Cars</h3>
@@ -48,9 +49,9 @@
 
         var cars = (_isBonus, Class) switch
         {
-            (true, _) => await RallyUoW.Cars.GetBonusCars(),
-            (false, null) => await RallyUoW.Cars.GetAll(),
-            _ => await RallyUoW.Cars.GetAllByClass(Class.Value)
+            (true, _) => await CarService.GetBonusCars(),
+            (false, null) => await CarService.GetAll(),
+            _ => await CarService.GetAllByClass(Class.Value)
         };
 
         CarsList.Clear();

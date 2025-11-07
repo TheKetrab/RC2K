@@ -25,44 +25,45 @@ var serviceProvider = new ServiceCollection()
 
 IRallyUoW uow = serviceProvider.GetService<IRallyUoW>()!;
 
-var cars = await uow.Cars.GetAll();
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Cars:");
-foreach (var x in cars)
-    Console.WriteLine($"{x.Id:d2}. {x.Name}");
+//var cars = await uow.Cars.GetAll();
 
-var users = await uow.Users.GetAll();
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Cars:");
+//foreach (var x in cars)
+//    Console.WriteLine($"{x.Id:d2}. {x.Name}");
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Users:");
-foreach (var x in users)
-    Console.WriteLine($"{x.Id:d2}. {x.ToString()})");
+//var users = await uow.Users.GetAll();
 
-var stages = await uow.Stages.GetAll();
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Users:");
+//foreach (var x in users)
+//    Console.WriteLine($"{x.Id:d2}. {x.ToString()})");
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Stages:");
-foreach (var x in stages)
-    Console.WriteLine($"{x.Id:d2}. {x.Code,-20}");
+//var stages = await uow.Stages.GetAll();
 
-var drivers = await uow.Drivers.GetAll();
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Stages:");
+//foreach (var x in stages)
+//    Console.WriteLine($"{x.Id:d2}. {x.Code,-20}");
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Drivers:");
-foreach (var x in drivers)
-    Console.WriteLine($"{x.Id:d2}. userId = {x.ToString()}");
+//var drivers = await uow.Drivers.GetAll();
 
-var timeEntries = await uow.TimeEntries.GetAll();
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Drivers:");
+//foreach (var x in drivers)
+//    Console.WriteLine($"{x.Id:d2}. userId = {x.ToString()}");
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Time entries:");
-foreach (var x in timeEntries)
-    Console.WriteLine($"{x.Id:d3}. driver: {x.DriverId,-4} stage: {x.StageId,-4} car: {x.CarId,-4} time = {x.Time.ToString("mm:ss.fff")}");
+//var timeEntries = await uow.TimeEntries.GetAll();
 
-var verifyInfos = await uow.VerifyInfos.GetAll();
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Time entries:");
+//foreach (var x in timeEntries)
+//    Console.WriteLine($"{x.Id:d3}. driver: {x.DriverId,-4} stage: {x.StageId,-4} car: {x.CarId,-4} time = {x.Time.ToString("mm:ss.fff")}");
 
-Console.WriteLine(new string('-', 100));
-Console.WriteLine("Verify infos:");
-foreach (var x in verifyInfos)
-    Console.WriteLine($"{x.Id:d3}. verifier: {x.VerifierId,-4} comment: {x.Comment.Substring(0, Math.Min(x.Comment.Length, 60))}");
+//var verifyInfos = await uow.VerifyInfos.GetAll();
+
+//Console.WriteLine(new string('-', 100));
+//Console.WriteLine("Verify infos:");
+//foreach (var x in verifyInfos)
+//    Console.WriteLine($"{x.Id:d3}. verifier: {x.VerifierId,-4} comment: {x.Comment.Substring(0, Math.Min(x.Comment.Length, 60))}");

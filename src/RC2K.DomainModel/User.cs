@@ -1,10 +1,10 @@
 ﻿namespace RC2K.DomainModel;
 
-public class User : IEntity
+public class User
 {
-    public required int Id { get; init; }
+    public required Guid Id { get; init; }
     public required string Name { get; init; }
-    public required int DriverId { get; init; }
+    public required Guid DriverId { get; init; }
     public required string[] Roles { get; init; }
     public required string PasswordHash { get; init; }
 

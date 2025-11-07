@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace RC2K.DataAccess.Fake.Repositories;
 
 public abstract class AbstractDataSet<TEntity, TFaker, TDataSet> : IQueryable<TEntity>
-    where TEntity : class, IEntity
+    where TEntity : class
     where TFaker : Faker<TEntity>
     where TDataSet : AbstractDataSet<TEntity, TFaker, TDataSet>
 

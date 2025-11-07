@@ -25,13 +25,13 @@
     </div>
 
 
-    @foreach (var group in @_stages.GroupBy(x => new { Rally = x.Code / 10, x.IsArcade }))
+    @foreach (var group in @_stages.GroupBy(x => new { Rally = x.Code / 10, x.Direction }))
     {
         <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
             @foreach (var stage in group)
             {
                 string name = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(stage.Code).ToString().ToLower();
-                <div><a href="stages/@name/@stage.Code?IsArcade=@stage.IsArcade">@stage.StageData.Name @(stage.IsArcade ? "(Arcade)" : "")</a></div>
+                <div><a href="stages/@name/@stage.Code?IsArcade=@stage.Direction">@stage.StageData.Name @(stage.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")</a></div>
                 <div>@stage.StageData.StageDetails!.Length</div>
                 <div>@stage.StageData.StageDetails!.Asphalt</div>
                 <div>@stage.StageData.StageDetails!.Dirt</div>
@@ -81,8 +81,8 @@
         }
 
         var stages = Name is null
-            ? await StageService.GetAllFilled()
-            : await StageService.GetAllFilledByRallyCode(_rallyCode!.Value);
+            ? await StageService.GetAll()
+            : await StageService.GetAllByRallyCode(_rallyCode!.Value);
 
         _stages.Clear();
         _stages.AddRange(stages);

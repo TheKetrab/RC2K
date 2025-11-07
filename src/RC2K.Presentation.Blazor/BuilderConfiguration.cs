@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using RC2K.DataAccess;
 using RC2K.DataAccess.Database;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Repositories;
@@ -9,6 +8,19 @@ using RC2K.Logic.Interfaces;
 using RC2K.Logic;
 using MudBlazor.Services;
 using RC2K.Presentation.Blazor.ViewModels.Layout;
+using RC2K.DataAccess.Dynamic.Repositories;
+using Microsoft.Extensions.Azure;
+using Azure.Identity;
+using Microsoft.Azure.Cosmos;
+using RC2K.DataAccess.Dynamic.Mappers;
+using RC2K.DataAccess.Dynamic.Models;
+using RC2K.DomainModel;
+using Microsoft.Azure.Cosmos.Linq;
+using RC2K.DataAccess.Interfaces.Cache;
+using RC2K.DataAccess.Database.Cache;
+using RC2K.Logic.Interfaces.Fillers;
+using RC2K.Logic.Fillers;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace RC2K.Presentation.Blazor;
 
@@ -26,17 +38,59 @@ public static class BuilderConfiguration
     {
         builder.Services.AddMudServices();
 
+        builder
+            .RegisterPersistentDataAccess()
+            .RegisterDynamicDataAccess();
+
+        builder.Services.AddSingleton<HeaderViewModel>();
+        builder.Services.AddScoped<ITimeEntryFiller, TimeEntryFiller>();
+        builder.Services.AddScoped<IDriverFiller, DriverFiller>();
+        builder.Services.AddScoped<IUserFiller, UserFiller>();
+        builder.Services.AddScoped<IVerifyInfoFiller, VerifyInfoFiller>();
+
+        builder.Services.AddScoped<IFillersBag, FillersBag>();
         builder.Services.AddScoped<IStageService, StageService>();
+        builder.Services.AddScoped<ICarService, CarService>();
+        builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
+
+        return builder;
+    }
+
+    private static WebApplicationBuilder RegisterPersistentDataAccess(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<RallyDbContext>();
+
+        builder.Services.AddScoped<IMemoryCache, MemoryCache>();
+        builder.Services.AddScoped<ICarCache, CarCache>();
+        builder.Services.AddScoped<IStageCache, StageCache>();
         builder.Services.AddScoped<ICarRepository, CarRepository>();
-        builder.Services.AddScoped<IDriverRepository, DriverRepository>();
         builder.Services.AddScoped<IStageRepository, StageRepository>();
+        builder.Services.AddScoped<IRallyUoW, RallyUoW>();
+        return builder;
+    }
+
+    private static WebApplicationBuilder RegisterDynamicDataAccess(this WebApplicationBuilder builder)
+    {
+        var cosmosSection = builder.Configuration.GetSection("Cosmos");
+        
+        string endpoint = cosmosSection.GetValue<string>("Endpoint");
+        string database = cosmosSection.GetValue<string>("Database");
+        string primaryKey = cosmosSection.GetValue<string>("ApiKey");
+
+        CosmosClient client = new(endpoint, primaryKey);
+        Database db = client.GetDatabase(database);
+        builder.Services.AddSingleton(db);
+
+        builder.Services.AddScoped<DriverMapper>();
+        builder.Services.AddScoped<TimeEntryMapper>();
+        builder.Services.AddScoped<UserMapper>();
+        builder.Services.AddScoped<VerifyInfoMapper>();
+
+
+        builder.Services.AddScoped<IDriverRepository, DriverRepository>();
         builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IVerifyInfoRepository, VerifyInfoRepository>();
-        builder.Services.AddScoped<IDataContext, RallyDbContext>();
-        builder.Services.AddScoped<IRallyUoW, RallyUoW>();
-        builder.Services.AddSingleton<HeaderViewModel>();
-
         return builder;
     }
 
