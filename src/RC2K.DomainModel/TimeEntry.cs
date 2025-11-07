@@ -10,6 +10,7 @@ public class TimeEntry
     public required TimeOnly Time { get; init; }
     public required DateTime UploadTime { get; init; }
     public Guid? VerifyInfoId { get; set; }
+    public string? Labels { get; set; }
 
 
     public Stage? Stage { get; set; }

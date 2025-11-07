@@ -64,13 +64,13 @@
         <div class="item stage-times">
             <div class="card" >
                 <div class="card-header">Records</div>
-                <div class="card-body times-table" style="display: grid; grid-template-columns: .5fr 1.5fr 1.5fr 1fr 1fr .5fr;">
+                <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr;">
                     <p class="th-header">#</p>
                     <p class="th-header">Time</p>
                     <p class="th-header">Driver</p>
                     <p class="th-header">Car</p>
                     <p class="th-header">Uploaded</p>
-                    <p class="th-header">Verified?</p>
+                    <p class="th-header">Labels</p>
 
                     @{
                         int cnt = 0;
@@ -79,11 +79,27 @@
                     {
                         cnt++;
                         <p>@timeEntry.Place</p>
-                        <p>@timeEntry.Data.Time</p>
-                        <p>@(timeEntry.Data.Driver.Name ?? timeEntry.Data.Driver.User.Name)</p>
-                        <p>@timeEntry.Data.Car.Name</p>
+                        <p style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss:ff")</p>
+                        <p>
+                            <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
+                            <span>@(timeEntry.Data.Driver.Name ?? timeEntry.Data.Driver.User.Name)</span>
+                        </p>
+                        <p>
+                            <div class="car" data-car-id="@(timeEntry.Data.Car.Id-1)"></div>
+                        </p>
                         <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
-                        <p>@(timeEntry.Data.VerifyInfo is null ? "nv" : "v")</p>
+                        <p>
+                            @{
+                                var split = timeEntry.Data.Labels?.Split(",");
+                                if (split is not null)
+                                {
+                                    foreach (var label in split)
+                                    {
+                                        <span style="margin: 0 1px; border: solid 1px black; border-radius: 5px; background-color: pink;">@label</span>
+                                    }
+                                }
+                            }
+                        </p>
                     }
                     @for (int i = 10 - cnt; i >= 0; i--)
                     {
