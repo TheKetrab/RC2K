@@ -33,7 +33,7 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.Driver = await driverRepository.GetById(timeEntry.DriverId) ?? throw new Exception();
+            timeEntry.Driver = await driverRepository.GetById(timeEntry.DriverId) ?? throw new KeyNotFoundException();
             await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers);
         }
     }
@@ -51,7 +51,7 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.VerifyInfo = await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value) ?? throw new Exception();
+            timeEntry.VerifyInfo = await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value) ?? throw new KeyNotFoundException();
             await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers);
         }
     }

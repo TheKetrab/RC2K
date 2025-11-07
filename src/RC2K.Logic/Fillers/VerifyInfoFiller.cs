@@ -26,7 +26,7 @@ public class VerifyInfoFiller(IUserRepository userRepository)
         }
         else
         {
-            verifyInfo.Verifier = await userRepository.GetById(verifyInfo.VerifierId) ?? throw new Exception();
+            verifyInfo.Verifier = await userRepository.GetById(verifyInfo.VerifierId) ?? throw new KeyNotFoundException();
             await fillers.UserFiller.FillRecursive(verifyInfo.Verifier, context, fillers);
         }
     }

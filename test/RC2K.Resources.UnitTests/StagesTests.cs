@@ -39,7 +39,7 @@ public class StagesTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(stages, Has.Count.EqualTo(36));
-            Assert.That(stages.Select(x => x.Code).Intersect(_codes), Has.Count.EqualTo(36));
+            Assert.That(stages.Select(x => x.Code).Intersect(_codes).ToList(), Has.Count.EqualTo(36));
         }
     }
 

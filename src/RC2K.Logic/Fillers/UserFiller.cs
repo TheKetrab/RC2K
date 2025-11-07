@@ -26,7 +26,7 @@ public class UserFiller(IDriverRepository driverRepository)
         }
         else
         {
-            user.Driver = await driverRepository.GetById(user.DriverId) ?? throw new Exception();
+            user.Driver = await driverRepository.GetById(user.DriverId) ?? throw new KeyNotFoundException();
             await fillers.DriverFiller.FillRecursive(user.Driver, context, fillers);
         }
     }
