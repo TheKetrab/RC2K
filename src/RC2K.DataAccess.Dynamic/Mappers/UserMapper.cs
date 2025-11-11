@@ -14,6 +14,7 @@ public class UserMapper : IModelMapper<User, UserModel>
             Name = model.Name,
             PasswordHash = model.PasswordHash,
             Roles = model.Roles.ToArray(),
+            Email = model.Email,
         };
 
         return user;
@@ -27,6 +28,7 @@ public class UserMapper : IModelMapper<User, UserModel>
             DriverId = user.DriverId,
             Name = user.Name,
             PasswordHash = user.PasswordHash,
+            Email = user.Email,
         };
 
         model.Roles.AddRange(user.Roles);

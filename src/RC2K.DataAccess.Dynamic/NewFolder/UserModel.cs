@@ -5,6 +5,10 @@ namespace RC2K.DataAccess.Dynamic.Models;
 public class UserModel
 {
     [JsonRequired]
+    [JsonPropertyName("partitionKey")]
+    public string PartitionKey { get; set; } = "Users";
+
+    [JsonRequired]
     [JsonPropertyName("id")]
     public required Guid Id { get; init; }
 
@@ -16,9 +20,8 @@ public class UserModel
     [JsonPropertyName("driverId")]
     public required Guid DriverId { get; init; }
 
-    [JsonRequired]
     [JsonPropertyName("hash")]
-    public required string PasswordHash { get; init; }
+    public string? PasswordHash { get; set; }
 
     [JsonPropertyName("roles")]
     public List<string> Roles { get; } = [];

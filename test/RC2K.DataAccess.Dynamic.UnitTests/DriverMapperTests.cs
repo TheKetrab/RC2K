@@ -31,7 +31,7 @@ public class DriverMapperTests
             Assert.That(result.UserId, Is.EqualTo(model.UserId));
             Assert.That(result.Name, Is.EqualTo(model.Name));
             Assert.That(result.Key, Is.EqualTo(model.Key));
-            Assert.That(result.Nationality, Is.EqualTo(model.Nat));
+            Assert.That(result.Nationality, Is.EqualTo(model.Nationality));
         }
         
     }
@@ -53,7 +53,7 @@ public class DriverMapperTests
             Assert.That(result.UserId, Is.EqualTo(driver.UserId));
             Assert.That(result.Name, Is.EqualTo(driver.Name));
             Assert.That(result.Key, Is.EqualTo(driver.Key));
-            Assert.That(result.Nat, Is.EqualTo(driver.Nationality));
+            Assert.That(result.Nationality, Is.EqualTo(driver.Nationality));
         }
 
     }
@@ -64,7 +64,7 @@ public class DriverMapperTests
         Key = "asd",
         Known = true,
         Name = "name",
-        Nat = "pl",
+        Nationality = "pl",
         UserId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3")
     };
 

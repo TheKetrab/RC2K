@@ -5,6 +5,10 @@ namespace RC2K.DataAccess.Dynamic.Models;
 public class VerifyInfoModel
 {
     [JsonRequired]
+    [JsonPropertyName("partitionKey")]
+    public string PartitionKey { get; set; } = "VerifyInfos";
+
+    [JsonRequired]
     [JsonPropertyName("id")]
     public required Guid Id { get; init; }
 

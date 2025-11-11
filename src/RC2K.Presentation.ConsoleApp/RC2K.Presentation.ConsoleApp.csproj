@@ -9,10 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RC2K.DataAccess.Fake\RC2K.DataAccess.Fake.csproj" />
     <ProjectReference Include="..\RC2K.DataAccess.Interfaces\RC2K.DataAccess.Interfaces.csproj" />
     <ProjectReference Include="..\RC2K.DataAccess.Database\RC2K.DataAccess.Database.csproj" />
     <ProjectReference Include="..\RC2K.DomainModel\RC2K.DomainModel.csproj" />

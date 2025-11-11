@@ -5,6 +5,10 @@ namespace RC2K.DataAccess.Dynamic.Models;
 public class DriverModel
 {
     [JsonRequired]
+    [JsonPropertyName("partitionKey")]
+    public string PartitionKey { get; set; } = "Drivers";
+
+    [JsonRequired]
     [JsonPropertyName("id")]
     public required Guid Id { get; init; }
 
@@ -22,5 +26,5 @@ public class DriverModel
     public string? Key { get; init; }
 
     [JsonPropertyName("nat")]
-    public string? Nat { get; set; }
+    public string? Nationality { get; set; }
 }

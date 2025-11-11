@@ -13,7 +13,7 @@ public class DriverMapper : IModelMapper<Driver, DriverModel>
             Known = driver.Known,
             Key = driver.Key,
             Name = driver.Name,
-            Nat = driver.Nationality,
+            Nationality = driver.Nationality,
             UserId = driver.UserId
         };
 
@@ -28,7 +28,7 @@ public class DriverMapper : IModelMapper<Driver, DriverModel>
             Known = model.Known,
             Key = model.Key,
             Name = model.Name,
-            Nationality = model.Nat,
+            Nationality = model.Nationality,
             UserId = model.UserId
         };
 
