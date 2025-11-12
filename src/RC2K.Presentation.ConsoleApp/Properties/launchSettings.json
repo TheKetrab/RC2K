@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RC2K.Presentation.ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "--createUser \"C:\\Users\\bartlomiej\\Desktop\\rc2k_users\\users.json\""
+    }
+  }
+}

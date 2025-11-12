@@ -7,4 +7,5 @@ public interface IDriverRepository
     Task<List<Driver>> GetAll();
     Task<bool> Exist(string name);
     Task<Driver?> GetById(Guid id);
+    Task Create(Driver driver);
 }
