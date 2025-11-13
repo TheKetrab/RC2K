@@ -24,7 +24,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     public virtual async Task<TEntity?> GetById(Guid id)
     {
         string key = id.ToString();
-        var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(key));
+        var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(ContainerName));
         
         var model = response.Resource;
 
@@ -68,6 +68,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public virtual async Task Delete(string id)
     {
-        await Container.DeleteItemAsync<TEntity>(id, new PartitionKey("id"));
+        await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(ContainerName));
     }
 }
