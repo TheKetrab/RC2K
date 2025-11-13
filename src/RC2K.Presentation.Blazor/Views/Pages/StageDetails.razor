@@ -64,12 +64,13 @@
         <div class="item stage-times">
             <div class="card" >
                 <div class="card-header">Records</div>
-                <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr;">
+                <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr .5fr;">
                     <p class="th-header">#</p>
                     <p class="th-header">Time</p>
                     <p class="th-header">Driver</p>
                     <p class="th-header">Car</p>
                     <p class="th-header">Uploaded</p>
+                    <p class="th-header">Proofs</p>
                     <p class="th-header">Labels</p>
 
                     @{
@@ -90,6 +91,14 @@
                         <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
                         <p>
                             @{
+                                foreach (var p in timeEntry.Data.Proofs)
+                                {
+                                    <MudIconButton Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" />
+                                }
+                            }
+                        </p>
+                        <p>
+                            @{
                                 var split = timeEntry.Data.Labels?.Split(",");
                                 if (split is not null)
                                 {
@@ -104,6 +113,7 @@
                     @for (int i = 10 - cnt; i >= 0; i--)
                     {
                         <p>@(10 - i)</p>
+                        <p>---</p>
                         <p>---</p>
                         <p>---</p>
                         <p>---</p>

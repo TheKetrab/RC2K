@@ -28,3 +28,12 @@ public enum Direction
     Simulation,
     Arcade
 }
+
+public enum ProofType
+{
+    Unknown = '?',
+    Image = 'i',
+    Twitch = 't',
+    Youtube = 'y',
+    Replay = 'r'
+}

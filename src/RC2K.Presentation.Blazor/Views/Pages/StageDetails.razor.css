@@ -19,12 +19,13 @@
     padding: 0 0.5rem;
 }
 
-    .times-table > *:nth-child(12n+7),
-    .times-table > *:nth-child(12n+8),
-    .times-table > *:nth-child(12n+9),
-    .times-table > *:nth-child(12n+10),
-    .times-table > *:nth-child(12n+11),
-    .times-table > *:nth-child(12n+12) {
+    .times-table > *:nth-child(14n+8),
+    .times-table > *:nth-child(14n+9),
+    .times-table > *:nth-child(14n+10),
+    .times-table > *:nth-child(14n+11),
+    .times-table > *:nth-child(14n+12),
+    .times-table > *:nth-child(14n+13),
+    .times-table > *:nth-child(14n+14) {
         background-color: #a6a6a661;
     }
 
