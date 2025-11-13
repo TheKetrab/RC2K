@@ -114,13 +114,5 @@ public class RallyDbContext : DbContext
             .HasKey(x => x.StageCode);
         modelBuilder.Entity<StageWaypoints>()
             .HasData(stageWaypoints);
-
-        // TIME ENTRY
-        modelBuilder.Entity<TimeEntry>()
-            .HasOne(x => x.VerifyInfo);
-
-        // USERS
-        modelBuilder.Entity<User>()
-            .HasKey(x => x.Id);
     }
 }
