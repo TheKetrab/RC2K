@@ -1,10 +1,5 @@
 ﻿using RC2K.DomainModel;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RC2K.DataAccess.Dynamic;
 
@@ -49,5 +44,30 @@ internal static class Utils
         'a' => Direction.Arcade,
         _ => throw new ArgumentException()
     };
+
+    public static Proof DeserializeProof(string str)
+    {
+        int idx = str.IndexOf('|');
+        if (idx != 1)
+        {
+            return new Proof() { Url = str };
+        }
+
+        ProofType type = str[0] switch
+        {
+            'i' => ProofType.Image,
+            't' => ProofType.Twitch,
+            'y' => ProofType.Youtube,
+            'r' => ProofType.Replay,
+            _ => ProofType.Unknown
+        };
+
+        return new Proof() { Url = str.Substring(2), Type = type };
+    }
+
+    public static string SerializeProof(Proof proof)
+    {
+        return $"{(char)proof.Type}|{proof.Url}";
+    }
 
 }

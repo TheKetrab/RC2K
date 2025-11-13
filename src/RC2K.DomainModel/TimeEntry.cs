@@ -11,6 +11,7 @@ public class TimeEntry
     public required DateTime UploadTime { get; init; }
     public Guid? VerifyInfoId { get; set; }
     public string? Labels { get; set; }
+    public List<Proof> Proofs { get; set; } = [];
 
 
     public Stage? Stage { get; set; }

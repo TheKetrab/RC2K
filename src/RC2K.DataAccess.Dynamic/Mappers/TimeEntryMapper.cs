@@ -16,12 +16,17 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             Time = Utils.CentisecondsToTimeOnly(model.Time),
             UploadTime = Utils.StringToDateTime(model.UploadTime),
             VerifyInfoId = model.VerifyInfoId,
-            Labels = model.Labels
+            Labels = model.Labels,
         };
+
+        if (model.Proofs is not null)
+        {
+            timeEntry.Proofs.AddRange(
+                model.Proofs.Select(Utils.DeserializeProof));
+        }
 
         return timeEntry;
     }
-
 
     public TimeEntryModel ToCosmosModel(TimeEntry timeEntry)
     {
@@ -36,6 +41,11 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             VerifyInfoId = timeEntry.VerifyInfoId,
             Labels = timeEntry.Labels
         };
+
+        if (timeEntry.Proofs.Any())
+        {
+            model.Proofs = timeEntry.Proofs.Select(Utils.SerializeProof).ToList();
+        }
 
         return model;
     }
