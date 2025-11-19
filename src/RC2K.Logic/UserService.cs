@@ -18,7 +18,25 @@ public class UserService : IUserService
         _passwordProvider = passwordProvider;
     }
 
-    public async Task<Result> CreateUserWithPassword(string name, string? password, string? nationality, string? email = null)
+    public async Task<Result> Authenticate(string name, string password)
+    {
+        User? user = await _userRepository.GetByName(name);
+        if (user is null)
+        {
+            return new Result() { Success = false };
+        }
+
+        string passwordHash = _passwordProvider.CalculatePasswordHash(password);
+
+        if (user.PasswordHash == passwordHash)
+        {
+            return new Result() { Success = true, Message = string.Join(",", user.Roles) };
+        }
+
+        return new Result() { Success = false };
+    } 
+
+    public async Task<Result> CreateUserWithPassword(string name, string? password, string? nationality, string email)
     {
         password ??= _passwordProvider.GenerateTemporaryPassword();
         string passwordHash = _passwordProvider.CalculatePasswordHash(password);
@@ -28,7 +46,7 @@ public class UserService : IUserService
     public Task<Result> CreateUserWithOAuth(string name, string email, string? nationality) =>
         CreateUserInternal(name, nationality, null, email);
 
-    private async Task<Result> CreateUserInternal(string name, string? nationality, string? passwordHash, string? email)
+    private async Task<Result> CreateUserInternal(string name, string? nationality, string? passwordHash, string email)
     {
         Guid driverId = Guid.NewGuid();
         Guid userId = Guid.NewGuid();
@@ -66,7 +84,7 @@ public class UserService : IUserService
             {
                 Success = false,
                 ErrorCode = (int)ErrorCodes.UserAlreadyExists,
-                Message = "User exists"
+                Message = "User with given name or email already exists"
             };
         }
     }

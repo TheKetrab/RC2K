@@ -57,6 +57,7 @@ public static class BuilderConfiguration
                 options.AccessDeniedPath = "/access-denied";
             });
 
+        builder.Services.AddScoped<AuthService>();
         return builder;
     }
 
@@ -99,7 +100,14 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IFillersBag, FillersBag>();
         builder.Services.AddScoped<IStageService, StageService>();
         builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IPasswordProvider, PasswordProvider>();
+        builder.Services.AddScoped<IPasswordProvider, PasswordProvider>(provider =>
+        {
+            var securitySection = builder.Configuration.GetSection("Security");
+            int iterations = securitySection.GetValue<int>("Iterations");
+            string salt = securitySection.GetValue<string>("Salt");
+
+            return new PasswordProvider(iterations, salt);
+        });
         builder.Services.AddScoped<ICarService, CarService>();
         builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 
