@@ -2,7 +2,7 @@
 
 namespace RC2K.Presentation.Blazor.ViewModels;
 
-public class LoginViewModel
+public class LoginDto
 {
     [Required(AllowEmptyStrings = false)]
     public string? UserName { get; set; }
