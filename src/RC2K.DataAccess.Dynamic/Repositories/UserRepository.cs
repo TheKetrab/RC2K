@@ -27,4 +27,12 @@ public class UserRepository(Database database, UserMapper mapper)
             throw;
         }
     }
+
+    public async Task<DomainModel.User?> GetByName(string name)
+    {
+        // TODO query by name
+
+        var allUsers = await GetAll();
+        return allUsers.FirstOrDefault(x => x.Name == name);
+    }
 }

@@ -90,7 +90,8 @@ public class UserFillerTests
         DriverId = driverId.HasValue ? driverId.Value : Guid.NewGuid(),
         Name = "",
         PasswordHash = "",
-        Roles = []
+        Roles = [],
+        Email = ""
     };
 
     private Driver AnyDriver() => new Driver()

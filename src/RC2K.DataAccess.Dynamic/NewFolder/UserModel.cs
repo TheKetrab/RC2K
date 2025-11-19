@@ -26,6 +26,7 @@ public class UserModel
     [JsonPropertyName("roles")]
     public List<string> Roles { get; } = [];
 
+    [JsonRequired]
     [JsonPropertyName("email")]
-    public string? Email { get; init; }
+    public string Email { get; init; }
 }
