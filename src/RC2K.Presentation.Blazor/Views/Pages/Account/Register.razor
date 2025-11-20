@@ -1,0 +1,172 @@
+﻿@using RC2K.Logic.Interfaces
+@using System.ComponentModel.DataAnnotations
+@using RC2K.Presentation.Blazor.ViewModels;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using System.Text.RegularExpressions;
+@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using CodeName = (string code, string name);
+
+@rendermode InteractiveServer
+@inject IUserService UserService;
+@inject NavigationManager NavigationManager
+
+
+@page "/register"
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<h1>Login to see more stats!</h1>
+
+<div style="width: 100%;">
+  <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+    <MudForm Class="gap-5" @ref="formRegister" @bind-IsValid="@registerSuccess" @bind-Errors="@errors">
+      <div style="display: flex; gap: 1em;">
+        <MudTextField T="string"
+                      Label="Username"
+                      @bind-Value="Model.Username"
+                      Required="true"
+                      RequiredError="User name is required!" />
+        <MudSelect T="CodeName?"
+                   @bind-Value="Model.Nationality"
+                   Label="Country"
+                   Variant="Variant.Outlined"
+                   Dense="true">
+          <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
+          @foreach (var country in allCountries)
+          {
+            <MudSelectItem T="CodeName?" Value="@country">
+              <span class="fi @($"fi-{country.code}")"></span>
+              <span>@country.name</span>
+            </MudSelectItem>
+          }
+        </MudSelect>
+      </div>
+      <MudTextField T="string"
+                    Label="Email"
+                    Required="true"
+                    RequiredError="Email is required!"
+                    @bind-Value="Model.Email"
+                    Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+      <MudTextField T="string"
+                    Label="Password"
+                    HelperText="Choose a strong password"
+                    @ref="formRegisterPassword"
+                    @bind-Value="Model.Password"
+                    InputType="InputType.Password"
+                    Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                    Required="true"
+                    RequiredError="Password is required!" />
+      <MudTextField T="string"
+                    Label="Password"
+                    @ref="formRegisterRepeatPassword"
+                    @bind-Value="Model.Password2"
+                    HelperText="Repeat the password"
+                    InputType="InputType.Password"
+                    Validation="@(new Func<string, string?>(PasswordMatch))" />
+      <div class="d-flex align-center justify-space-between">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@(!registerSuccess)"
+                   Class="ml-auto"
+                   OnClick="RegisterClick">Register</MudButton>
+      </div>
+      <div>
+        <p class="d-flex" style="justify-self: center;">
+          <MudText Class="mr-1">Already have account?</MudText>
+          <MudLink Href="/login">Go to login page</MudLink>
+        </p>
+      </div>
+      @if (errors.Length > 0)
+      {
+        @foreach (var error in errors)
+        {
+          <MudText Color="@Color.Error">@error</MudText>
+        }
+      }
+    </MudForm>
+    <MudPopover Open="@registerSuccessOpen"
+                Fixed="true"
+                Class="px-4 pt-4"
+                AnchorOrigin="Origin.CenterCenter"
+                TransformOrigin="Origin.CenterCenter">
+      <div class="d-flex flex-column">
+        <MudText>Your account is created. Please go to login page and login.</MudText>
+        <MudButton OnClick="@ClosePopup"
+                   Class="ml-auto mr-n3 mb-1"
+                   Color="Color.Error">Close</MudButton>
+      </div>
+    </MudPopover>
+
+  </MudPaper>
+</div>
+
+@code {
+
+  RegisterAccountDto Model { get; set; } = new();
+  IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
+  bool registerSuccessOpen;
+  bool registerSuccess;
+  string[] errors = { };
+
+  MudTextField<string>? formRegisterPassword;
+  MudTextField<string>? formRegisterRepeatPassword;
+  MudForm? formRegister;
+
+
+  protected override void OnInitialized()
+  {
+    Model.Nationality = allCountries.FirstOrDefault(x => x.code == "pl");
+  }
+
+  private void OpenPopup() => registerSuccessOpen = true;
+  private void ClosePopup() => registerSuccessOpen = false;
+  private void ToLoginView() => NavigationManager.NavigateTo("/login");
+
+
+  private IEnumerable<string> PasswordStrength(string pw)
+  {
+    if (string.IsNullOrWhiteSpace(pw))
+    {
+      yield return "Password is required!";
+      yield break;
+    }
+    if (pw.Length < 8)
+      yield return "Password must be at least of length 8";
+    if (!Regex.IsMatch(pw, @"[A-Z]"))
+      yield return "Password must contain at least one capital letter";
+    if (!Regex.IsMatch(pw, @"[a-z]"))
+      yield return "Password must contain at least one lowercase letter";
+    if (!Regex.IsMatch(pw, @"[0-9]"))
+      yield return "Password must contain at least one digit";
+  }
+
+  private string? PasswordMatch(string arg)
+  {
+    if (formRegisterPassword!.Value != arg)
+      return "Passwords don't match";
+    return null;
+  }
+
+  private async Task RegisterClick()
+  {
+    string? country = Model.Nationality.HasValue
+      ? Model.Nationality.Value.Item1 : null;
+
+    var result = await UserService.CreateUserWithPassword(
+      Model.Username!, Model.Password!, country, Model.Email!);
+
+    if (result.Success)
+    {
+      OpenPopup();
+    }
+    else
+    {
+      errors = [result?.Message ?? "Unknown error"];
+    }
+  }
+}

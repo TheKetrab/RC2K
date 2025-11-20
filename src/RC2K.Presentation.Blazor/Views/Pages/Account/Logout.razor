@@ -1,21 +1,20 @@
-﻿@page "/logout"
-@using Microsoft.AspNetCore.Authentication;
-<div class="row">
-    <span class="text-danger fw-bolder">You successfully logged out.</span>
-</div>
+﻿
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
 
+@page "/logout"
 
 @code {
 
-    [CascadingParameter]
-    public HttpContext HttpContext { get; set; }
+  [CascadingParameter]
+  private HttpContext HttpContext { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+  protected override async Task OnInitializedAsync()
+  {
+    if (HttpMethods.IsGet(HttpContext.Request.Method))
     {
-        await base.OnInitializedAsync();
-        if (HttpContext.User.Identity.IsAuthenticated)
-        {
-            await HttpContext.SignOutAsync();
-        }
+      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+      HttpContext.Response.Redirect("/");
     }
+  }
 }

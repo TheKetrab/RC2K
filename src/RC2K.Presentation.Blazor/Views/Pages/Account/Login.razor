@@ -1,71 +1,99 @@
-﻿@using RC2K.Presentation.Blazor.ViewModels;
+﻿@using RC2K.Logic.Interfaces
+@using System.ComponentModel.DataAnnotations
+@using RC2K.Presentation.Blazor.ViewModels;
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authentication;
 @using Microsoft.AspNetCore.Authentication.Cookies;
-
+@using System.Text.RegularExpressions;
+@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@inject NavigationManager NavigationManager;
+@inject AuthService AuthService;
 @page "/login"
-<div class="row">
-    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
-        <EditForm Model="@Model" OnValidSubmit="Authenticate" FormName="LoginForm">
+
+<h1>Login to see more stats!</h1>
+@inject IJSRuntime Js
+
+<div style="width: 100%;">
+
+    <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+
+        <EditForm Model="@Model"
+                  class="gap-5"
+                  @ref="formLogin"
+                  @bind-Errors="@errors"
+                  OnValidSubmit="HandleValidSubmit"
+                  method="post"
+                  FormName="login">
             <DataAnnotationsValidator />
-            <div class="mb-3 text-center flex-column">
-                <h3>LOGIN</h3>
+            <MudStaticTextField T="string"
+                                Label="Username"
+                                @bind-Value="@Model.UserName" For="() => Model.UserName" />
+            <MudStaticTextField T="string"
+                                Label="Password"
+                                @bind-Value="@Model.Password" For="() => Model.Password"
+                                InputType="InputType.Password" />
+            <div class="d-flex align-center justify-space-between">
+                <MudStaticButton FormAction="FormAction.Submit"
+                                 Variant="Variant.Filled"
+                                 Disabled="@isLoading"
+                                 Color="Color.Primary"
+                                 Class="ml-auto">Login</MudStaticButton>
             </div>
-            <div class="mb-3">
-                <label>User Name</label>
-                <InputText @bind-Value="Model.UserName" class="form-control" placeholder="Username" />
-                <ValidationMessage For="() => Model.UserName" />
+            <div>
+                <p class="d-flex" style="justify-self: center;">
+                    <MudText Class="mr-1">Don't have an account yet?</MudText>
+                    <MudLink Href="/register">Sign up now</MudLink>
+                </p>
             </div>
-            <div class="mb-3">
-                <label>Password</label>
-                <InputText @bind-Value="Model.Password" class="form-control" placeholder="Password" typeof="password" />
-                <ValidationMessage For="() => Model.Password" />
-            </div>
-            <div class="mb-3 text-center">
-                <span class="text-danger">@errorMessage</span>
-            </div>
-            <div class="mb-3 d-grid gap-2">
-                <button type="submit" class="btn btn-primary"></button>
-            </div>
+            @if (errors.Length > 0)
+            {
+                @foreach (var error in errors)
+                {
+                    <MudText Color="@Color.Error">@error</MudText>
+                }
+            }
         </EditForm>
-    </div>
+
+    </MudPaper>
 </div>
 
-
 @code {
-    [SupplyParameterFromForm]
-    public LoginViewModel Model { get; set; } = new();
+
+
 
     [CascadingParameter]
-    public HttpContext HttpContext { get; set; }
+    private HttpContext HttpContext { get; set; } = default!;
 
-    private string? errorMessage;
+    [SupplyParameterFromForm(FormName = "login")]
+    private LoginDto Model { get; set; } = new();
 
-    private async Task Authenticate()
+    string[] errors = { };
+    EditForm formLogin = new();
+
+    private bool isLoading;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (Model.UserName == Model.Password)
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            List<Claim> claims = [
-                new Claim(ClaimTypes.Name, Model.UserName),
-                new Claim(ClaimTypes.Role, "User"),
-            ];
-
-            if (Model.UserName == "admin")
-            {
-                claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
-            }
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-            await HttpContext!.SignInAsync(principal);
-
-
-            return;
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
-        else
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
         {
-            errorMessage = "Invalid User Name or Password";
+            var principal = await AuthService.Login(Model.UserName!, Model.Password!);
+            await HttpContext.SignInAsync(principal);
+            HttpContext.Response.Redirect("/");
+        }
+        catch (Exception ex)
+        {
+            errors = [ex.Message];
         }
 
     }
+
 }

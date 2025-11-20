@@ -7,7 +7,7 @@ public class User
     public required Guid DriverId { get; init; }
     public required string[] Roles { get; init; }
     public string? PasswordHash { get; set; }
-    public string? Email { get; set; }
+    public required string Email { get; init; }
 
     public Driver? Driver { get; set; }
 

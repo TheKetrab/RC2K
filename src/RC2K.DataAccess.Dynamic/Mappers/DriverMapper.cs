@@ -7,14 +7,15 @@ public class DriverMapper : IModelMapper<Driver, DriverModel>
 {
     public DriverModel ToCosmosModel(Driver driver)
     {
+        string name = driver.Known ? driver.UserId!.Value.ToString() : driver.Name!;
         DriverModel model = new()
         {
             Id = driver.Id,
             Known = driver.Known,
-            Key = driver.Key,
-            Name = driver.Name,
             Nationality = driver.Nationality,
-            UserId = driver.UserId
+            UserId = driver.UserId,
+            Name = name,
+            Key = driver.Key
         };
 
         return model;
