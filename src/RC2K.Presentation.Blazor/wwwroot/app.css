@@ -65,7 +65,7 @@ h1:focus {
     --car-mini-h: 15px;
     --car-mini-offset-y: -90px;
     --car-mini-offset-x: 0px;
-    --car-mini-tex: url('img/TX1802.png');
+    --car-mini-tex: url('img/TX1802_SMALL.png');
 
     width: var(--car-mini-w);
     height: var(--car-mini-h);
@@ -175,8 +175,8 @@ h1:focus {
     --car-col: 0;
     --car-maxi-w: 83px;
     --car-maxi-h: 42px;
-    --car-maxi-tex: url('img/TX1822.png');
-    --car-maxi-tex2: url('img/TX1824.png');
+    --car-maxi-tex: url('img/TX1822_SMALL.png');
+    --car-maxi-tex2: url('img/TX1824_SMALL.png');
     width: var(--car-maxi-w);
     height: var(--car-maxi-h);
     background-position-x: calc(-1 * var(--car-col) * var(--car-maxi-w));

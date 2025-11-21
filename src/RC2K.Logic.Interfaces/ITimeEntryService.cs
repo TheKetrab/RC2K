@@ -4,6 +4,6 @@ namespace RC2K.Logic.Interfaces;
 
 public interface ITimeEntryService
 {
-    Task Upload(TimeEntry timeEntry);
+    Task Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels);
     Task<List<TimeEntry>> Get(int stageId, int? carId = null);    
 }

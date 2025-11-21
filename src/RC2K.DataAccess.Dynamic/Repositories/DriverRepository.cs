@@ -14,4 +14,12 @@ public class DriverRepository(Database database, DriverMapper mapper)
     {
         throw new NotImplementedException();
     }
+
+    public async Task<Driver?> GetByName(string name)
+    {
+        // TODO query by name
+
+        var allDrivers = await GetAll();
+        return allDrivers.FirstOrDefault(x => x.Name == name);
+    }
 }

@@ -54,4 +54,32 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
 
         return result;
     }
+
+    public async Task<List<TimeEntry>> GetByStageIdAndCarIdAndDriverIdAndTime(int stageId, int carId, Guid driverId, TimeOnly time)
+    {
+        int centiseconds = Utils.TimeOnlyToCentiseconds(time);
+
+        var query = new QueryDefinition(@"
+            SELECT * FROM c 
+              WHERE c.stageId = @stageId
+                AND c.carId = @carId
+                AND c.driverId = @driverId
+                AND c.time = @centiseconds")
+            .WithParameter("@stageId", stageId)
+            .WithParameter("@carId", carId)
+            .WithParameter("@driverId", driverId)
+            .WithParameter("@centiseconds", centiseconds);
+
+        using var it = Container.GetItemQueryIterator<TimeEntryModel>(query);
+
+        List<TimeEntry> result = new();
+        while (it.HasMoreResults)
+        {
+            var val = (await it.ReadNextAsync()).Resource;
+            result.AddRange(val.Select(Mapper.ToDomainModel));
+        }
+
+        return result;
+    }
+
 }

@@ -6,7 +6,7 @@ namespace RC2K.DataAccess.Dynamic;
 internal static class Utils
 {
     public static int TimeOnlyToCentiseconds(TimeOnly time) =>
-        time.Hour * 3600 + time.Minute * 60 + time.Millisecond / 10;
+        time.Hour * 3600 * 100 + time.Minute * 60 * 100 + time.Second * 100 + time.Millisecond / 10;
 
     public static TimeOnly CentisecondsToTimeOnly(int centiseconds)
     {

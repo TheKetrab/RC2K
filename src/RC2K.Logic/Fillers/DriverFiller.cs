@@ -7,15 +7,25 @@ namespace RC2K.Logic.Fillers;
 public class DriverFiller(IUserRepository userRepository)
     : IDriverFiller
 {
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+
     public async Task FillRecursive(Driver driver, FillingContext context, IFillersBag fillers)
     {
-        if (context.Drivers.ContainsKey(driver.Id))
+        await _semaphore.WaitAsync();
+        try
         {
-            return;
-        }
-        context.Drivers.Add(driver.Id, driver);
+            if (context.Drivers.ContainsKey(driver.Id))
+            {
+                return;
+            }
+            context.Drivers.Add(driver.Id, driver);
 
-        await FillUser(driver, context, fillers);
+            await FillUser(driver, context, fillers);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private async Task FillUser(Driver driver, FillingContext context, IFillersBag fillers)
@@ -31,7 +41,7 @@ public class DriverFiller(IUserRepository userRepository)
         }
         else
         {
-            driver.User = await userRepository.GetById(driver.UserId.Value) ?? throw new KeyNotFoundException();
+            driver.User = (await userRepository.GetById(driver.UserId.Value)) ?? throw new KeyNotFoundException();
             await fillers.UserFiller.FillRecursive(driver.User, context, fillers);
         }
     }
