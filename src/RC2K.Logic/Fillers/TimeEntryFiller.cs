@@ -10,19 +10,29 @@ public class TimeEntryFiller(ICarRepository carRepository,
                              IVerifyInfoRepository verifyInfoRepository)
     : ITimeEntryFiller
 {
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+
     public async Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
     {
-        if (context.TimeEntries.ContainsKey(timeEntry.Id))
+        await _semaphore.WaitAsync();
+        try
         {
-            return;
+            if (context.TimeEntries.ContainsKey(timeEntry.Id))
+            {
+                return;
+            }
+            context.TimeEntries.Add(timeEntry.Id, timeEntry);
+
+            timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
+            timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
+
+            await FillDriver(timeEntry, context, fillers);
+            await FillVerifyInfo(timeEntry, context, fillers);
         }
-        context.TimeEntries.Add(timeEntry.Id, timeEntry);
-
-        timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
-        timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
-
-        await FillDriver(timeEntry, context, fillers);
-        await FillVerifyInfo(timeEntry, context, fillers);
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
@@ -33,7 +43,7 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.Driver = await driverRepository.GetById(timeEntry.DriverId) ?? throw new KeyNotFoundException();
+            timeEntry.Driver = (await driverRepository.GetById(timeEntry.DriverId)) ?? throw new KeyNotFoundException();
             await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers);
         }
     }
@@ -51,7 +61,7 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.VerifyInfo = await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value) ?? throw new KeyNotFoundException();
+            timeEntry.VerifyInfo = (await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value)) ?? throw new KeyNotFoundException();
             await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers);
         }
     }
