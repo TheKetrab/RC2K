@@ -1,6 +1,7 @@
 @rendermode InteractiveServer
 @page "/stages/{raceName}/{id:int}"
 
+@using Microsoft.AspNetCore.Authorization
 @using RC2K.DataAccess.Interfaces
 @using RC2K.DataAccess.Interfaces.Repositories
 @using RC2K.DomainModel
@@ -10,220 +11,336 @@
 @using RC2K.Presentation.Blazor.ViewModels
 @inject IStageService StageService
 @inject ITimeEntryService TimeEntryService
+@inject IDriverService DriverService
+@inject ICarService CarService
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 <h3></h3>
+
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 
 @page "/map"
 @using System.Collections.Generic
 
 <div class="MAIN">
-    <h1>@_raceName</h1>
-    <div class="container" id="containerId" accesskey="">
+  <h1>@_raceName</h1>
+  <div class="container" id="containerId" accesskey="">
 
-        <div class="item stage-info">
-            <div class="card" style="position: relative;">
-                <div class="card-header">Stage details</div>
-                <div class="card-body">
-                    <div style="position: absolute; top: 0; right: 0;">
-                        @if (IsArcade)
-                        {
-                            <a href="@NavigationManager.GetUriWithQueryParameter("direction","simulation")">Not arcade version</a>
-                        }
-                        else
-                        {
-                            <a href="@NavigationManager.GetUriWithQueryParameter("direction","arcade")">Arcade version</a>
-                        }
-                    </div>
-                    <h2>@($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")</h2>
-                    <br />
-                    <p>Length: @_stageDetails.Length</p>
-                    <br />
-                    <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
-                    <br />
-                    <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
-                </div>
-                <div class="card-footer"></div>
-            </div>
+    <div class="item stage-info">
+      <div class="card" style="position: relative;">
+        <div class="card-header">Stage details</div>
+        <div class="card-body">
+          <div style="position: absolute; top: 0; right: 0;">
+            @if (IsArcade)
+            {
+              <a href="@NavigationManager.GetUriWithQueryParameter("direction","simulation")">Not arcade version</a>
+            }
+            else
+            {
+              <a href="@NavigationManager.GetUriWithQueryParameter("direction","arcade")">Arcade version</a>
+            }
+          </div>
+          <h2>@($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")</h2>
+          <br />
+          <p>Length: @_stageDetails.Length</p>
+          <br />
+          <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
+          <br />
+          <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
         </div>
-        <div class="item stage-img">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
-                <img src="img/maps/@_imgName" style="width: 100%;" />
-            </div>
-        </div>
-        <div class="item stage-description">
-            <div class="card">
-                <div class="card-header">Description</div>
-                <div class="card-body">
-                    @_description
-                </div>
-                <div class="card-footer"></div>
-            </div>
-        </div>
-        <div class="item stage-times">
-            <div class="card" >
-                <div class="card-header">Records</div>
-                <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr .5fr;">
-                    <p class="th-header">#</p>
-                    <p class="th-header">Time</p>
-                    <p class="th-header">Driver</p>
-                    <p class="th-header">Car</p>
-                    <p class="th-header">Uploaded</p>
-                    <p class="th-header">Proofs</p>
-                    <p class="th-header">Labels</p>
-
-                    @{
-                        int cnt = 0;
-                    }
-                    @foreach (var timeEntry in _timeEntries.OrderBy(x => x.Time).Select((x, i) => new { Place = i + 1, Data = x }))
-                    {
-                        cnt++;
-                        <p>@timeEntry.Place</p>
-                        <p style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss:ff")</p>
-                        <p>
-                            <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
-                            <span>@(timeEntry.Data.Driver.Name ?? timeEntry.Data.Driver.User.Name)</span>
-                        </p>
-                        <p>
-                            <div class="car" data-car-id="@(timeEntry.Data.Car.Id-1)"></div>
-                        </p>
-                        <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
-                        <p>
-                            @{
-                                foreach (var p in timeEntry.Data.Proofs)
-                                {
-                                    <MudIconButton Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" />
-                                }
-                            }
-                        </p>
-                        <p>
-                            @{
-                                var split = timeEntry.Data.Labels?.Split(",");
-                                if (split is not null)
-                                {
-                                    foreach (var label in split)
-                                    {
-                                        <span style="margin: 0 1px; border: solid 1px black; border-radius: 5px; background-color: pink;">@label</span>
-                                    }
-                                }
-                            }
-                        </p>
-                    }
-                    @for (int i = 10 - cnt; i >= 0; i--)
-                    {
-                        <p>@(10 - i)</p>
-                        <p>---</p>
-                        <p>---</p>
-                        <p>---</p>
-                        <p>---</p>
-                        <p>---</p>
-                        <p>---</p>
-                    }
-                </div>
-                <div class="card-footer"></div>
-            </div>
-        </div>
-        <div class="item stage-map">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
-                <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
-            </div>
-        </div>
-        <div class="break"></div>
+        <div class="card-footer"></div>
+      </div>
     </div>
+    <div class="item stage-img">
+      <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
+        <img src="img/maps/@_imgName" style="width: 100%;" />
+      </div>
+    </div>
+    <div class="item stage-description">
+      <div class="card">
+        <div class="card-header">Description</div>
+        <div class="card-body">
+          @_description
+        </div>
+        <div class="card-footer"></div>
+      </div>
+    </div>
+    <div class="item stage-times">
+      <div class="card">
+        <div class="card-header">Records</div>
+        <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr .5fr;">
+          <p class="th-header">#</p>
+          <p class="th-header">Time</p>
+          <p class="th-header">Driver</p>
+          <p class="th-header">Car</p>
+          <p class="th-header">Uploaded</p>
+          <p class="th-header">Proofs</p>
+          <p class="th-header">Labels</p>
+
+          @{
+            int cnt = 0;
+          }
+          @foreach (var timeEntry in _timeEntries.OrderBy(x => x.Time).Select((x, i) => new { Place = i + 1, Data = x }))
+          {
+            cnt++;
+            <p>@timeEntry.Place</p>
+            <p style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss:ff")</p>
+            <p>
+              <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
+              <span>@(timeEntry.Data.Driver.Known ? timeEntry.Data.Driver.User!.Name : timeEntry.Data.Driver.Name)</span>
+            </p>
+            <p>
+              <div class="car" data-car-id="@(timeEntry.Data.Car.Id-1)"></div>
+            </p>
+            <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
+            <p>
+              @{
+                foreach (var p in timeEntry.Data.Proofs)
+                {
+                  <MudIconButton Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" />
+                }
+              }
+            </p>
+            <p>
+              @{
+                var split = timeEntry.Data.Labels?.Split(",");
+                if (split is not null)
+                {
+                  foreach (var label in split)
+                  {
+                    <span style="margin: 0 1px; border: solid 1px black; border-radius: 5px; background-color: pink;">@label</span>
+                  }
+                }
+              }
+            </p>
+          }
+          @for (int i = 10 - cnt; i >= 0; i--)
+          {
+            <p>@(10 - i)</p>
+            <p>---</p>
+            <p>---</p>
+            <p>---</p>
+            <p>---</p>
+            <p>---</p>
+            <p>---</p>
+          }
+        </div>
+        <div class="card-footer" style="display: flex; flex-direction: row-reverse; width: 100%;">
+          <MudButton OnClick="OpenUploadDialog">Upload time</MudButton>
+        </div>
+
+      </div>
+    </div>
+    <div class="item stage-map">
+      <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
+        <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
+      </div>
+    </div>
+    <div class="break"></div>
+  </div>
+  <MudPopover Open="uploadDialogVisible"
+              Fixed="true"
+              Class="px-4 pt-4"
+              AnchorOrigin="Origin.CenterCenter"
+              TransformOrigin="Origin.CenterCenter">
+    <div class="d-flex flex-column">
+
+      <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+        <MudForm Class="gap-5">
+          <div style="display: flex; gap: 1em;">
+            <MudTextField T="int"
+                          Label="min"
+                          @bind-Value="UploadTimeModel.Min" />
+            <MudTextField T="int"
+                          Label="sec"
+                          @bind-Value="UploadTimeModel.Sec" />
+            <MudTextField T="int"
+                          Label="cc"
+                          @bind-Value="UploadTimeModel.Cc" />
+          </div>
+          <MudTextField T="string"
+                        Label="Driver name"
+                        @bind-Value="UploadTimeModel.DriverName" />
+
+          <MudSelect T="Car"
+                     @bind-Value="UploadTimeModel.Car"
+                     Label="Car"
+                     Variant="Variant.Outlined"
+                     Dense="true">
+            @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
+            {
+              <MudSelectItem T="Car" Value="@car">
+                <div style="display: flex;">
+                  <div class="car-big" data-car-id="@(car.Id-1)"></div>
+                  <span>@($"A{car.Class} - {@car.Name}")</span>
+                </div>
+              </MudSelectItem>
+            }
+          </MudSelect>
+          <MudTextField T="string"
+                        Label="Proofs"
+                        @bind-Value="UploadTimeModel.Proofs" />
+
+          <MudButton Variant="Variant.Filled"
+                     Color="Color.Primary"
+                     Class="ml-auto"
+                     OnClick="UploadClick">Upload</MudButton>
+        </MudForm>
+      </MudPaper>
+
+      <MudButton OnClick="CloseUploadDialog"
+                 Class="ml-auto mr-n3 mb-1"
+                 Color="Color.Error">Close</MudButton>
+
+    </div>
+  </MudPopover>
+
 
 </div>
 
 
 @code {
-    private string _api;
-    private async Task HandleNewPathCachedEvent(string path)
+
+  public class UploadTimeModelType
+  {
+    public int Min { get; set; }
+    public int Sec { get; set; }
+    public int Cc { get; set; }
+    public Car Car { get; set; }
+    public string Proofs { get; set; }
+    public string DriverName { get; set; }
+  }
+
+  private List<Car> _cars;
+
+  UploadTimeModelType UploadTimeModel = new();
+
+  private string _api;
+  private async Task HandleNewPathCachedEvent(string path)
+  {
+    var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
+    int stageCode = stage.Code;
+    await StageService.SetPath(stageCode, path);
+  }
+
+  [Parameter]
+  public string RaceName { get; set; }
+
+  [Parameter]
+  public int Id { get; set; }
+
+  private IList<double[]> _waypoints;
+
+  private string _name;
+  private string _raceName;
+  private string _description;
+
+  private string _imgName;
+
+  private DomainModel.StageDetails _stageDetails;
+
+  private List<DomainModel.TimeEntry> _timeEntries = new();
+
+  private string _directionParameter;
+  [SupplyParameterFromQuery(Name = "direction")]
+  public string DirectionParameter
+  {
+    get => _directionParameter;
+    set
     {
-        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
-        int stageCode = stage.Code;
-        await StageService.SetPath(stageCode, path);
+      _directionParameter = value;
+      Direction = value == "arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
     }
+  }
 
-    [Parameter]
-    public string RaceName { get; set; }
+  public DomainModel.Direction Direction { get; set; }
 
-    [Parameter]
-    public int Id { get; set; }
+  public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
-    private IList<double[]> _waypoints;
+  [SupplyParameterFromQuery]
+  [Parameter]
+  public bool ShowWaypoints { get; set; } = true;
 
-    private string _name;
-    private string _raceName;
-    private string _description;
+  private string? _path;
+  protected override async Task OnInitializedAsync()
+  {
+    _cars = await CarService.GetAll();
 
-    private string _imgName;
+    var stage = await StageService.GetByCode(Id, Direction);
+    _api = stage.StageWaypoints.ApiHint;
+    _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
-    private DomainModel.StageDetails _stageDetails;
+    _path = await StageService.GetPath(Id);
+    //_waypoints = [
+    //];
+    //string rawStr = string.Join(";", _waypoints.Select(x => string.Join(",", x.Select(d => Math.Round(d,7)))));
 
-    private List<DomainModel.TimeEntry> _timeEntries = new();
+    _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
+    _name = stage.StageData.Name;
+    _imgName = stage.StageData.ImgName;
+    _description = stage.StageData.Description;
+    _stageDetails = stage.StageData.StageDetails;
 
-    private string _directionParameter;
-    [SupplyParameterFromQuery(Name = "direction")]
-    public string DirectionParameter 
-    { 
-        get => _directionParameter; 
-        set
-        {
-            _directionParameter = value;
-            Direction = value == "arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
-        }
-    }
+    var timeEntries = await TimeEntryService.Get(stage.Id);
+    // int cnt = Random.Shared.Next(5, 20);
+    // for (int i=0; i<cnt; i++)
+    // {
+    //     _timeEntries.Add(new DomainModel.TimeEntry()
+    //         {
+    //             Id = Guid.NewGuid(),
+    //             Car = new DomainModel.Car() { Id = 1, Class = 5, Name = "car" },
+    //             StageId = 1,
+    //             DriverId = Guid.NewGuid(),
+    //             Driver = new DomainModel.Driver() { Id = Guid.NewGuid(), Known = true, Name = "driver" },
+    //             CarId = 1,
+    //             Time = TimeOnly.FromTimeSpan(TimeSpan.FromSeconds(45)),
+    //             UploadTime = DateTime.Now
+    //         });
+    // }
 
-    public DomainModel.Direction Direction { get; set; }
+    _timeEntries.AddRange(timeEntries);
+  }
 
-    public bool IsArcade => Direction == DomainModel.Direction.Arcade;
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
+  }
 
-    [SupplyParameterFromQuery]
-    [Parameter]
-    public bool ShowWaypoints { get; set; } = true;
 
-    private string? _path;
-    protected override async Task OnInitializedAsync()
+  private async Task UploadClick()
+  {
+    var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
+    if (driver is null || !driver.Known)
     {
-
-        var stage = await StageService.GetByCode(Id, Direction);
-        _api = stage.StageWaypoints.ApiHint;
-        _waypoints = await StageService.GetWaypoints(Id, stage.IsArcade);
-        
-        _path = await StageService.GetPath(Id);
-        //_waypoints = [
-        //];
-        //string rawStr = string.Join(";", _waypoints.Select(x => string.Join(",", x.Select(d => Math.Round(d,7)))));
-
-        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
-        _name = stage.StageData.Name;
-        _imgName = stage.StageData.ImgName;
-        _description = stage.StageData.Description;
-        _stageDetails = stage.StageData.StageDetails;
-
-        var timeEntries = await TimeEntryService.Get(stage.Id);
-        // int cnt = Random.Shared.Next(5, 20);
-        // for (int i=0; i<cnt; i++)
-        // {
-        //     _timeEntries.Add(new DomainModel.TimeEntry()
-        //         {
-        //             Id = Guid.NewGuid(),
-        //             Car = new DomainModel.Car() { Id = 1, Class = 5, Name = "car" },
-        //             StageId = 1,
-        //             DriverId = Guid.NewGuid(),
-        //             Driver = new DomainModel.Driver() { Id = Guid.NewGuid(), Known = true, Name = "driver" },
-        //             CarId = 1,
-        //             Time = TimeOnly.FromTimeSpan(TimeSpan.FromSeconds(45)),
-        //             UploadTime = DateTime.Now
-        //         });
-        // }
-
-        _timeEntries.AddRange(timeEntries);
+      // TODO: handle adding times for anonymous drivers
+      return;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
-    }
+    var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
+    await TimeEntryService.Upload(
+      stage.Id,
+      UploadTimeModel.Car.Id,
+      driver.Id,
+      UploadTimeModel.Min,
+      UploadTimeModel.Sec,
+      UploadTimeModel.Cc,
+            [],
+      null
+      );
+  }
+
+  private bool uploadDialogVisible;
+  private void OpenUploadDialog()
+  {
+    uploadDialogVisible = true;
+  }
+  private void CloseUploadDialog()
+  {
+    uploadDialogVisible = false;
+  }
 
 }
