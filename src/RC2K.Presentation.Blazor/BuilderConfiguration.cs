@@ -17,6 +17,7 @@ using RC2K.DataAccess.Database.Cache;
 using RC2K.DataAccess.Interfaces.Cache;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Database.Repositories;
+using RC2K.Presentation.Blazor.AuthProxy;
 
 
 namespace RC2K.Presentation.Blazor;
@@ -110,7 +111,9 @@ public static class BuilderConfiguration
             return new PasswordProvider(iterations, salt);
         });
         builder.Services.AddScoped<ICarService, CarService>();
-        builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
+
+        builder.Services.AddScoped<TimeEntryService>();
+        builder.Services.AddScoped<ITimeEntryService, AuthTimeEntryServiceProxy>();
 
         return builder;
     }

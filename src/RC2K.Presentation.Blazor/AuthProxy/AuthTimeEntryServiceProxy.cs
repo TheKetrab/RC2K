@@ -1,0 +1,68 @@
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using RC2K.DataAccess.Interfaces.Repositories;
+using RC2K.DomainModel;
+using RC2K.Logic;
+using RC2K.Logic.Interfaces;
+using RC2K.Logic.Interfaces.Fillers;
+
+namespace RC2K.Presentation.Blazor.AuthProxy
+{
+    public class AuthTimeEntryServiceProxy : ITimeEntryService
+    {
+        private AuthenticationStateProvider _asp;
+        private TimeEntryService _service;
+        private IDriverRepository _driverRepository;
+        private IFillersBag _fillers;
+
+        public AuthTimeEntryServiceProxy(
+            AuthenticationStateProvider asp,
+            TimeEntryService service,
+            IDriverRepository driverRepository,
+            IFillersBag fillers)
+        {
+            _asp = asp;
+            _service = service;
+            _driverRepository = driverRepository;
+            _fillers = fillers;
+        }
+
+        public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
+            _service.Get(stageId, carId);
+
+
+        public async Task Upload(
+            int stageId, int carId, Guid driverId,
+            int min, int sec, int cc,
+            List<Proof> proofs, string? labels)
+        {
+            Driver driver = await _driverRepository.GetById(driverId)
+                ?? throw new ArgumentException();
+
+            FillingContext context = new();
+            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
+
+            await AuthorizeSelf(driver);
+
+            await _service.Upload(
+                stageId, carId, driverId,
+                min, sec, cc,
+                proofs, labels);
+        }
+
+        public async Task Upload(TimeEntry timeEntry)
+        {
+            await AuthorizeSelf(timeEntry.Driver!);
+            await _service.Upload(timeEntry);
+        }
+
+        private async Task AuthorizeSelf(Driver driver)
+        {
+            string name = driver.Known
+                ? driver.User!.Name
+                : driver.Name!;
+
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.AuthorizeSelf(auth, name);
+        }
+    }
+}
