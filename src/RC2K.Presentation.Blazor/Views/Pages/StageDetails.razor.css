@@ -1,4 +1,5 @@
 ﻿
+
 .card {
     margin: auto auto;
     border-radius: 0.375rem;
@@ -19,13 +20,14 @@
     padding: 0 0.5rem;
 }
 
-    .times-table > *:nth-child(14n+8),
-    .times-table > *:nth-child(14n+9),
-    .times-table > *:nth-child(14n+10),
-    .times-table > *:nth-child(14n+11),
-    .times-table > *:nth-child(14n+12),
-    .times-table > *:nth-child(14n+13),
-    .times-table > *:nth-child(14n+14) {
+    .times-table > *:nth-child(16n+9),
+    .times-table > *:nth-child(16n+10),
+    .times-table > *:nth-child(16n+11),
+    .times-table > *:nth-child(16n+12),
+    .times-table > *:nth-child(16n+13),
+    .times-table > *:nth-child(16n+14),
+    .times-table > *:nth-child(16n+15),
+    .times-table > *:nth-child(16n+16) {
         background-color: #a6a6a661;
     }
 

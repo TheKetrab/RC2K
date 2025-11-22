@@ -22,6 +22,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client", "client", "{252FC98F-8D05-4296-BB0C-7E17AC658E14}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{C927C1DB-39F8-4C1A-A6A8-992ED59F2ABE}"
+	ProjectSection(SolutionItems) = preProject
+		..\data\RC2K.db = ..\data\RC2K.db
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Utils", "RC2K.Extensions\RC2K.Utils.csproj", "{20B44205-217B-4DAF-8CEF-9DFF385516F9}"
 EndProject

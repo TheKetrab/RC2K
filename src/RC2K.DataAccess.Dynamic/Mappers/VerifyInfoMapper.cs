@@ -1,4 +1,5 @@
 ﻿using RC2K.DataAccess.Dynamic.Models;
+using static RC2K.Utils.Utils;
 using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Dynamic.Mappers;
@@ -12,7 +13,7 @@ public class VerifyInfoMapper : IModelMapper<VerifyInfo, VerifyInfoModel>
             Id = verifyInfo.Id,
             VerifierId = verifyInfo.VerifierId,
             Comment = verifyInfo.Comment,
-            VerifyDate = Utils.DateTimeToString(verifyInfo.VerifyDate),
+            VerifyDate = DateTimeToString(verifyInfo.VerifyDate),
         };
 
         return model;
@@ -25,7 +26,7 @@ public class VerifyInfoMapper : IModelMapper<VerifyInfo, VerifyInfoModel>
             Id = model.Id,
             VerifierId = model.VerifierId,
             Comment = model.Comment,
-            VerifyDate = Utils.StringToDateTime(model.VerifyDate),
+            VerifyDate = StringToDateTime(model.VerifyDate),
         };
 
         return verifyInfo;

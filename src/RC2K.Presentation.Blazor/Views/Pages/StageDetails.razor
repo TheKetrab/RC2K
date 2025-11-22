@@ -72,9 +72,10 @@
     <div class="item stage-times">
       <div class="card">
         <div class="card-header">Records</div>
-        <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr 1fr 1.5fr .5fr 1fr .5fr .5fr;">
+        <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr .8fr .8fr 1.5fr .5fr 1fr .7fr .5fr;">
           <p class="th-header">#</p>
           <p class="th-header">Time</p>
+          <p class="th-header">Gap</p>
           <p class="th-header">Driver</p>
           <p class="th-header">Car</p>
           <p class="th-header">Uploaded</p>
@@ -84,24 +85,43 @@
           @{
             int cnt = 0;
           }
-          @foreach (var timeEntry in _timeEntries.OrderBy(x => x.Time).Select((x, i) => new { Place = i + 1, Data = x }))
+          @foreach (var timeEntry in _timeEntries.OrderBy(x => x.Time).Skip((Page-1) * perPage).Take(perPage).Select((x, i) => new { Place = i + 1 + perPage * (Page - 1), Data = x }))
           {
             cnt++;
-            <p>@timeEntry.Place</p>
-            <p style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss:ff")</p>
-            <p>
-              <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
-              <span>@(timeEntry.Data.Driver.Known ? timeEntry.Data.Driver.User!.Name : timeEntry.Data.Driver.Name)</span>
-            </p>
-            <p>
+            <div style="display: flex; align-items: center;"><span>@timeEntry.Place</span></div>
+            <div style="display: flex; align-items: center;">
+              <span style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss.ff")</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+              @{
+                TimeSpan diff = timeEntry.Data.Time - best.Time;
+                if (diff != TimeSpan.Zero)
+                {
+                  string diffFormatted = diff.ToString("m\\:ss\\.ff");
+                  <p>
+                    <span>-</span>
+                    <span>@diffFormatted</span>
+                  </p>
+                }
+              }
+            </div>
+            <div style="display: flex; align-items: center;">
+              <p>
+                <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
+                <span>@(timeEntry.Data.Driver.Known ? timeEntry.Data.Driver.User!.Name : timeEntry.Data.Driver.Name)</span>
+              </p>
+            </div>
+            <div style="display: flex; align-items: center;">
               <div class="car" data-car-id="@(timeEntry.Data.Car.Id-1)"></div>
-            </p>
-            <p>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</p>
-            <p>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <span>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</span>
+            </div>
+            <p style="display: flex;">
               @{
                 foreach (var p in timeEntry.Data.Proofs)
                 {
-                  <MudIconButton Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" />
+                  <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
                 }
               }
             </p>
@@ -112,23 +132,37 @@
                 {
                   foreach (var label in split)
                   {
-                    <span style="margin: 0 1px; border: solid 1px black; border-radius: 5px; background-color: pink;">@label</span>
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">@label</MudChip>
                   }
                 }
               }
             </p>
           }
-          @for (int i = 10 - cnt; i >= 0; i--)
-          {
-            <p>@(10 - i)</p>
-            <p>---</p>
-            <p>---</p>
-            <p>---</p>
-            <p>---</p>
-            <p>---</p>
-            <p>---</p>
+          @{
+            if (_timeEntries.Count() < perPage)
+            {
+              for (int i = 10 - cnt; i >= 0; i--)
+              {
+                <p>@(10 - i)</p>
+                <p>---</p>
+                <p>---</p>
+                <p>---</p>
+                <p>---</p>
+                <p>---</p>
+                <p>---</p>
+                <p>---</p>
+              }
+            }
           }
         </div>
+        <p>
+          <span>Pages:</span>
+          @for(int i=0; i<pageCnt; i++)
+          {
+            int jj = i;
+            <MudButton Size="Size.Small" OnClick="() => { GoToPage(jj+1); }" >@(jj+1)</MudButton>
+          }
+        </p>
         <div class="card-footer" style="display: flex; flex-direction: row-reverse; width: 100%;">
           <MudButton OnClick="OpenUploadDialog">Upload time</MudButton>
         </div>
@@ -143,34 +177,34 @@
     <div class="break"></div>
   </div>
   <MudPopover Open="uploadDialogVisible"
-              Fixed="true"
-              Class="px-4 pt-4"
-              AnchorOrigin="Origin.CenterCenter"
-              TransformOrigin="Origin.CenterCenter">
+  Fixed="true"
+  Class="px-4 pt-4"
+  AnchorOrigin="Origin.CenterCenter"
+  TransformOrigin="Origin.CenterCenter">
     <div class="d-flex flex-column">
 
       <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
         <MudForm Class="gap-5">
           <div style="display: flex; gap: 1em;">
             <MudTextField T="int"
-                          Label="min"
-                          @bind-Value="UploadTimeModel.Min" />
+            Label="min"
+            @bind-Value="UploadTimeModel.Min" />
             <MudTextField T="int"
-                          Label="sec"
-                          @bind-Value="UploadTimeModel.Sec" />
+            Label="sec"
+            @bind-Value="UploadTimeModel.Sec" />
             <MudTextField T="int"
-                          Label="cc"
-                          @bind-Value="UploadTimeModel.Cc" />
+            Label="cc"
+            @bind-Value="UploadTimeModel.Cc" />
           </div>
           <MudTextField T="string"
-                        Label="Driver name"
-                        @bind-Value="UploadTimeModel.DriverName" />
+          Label="Driver name"
+          @bind-Value="UploadTimeModel.DriverName" />
 
           <MudSelect T="Car"
-                     @bind-Value="UploadTimeModel.Car"
-                     Label="Car"
-                     Variant="Variant.Outlined"
-                     Dense="true">
+          @bind-Value="UploadTimeModel.Car"
+          Label="Car"
+          Variant="Variant.Outlined"
+          Dense="true">
             @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
             {
               <MudSelectItem T="Car" Value="@car">
@@ -182,19 +216,19 @@
             }
           </MudSelect>
           <MudTextField T="string"
-                        Label="Proofs"
-                        @bind-Value="UploadTimeModel.Proofs" />
+          Label="Proofs"
+          @bind-Value="UploadTimeModel.Proofs" />
 
           <MudButton Variant="Variant.Filled"
-                     Color="Color.Primary"
-                     Class="ml-auto"
-                     OnClick="UploadClick">Upload</MudButton>
+          Color="Color.Primary"
+          Class="ml-auto"
+          OnClick="UploadClick">Upload</MudButton>
         </MudForm>
       </MudPaper>
 
       <MudButton OnClick="CloseUploadDialog"
-                 Class="ml-auto mr-n3 mb-1"
-                 Color="Color.Error">Close</MudButton>
+      Class="ml-auto mr-n3 mb-1"
+      Color="Color.Error">Close</MudButton>
 
     </div>
   </MudPopover>
@@ -204,6 +238,8 @@
 
 
 @code {
+
+  TimeEntry best;
 
   public class UploadTimeModelType
   {
@@ -232,6 +268,20 @@
 
   [Parameter]
   public int Id { get; set; }
+
+  [SupplyParameterFromQuery(Name = "Page")]
+  public int? PageFromQuery { get; set; }
+
+  int Page => PageFromQuery.HasValue ? PageFromQuery.Value : 1;
+
+  int perPage = 10;
+  int pageCnt;
+
+  void GoToPage(int p)
+  {
+    var newLocation = NavigationManager.GetUriWithQueryParameter("Page", p);
+    NavigationManager.NavigateTo(newLocation);
+  }
 
   private IList<double[]> _waypoints;
 
@@ -302,7 +352,10 @@
     //         });
     // }
 
+    pageCnt = (int)Math.Ceiling(((double)(timeEntries.Count())) / (double)perPage);
+
     _timeEntries.AddRange(timeEntries);
+    best = _timeEntries.OrderBy(x => x.Time).FirstOrDefault();
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -328,7 +381,7 @@
       UploadTimeModel.Min,
       UploadTimeModel.Sec,
       UploadTimeModel.Cc,
-            [],
+              [],
       null
       );
   }
