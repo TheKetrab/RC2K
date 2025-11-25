@@ -102,6 +102,7 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IStageService, StageService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDriverService, DriverService>();
+        builder.Services.AddScoped<IPointsProvider, PointsProvider>();
         builder.Services.AddScoped<IPasswordProvider, PasswordProvider>(provider =>
         {
             var securitySection = builder.Configuration.GetSection("Security");

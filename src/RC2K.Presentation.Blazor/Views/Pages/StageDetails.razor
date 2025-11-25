@@ -13,6 +13,7 @@
 @inject ITimeEntryService TimeEntryService
 @inject IDriverService DriverService
 @inject ICarService CarService
+@inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 <h3></h3>
@@ -30,18 +31,18 @@
   <h1>@_raceName</h1>
   <div class="container" id="containerId" accesskey="">
 
-    <div class="item stage-info">
+    <div class="item left stage-info">
       <div class="card" style="position: relative;">
         <div class="card-header">Stage details</div>
         <div class="card-body">
           <div style="position: absolute; top: 0; right: 0;">
             @if (IsArcade)
             {
-              <a href="@NavigationManager.GetUriWithQueryParameter("direction","simulation")">Not arcade version</a>
+              <a href="@NavigationManager.GetUriWithQueryParameter("direction","Simulation")">Not arcade version</a>
             }
             else
             {
-              <a href="@NavigationManager.GetUriWithQueryParameter("direction","arcade")">Arcade version</a>
+              <a href="@NavigationManager.GetUriWithQueryParameter("direction","Arcade")">Arcade version</a>
             }
           </div>
           <h2>@($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")</h2>
@@ -55,12 +56,12 @@
         <div class="card-footer"></div>
       </div>
     </div>
-    <div class="item stage-img">
+    <div class="item right stage-img">
       <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
         <img src="img/maps/@_imgName" style="width: 100%;" />
       </div>
     </div>
-    <div class="item stage-description">
+    <div class="item right stage-description">
       <div class="card">
         <div class="card-header">Description</div>
         <div class="card-body">
@@ -69,10 +70,10 @@
         <div class="card-footer"></div>
       </div>
     </div>
-    <div class="item stage-times">
+    <div class="item left stage-times">
       <div class="card">
         <div class="card-header">Records</div>
-        <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr .8fr .8fr 1.5fr .5fr 1fr .7fr .5fr;">
+        <div class="card-body times-table" style="display: grid; grid-template-columns: .25fr .8fr .8fr 1.5fr .5fr 1fr .7fr .5fr .25fr;">
           <p class="th-header">#</p>
           <p class="th-header">Time</p>
           <p class="th-header">Gap</p>
@@ -81,6 +82,7 @@
           <p class="th-header">Uploaded</p>
           <p class="th-header">Proofs</p>
           <p class="th-header">Labels</p>
+          <p class="th-header">Points</p>
 
           @{
             int cnt = 0;
@@ -119,7 +121,7 @@
             </div>
             <p style="display: flex;">
               @{
-                foreach (var p in timeEntry.Data.Proofs)
+                foreach (var p in timeEntry.Data.Proofs.OrderBy(x => x.Type))
                 {
                   <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
                 }
@@ -132,8 +134,33 @@
                 {
                   foreach (var label in split)
                   {
-                    <MudChip T="string" Color="Color.Info" Size="Size.Small">@label</MudChip>
+                    string color = label switch
+                    {
+                      "BRC20" => "#e0c444ff",
+                      "MFMI18" => "#c71a99ff",
+                      "MFMI19" => "#d18fd9",
+                      "MFMI20" => "#83ba73ff",
+                      "MFMI21" => "#bfb84eff",
+                      "MFMI22" => "#99e63cff",
+                      "MFMI23" => "#4d69f7ff",
+                      "MFMI24" => "#6eb3db",
+                      "MFMI25" => "#f25a46ff",
+                      _ => "#1c7848ff"
+                    };
+                    <MudChip T="string" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
                   }
+                }
+              }
+            </p>
+            <p>
+              @{
+                if (_generalPoints.TryGetValue(timeEntry.Data.Id, out int points))
+                {
+                  <span>+@points</span>
+                }
+                if (_carPoints.TryGetValue(timeEntry.Data.Id, out int carPoints))
+                {
+                  <span>+@carPoints</span>
                 }
               }
             </p>
@@ -144,6 +171,7 @@
               for (int i = 10 - cnt; i >= 0; i--)
               {
                 <p>@(10 - i)</p>
+                <p>---</p>
                 <p>---</p>
                 <p>---</p>
                 <p>---</p>
@@ -169,7 +197,7 @@
 
       </div>
     </div>
-    <div class="item stage-map">
+    <div class="item right stage-map">
       <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
         <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
       </div>
@@ -274,7 +302,7 @@
 
   int Page => PageFromQuery.HasValue ? PageFromQuery.Value : 1;
 
-  int perPage = 10;
+  int perPage = 20;
   int pageCnt;
 
   void GoToPage(int p)
@@ -295,6 +323,9 @@
 
   private List<DomainModel.TimeEntry> _timeEntries = new();
 
+  private Dictionary<Guid, int> _generalPoints = [];
+  private Dictionary<Guid, int> _carPoints = [];
+
   private string _directionParameter;
   [SupplyParameterFromQuery(Name = "direction")]
   public string DirectionParameter
@@ -303,7 +334,7 @@
     set
     {
       _directionParameter = value;
-      Direction = value == "arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
+      Direction = value == "Arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
     }
   }
 
@@ -356,6 +387,13 @@
 
     _timeEntries.AddRange(timeEntries);
     best = _timeEntries.OrderBy(x => x.Time).FirstOrDefault();
+
+
+
+
+    _generalPoints = PointsProvider.CalculateGeneralStagePoints(_timeEntries);
+    _carPoints = PointsProvider.CalculateCarStagePoints(_timeEntries);
+
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)

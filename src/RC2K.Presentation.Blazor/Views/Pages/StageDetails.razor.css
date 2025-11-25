@@ -20,14 +20,15 @@
     padding: 0 0.5rem;
 }
 
-    .times-table > *:nth-child(16n+9),
-    .times-table > *:nth-child(16n+10),
-    .times-table > *:nth-child(16n+11),
-    .times-table > *:nth-child(16n+12),
-    .times-table > *:nth-child(16n+13),
-    .times-table > *:nth-child(16n+14),
-    .times-table > *:nth-child(16n+15),
-    .times-table > *:nth-child(16n+16) {
+    .times-table > *:nth-child(18n+10),
+    .times-table > *:nth-child(18n+11),
+    .times-table > *:nth-child(18n+12),
+    .times-table > *:nth-child(18n+13),
+    .times-table > *:nth-child(18n+14),
+    .times-table > *:nth-child(18n+15),
+    .times-table > *:nth-child(18n+16),
+    .times-table > *:nth-child(18n+17),
+    .times-table > *:nth-child(18n+18) {
         background-color: #a6a6a661;
     }
 
@@ -125,8 +126,11 @@
 
 @media (min-width: 769px) {
 
-    .item {
-        width: 50%;
+    .item.left {
+        width: 60%;
+    }
+    .item.right {
+        width: 40%;
     }
 
     .container {

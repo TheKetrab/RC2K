@@ -19,6 +19,27 @@ public class DriverService : IDriverService
         _fillers = fillers;
     }
 
+    public async Task<Dictionary<Guid, string>> GetAllNames()
+    {
+        Dictionary<Guid, string> res = [];
+        var drivers = await _driverRepository.GetAll();
+
+        FillingContext context = new();
+        foreach (var driver in drivers)
+        {
+            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
+        }
+
+        foreach (var driver in drivers)
+        {
+            res[driver.Id] = driver.Known
+                ? driver.User!.Name
+                : driver.Name!;
+        }
+
+        return res;
+    }
+
     public async Task<Driver?> GetByName(string name)
     {
         User? user = await _userRepository.GetByName(name);
