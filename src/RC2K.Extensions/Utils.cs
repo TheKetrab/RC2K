@@ -6,7 +6,8 @@ namespace RC2K.Utils;
 
 public static class Utils
 {
-    public static int TimeOnlyToCentiseconds(TimeOnly time) => time.ToCentiseconds();
+    public static int TimeOnlyToCentiseconds(TimeOnly time) =>
+        time.Hour * 3600 * 100 + time.Minute * 60 * 100 + time.Second * 100 + time.Millisecond / 10;
 
     public static TimeOnly CentisecondsToTimeOnly(int centiseconds) => centiseconds.ToTimeOnly();
 
