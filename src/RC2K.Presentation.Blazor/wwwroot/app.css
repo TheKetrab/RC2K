@@ -321,3 +321,9 @@ h1:focus {
     --car-col: 1;
 }
 
+.proof-item {
+    border-radius: 0% !important;
+}
+    .proof-item > span > svg {
+        font-size: .75rem !important;
+    }

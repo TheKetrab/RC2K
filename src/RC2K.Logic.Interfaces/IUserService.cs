@@ -1,4 +1,6 @@
-﻿namespace RC2K.Logic.Interfaces;
+﻿using RC2K.DomainModel;
+
+namespace RC2K.Logic.Interfaces;
 
 public interface IUserService
 {

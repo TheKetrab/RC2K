@@ -58,7 +58,12 @@ public class TimeEntryService : ITimeEntryService
 
         if (identicEntries.Any())
         {
-            throw new Exception();
+            // user can put identical times ONLY if it has different label
+            if (string.IsNullOrEmpty(timeEntry.Labels) ||
+                identicEntries.Any(x => x.Labels == timeEntry.Labels))
+            {
+                throw new Exception($"There already exists TimeEntry for: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={timeEntry.Time}");
+            }
         }
 
         await _timeEntryRepository.Create(timeEntry);

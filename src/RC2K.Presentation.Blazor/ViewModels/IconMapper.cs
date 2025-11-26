@@ -32,37 +32,51 @@ public static class IconMapper
     private static readonly Dictionary<Icon, (bool, string, string)> _icon2classMap;
 
     private const string twitch = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M3.857 0 1 2.857v10.286h3.429V16l2.857-2.857H9.57L14.714 8V0zm9.714 7.429-2.285 2.285H9l-2 2v-2H4.429V1.143h9.142z""/>
         <path d=""M11.857 3.143h-1.143V6.57h1.143zm-3.143 0H7.571V6.57h1.143z""/>
+    </svg>
     ";
 
     private const string camera_slim = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0M1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0""/>
         <path d=""M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm6 8.73V7.27l-3.5 1.555v4.35zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1""/>
         <path d=""M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6M7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0""/>
+    </svg>
     ";
 
     private const string camera_fill = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0""/>
         <path d=""M9 6a3 3 0 1 1 0-6 3 3 0 0 1 0 6""/>
         <path d=""M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z""/>
+    </svg>
     ";
 
     private const string image_slim = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0""/>
         <path d=""M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z""/>
+    </svg>
     ";
 
     private const string image_fill = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0""/>
+    </svg>
     ";
 
     private const string square_slim = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z""/>
+    </svg>
     ";
 
     private const string square_fill = @"
+    <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
         <path d=""M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2z""/>
+    </svg>
     ";
 
 

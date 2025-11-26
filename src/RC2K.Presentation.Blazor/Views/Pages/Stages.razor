@@ -31,7 +31,7 @@
             @foreach (var stage in group)
             {
                 string name = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(stage.Code).ToString().ToLower();
-                <div><a href="stages/@name/@stage.Code?IsArcade=@stage.Direction">@stage.StageData.Name @(stage.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")</a></div>
+                <div><a href="stages/@name/@stage.Code?direction=@stage.Direction">@stage.StageData.Name @(stage.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")</a></div>
                 <div>@stage.StageData.StageDetails!.Length</div>
                 <div>@stage.StageData.StageDetails!.Asphalt</div>
                 <div>@stage.StageData.StageDetails!.Dirt</div>

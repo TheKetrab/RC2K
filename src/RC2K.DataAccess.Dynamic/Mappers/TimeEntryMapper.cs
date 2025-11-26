@@ -1,4 +1,5 @@
 ﻿using RC2K.DataAccess.Dynamic.Models;
+using static RC2K.Utils.Utils;
 using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Dynamic.Mappers;
@@ -13,8 +14,8 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             CarId = model.CarId,
             DriverId = model.DriverId,
             StageId = model.StageId,
-            Time = Utils.CentisecondsToTimeOnly(model.Time),
-            UploadTime = Utils.StringToDateTime(model.UploadTime),
+            Time = CentisecondsToTimeOnly(model.Time),
+            UploadTime = StringToDateTime(model.UploadTime),
             VerifyInfoId = model.VerifyInfoId,
             Labels = model.Labels,
         };
@@ -22,7 +23,7 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
         if (model.Proofs is not null)
         {
             timeEntry.Proofs.AddRange(
-                model.Proofs.Select(Utils.DeserializeProof));
+                model.Proofs.Select(DeserializeProof));
         }
 
         return timeEntry;
@@ -36,15 +37,15 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             CarId = timeEntry.CarId,
             DriverId = timeEntry.DriverId,
             StageId = timeEntry.StageId,
-            Time = Utils.TimeOnlyToCentiseconds(timeEntry.Time),
-            UploadTime = Utils.DateTimeToString(timeEntry.UploadTime),
+            Time = TimeOnlyToCentiseconds(timeEntry.Time),
+            UploadTime = DateTimeToString(timeEntry.UploadTime),
             VerifyInfoId = timeEntry.VerifyInfoId,
             Labels = timeEntry.Labels
         };
 
         if (timeEntry.Proofs.Any())
         {
-            model.Proofs = timeEntry.Proofs.Select(Utils.SerializeProof).ToList();
+            model.Proofs = timeEntry.Proofs.Select(SerializeProof).ToList();
         }
 
         return model;

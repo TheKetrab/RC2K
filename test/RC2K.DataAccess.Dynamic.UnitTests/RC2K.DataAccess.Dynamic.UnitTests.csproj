@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RC2K.DataAccess.Dynamic\RC2K.DataAccess.Dynamic.csproj" />
+    <ProjectReference Include="..\..\src\RC2K.Extensions\RC2K.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
