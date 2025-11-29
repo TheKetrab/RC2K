@@ -1,0 +1,115 @@
+﻿@using RC2K.DomainModel
+@using RC2K.Logic
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels
+@rendermode InteractiveServer
+@inject IStageService StageService
+@inject ITimeEntryService TimeEntryService
+@inject IDriverService DriverService
+@inject ICarService CarService
+@inject IPointsProvider PointsProvider
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+
+
+
+<div class="d-flex flex-column">
+
+  <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+    <MudForm Class="gap-5">
+      <div style="display: flex; gap: 1em;">
+        <MudTextField T="int"
+        Label="min"
+        @bind-Value="UploadTimeModel.Min" />
+        <MudTextField T="int"
+        Label="sec"
+        @bind-Value="UploadTimeModel.Sec" />
+        <MudTextField T="int"
+        Label="cc"
+        @bind-Value="UploadTimeModel.Cc" />
+      </div>
+      <MudTextField T="string"
+      Label="Driver name"
+      @bind-Value="UploadTimeModel.DriverName" />
+
+      <MudSelect T="Car"
+      @bind-Value="UploadTimeModel.Car"
+      Label="Car"
+      Variant="Variant.Outlined"
+      Dense="true">
+        @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
+        {
+          <MudSelectItem T="Car" Value="@car">
+            <div style="display: flex;">
+              <div class="car-big" data-car-id="@(car.Id-1)"></div>
+              <span>@($"A{car.Class} - {@car.Name}")</span>
+            </div>
+          </MudSelectItem>
+        }
+      </MudSelect>
+      <MudTextField T="string"
+      Label="Proofs"
+      @bind-Value="UploadTimeModel.Proofs" />
+
+      <MudButton Variant="Variant.Filled"
+      Color="Color.Primary"
+      Class="ml-auto"
+      OnClick="UploadClick">Upload</MudButton>
+    </MudForm>
+  </MudPaper>
+
+  <MudButton OnClick="OnCloseButtonClicked"
+  Class="ml-auto mr-n3 mb-1"
+  Color="Color.Error">Close</MudButton>
+
+</div>
+
+
+
+
+@code {
+
+  private List<Car> _cars;
+
+  [Parameter] public int StageId { get; set; }
+  [Parameter] public EventCallback<MouseEventArgs> OnCloseButtonClicked { get; set; }
+
+  UploadTimeModelType UploadTimeModel = new();
+
+  public class UploadTimeModelType
+  {
+    public int Min { get; set; }
+    public int Sec { get; set; }
+    public int Cc { get; set; }
+    public Car Car { get; set; }
+    public string Proofs { get; set; }
+    public string DriverName { get; set; }
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+    _cars = await CarService.GetAll();
+  }
+
+  private async Task UploadClick()
+  {
+    var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
+    if (driver is null || !driver.Known)
+    {
+      // TODO: handle adding times for anonymous drivers
+      return;
+    }
+
+    await TimeEntryService.Upload(
+      StageId,
+      UploadTimeModel.Car.Id,
+      driver.Id,
+      UploadTimeModel.Min,
+      UploadTimeModel.Sec,
+      UploadTimeModel.Cc,
+                  [],
+      null
+      );
+  }
+
+}
