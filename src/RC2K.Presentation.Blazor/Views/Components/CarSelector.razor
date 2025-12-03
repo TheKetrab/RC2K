@@ -1,0 +1,47 @@
+﻿@using RC2K.DomainModel
+@using RC2K.Logic
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels
+@rendermode InteractiveServer
+
+@inject ICarService CarService
+
+<MudSelect T="Car"
+           Value="SelectedCar"
+           ValueChanged="HandleSelectedCarChange"
+           Label="Car"
+           Variant="Variant.Outlined"
+           Dense="true">
+  @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
+  {
+    <MudSelectItem T="Car" Value="@car">
+      <div style="display: flex;">
+        <div class="car-big" data-car-id="@(car.Id-1)"></div>
+        <span>@($"A{car.Class} - {@car.Name}")</span>
+      </div>
+    </MudSelectItem>
+  }
+</MudSelect>
+
+@code {
+
+  private List<Car> _cars;
+
+  [Parameter] public Car? SelectedCar { get; set; }
+  [Parameter] public EventCallback<Car?> SelectedCarChanged { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    _cars = await CarService.GetAll();
+  }
+
+  private async Task HandleSelectedCarChange(Car? newCar)
+  {
+    if (SelectedCar != newCar)
+    {
+      SelectedCar = newCar;
+      await SelectedCarChanged.InvokeAsync(newCar); // Notify the parent
+    }
+  }
+
+}

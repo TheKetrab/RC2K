@@ -74,7 +74,7 @@
       <div class="card">
         <div class="card-header">Records</div>
         <div class="card-body">
-          <TimeEntryList PerPage="20" StageId="@stageId" />
+          <TimeEntryList PerPage="20" StageId="@stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
         </div>
         <div class="card-footer" style="display: flex; flex-direction: row-reverse; width: 100%;">
           <MudButton OnClick="OpenUploadDialog">Upload time</MudButton>
@@ -90,10 +90,10 @@
     <div class="break"></div>
   </div>
   <MudPopover Open="uploadDialogVisible"
-              Fixed="true"
-              Class="px-4 pt-4"
-              AnchorOrigin="Origin.CenterCenter"
-              TransformOrigin="Origin.CenterCenter">
+  Fixed="true"
+  Class="px-4 pt-4"
+  AnchorOrigin="Origin.CenterCenter"
+  TransformOrigin="Origin.CenterCenter">
     <UploadTime StageId="@stageId" OnCloseButtonClicked="CloseUploadDialog" />
   </MudPopover>
 
@@ -156,7 +156,7 @@
   private string? _path;
   protected override async Task OnInitializedAsync()
   {
-    
+
     var stage = await StageService.GetByCode(Id, Direction);
     stageId = stage.Id;
     _api = stage.StageWaypoints.ApiHint;
@@ -176,11 +176,19 @@
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
+    await RecalculateHeight();
+  }
+
+  private async Task RecalculateHeight()
+  {
     await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
   }
 
+  private void HandleOnTimeEntryListLoaded()
+  {
+    RecalculateHeight();
+  }
 
-  
 
   private bool uploadDialogVisible;
   private void OpenUploadDialog()

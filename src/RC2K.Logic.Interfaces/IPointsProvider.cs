@@ -7,4 +7,6 @@ public interface IPointsProvider
 {
     Dictionary<Guid, int> CalculateGeneralStagePoints(List<TimeEntry> timeEntries);
     Dictionary<Guid, int> CalculateCarStagePoints(List<TimeEntry> timeEntries);
+    Dictionary<Guid, int> CalculatePlace(List<TimeEntry> timeEntries);
+    Dictionary<Guid, int> CalculatePlaceByCar(List<TimeEntry> timeEntries);
 }

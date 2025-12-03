@@ -29,6 +29,8 @@ public static class BuilderConfiguration
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        builder.Services.AddHttpContextAccessor();
+
         return builder;
     }
 

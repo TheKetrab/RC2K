@@ -10,142 +10,161 @@
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 
-<div class="times-table" style="display: grid; grid-template-columns: .25fr .8fr .8fr 1.5fr .5fr 1fr .7fr .5fr .25fr;">
-  <p class="th-header">#</p>
-  <p class="th-header">Time</p>
-  <p class="th-header">Gap</p>
-  <p class="th-header">Driver</p>
-  <p class="th-header">Car</p>
-  <p class="th-header">Uploaded</p>
-  <p class="th-header">Proofs</p>
-  <p class="th-header">Labels</p>
-  <p class="th-header">Points</p>
-
-  @{
-    int cnt = 0;
-  }
-  @foreach (var timeEntry in timeEntries.OrderBy(x => x.Time).Skip((Page - 1) * PerPage).Take(PerPage).Select((x, i) => new { Place = i + 1 + PerPage * (Page - 1), Data = x }))
+@{
+  if (!dataLoaded)
   {
-    cnt++;
-    <div style="display: flex; align-items: center;"><span>@timeEntry.Place</span></div>
-    <div style="display: flex; align-items: center;">
-      <span style="color: @(timeEntry.Data.VerifyInfo is null ? "red" : "green");">@timeEntry.Data.Time.ToString("m:ss.ff")</span>
+    <div style="position: relative;">
+      <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
+      <MudOverlay Visible="visible" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+      </MudOverlay>
     </div>
-    <div style="display: flex; align-items: center;">
-      @{
-        TimeSpan diff = timeEntry.Data.Time - best.Time;
-        if (diff != TimeSpan.Zero)
-        {
-          string diffFormatted = diff.ToString("m\\:ss\\.ff");
-          <p>
-            <span>-</span>
-            <span>@diffFormatted</span>
-          </p>
-        }
-      }
-    </div>
-    <div style="display: flex; align-items: center;">
-      <p>
-        <span class="fi @($"fi-{timeEntry.Data.Driver.Nationality}")"></span>
-        <span>@(timeEntry.Data.Driver.Known ? timeEntry.Data.Driver.User!.Name : timeEntry.Data.Driver.Name)</span>
-      </p>
-    </div>
-    <div style="display: flex; align-items: center;">
-      <div class="car" data-car-id="@(timeEntry.Data.Car.Id-1)"></div>
-    </div>
-    <div style="display: flex; align-items: center;">
-      <span>@timeEntry.Data.UploadTime.ToString("yyyy/MM/dd")</span>
-    </div>
-    <p style="display: flex;">
-      @{
-        foreach (var p in timeEntry.Data.Proofs.OrderBy(x => x.Type))
-        {
-          <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
-        }
-      }
-    </p>
-    <p>
-      @{
-        var split = timeEntry.Data.Labels?.Split(",");
-        if (split is not null)
-        {
-          foreach (var label in split)
-          {
-            string color = label switch
-            {
-              "BRC20" => "#e0c444ff",
-              "MFMI18" => "#c71a99ff",
-              "MFMI19" => "#d18fd9",
-              "MFMI20" => "#83ba73ff",
-              "MFMI21" => "#bfb84eff",
-              "MFMI22" => "#99e63cff",
-              "MFMI23" => "#4d69f7ff",
-              "MFMI24" => "#6eb3db",
-              "MFMI25" => "#f25a46ff",
-              _ => "#1c7848ff"
-            };
-            <MudChip T="string" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
-          }
-        }
-      }
-    </p>
-    <p>
-      @{
-        if (generalPoints.TryGetValue(timeEntry.Data.Id, out int gp))
-        {
-          <span>+@gp</span>
-        }
-        if (carPoints.TryGetValue(timeEntry.Data.Id, out int cp))
-        {
-          <span>+@cp</span>
-        }
-      }
-    </p>
   }
-  @{
-    if (timeEntries.Count < PerPage)
-    {
-      for (int i = 10 - cnt; i >= 0; i--)
-      {
-        <p>@(10 - i)</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-        <p>---</p>
-      }
-    }
-  }
-</div>
-<p>
-  <span>Pages:</span>
-  @for (int i = 0; i < PageCnt; i++)
+  else
   {
-    int jj = i;
-    <MudButton Size="Size.Small" OnClick="() => { GoToPage(jj+1); }">@(jj + 1)</MudButton>
+    <MudDataGrid SortMode="SortMode.Single"
+                 T="TimeEntryListItem"
+                 Items="@_items"
+                 id="time-entry-list-table"
+                 ShowColumnOptions="false"
+                 RowsPerPage="20"
+                 QuickFilter="_quickFilter"
+                 RowStyleFunc="_rowStyleFunc">
+      <Columns>
+        <TemplateColumn Title="#">
+          <CellTemplate>
+            @{
+              if (this.filterCarCheckBox && this.filterCar != null)
+              {
+                <span>@context.Item.PlaceByCar</span>
+              }
+              else
+              {
+                <span>@context.Item.Place</span>
+              }
+            }
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
+        <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+        <TemplateColumn Title="Driver">
+
+          <CellTemplate>
+            <MudStack Row>
+              <span class="fi @($"fi-{@context.Item.Data.Driver.Nationality}")"></span>
+              <span>@context.Item.DisplayName</span>
+            </MudStack>
+          </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Car">
+          <CellTemplate>
+            <div class="car" data-car-id="@(context.Item.Data.Car.Id-1)"></div>
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
+        <TemplateColumn Title="Proofs">
+          <CellTemplate>
+            <p style="display: flex;">
+              @{
+                foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
+                {
+                  <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                }
+              }
+            </p>
+          </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Labels">
+          <CellTemplate>
+            <p>
+              @{
+                foreach (var label in context.Item.Labels)
+                {
+                  string color = label switch
+                  {
+                    "BRC20" => "#e0c444ff",
+                    "MFMI18" => "#c71a99ff",
+                    "MFMI19" => "#d18fd9",
+                    "MFMI20" => "#83ba73ff",
+                    "MFMI21" => "#bfb84eff",
+                    "MFMI22" => "#99e63cff",
+                    "MFMI23" => "#4d69f7ff",
+                    "MFMI24" => "#6eb3db",
+                    "MFMI25" => "#f25a46ff",
+                    _ => "#1c7848ff"
+                  };
+                  <MudChip T="string" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
+                }
+              }
+            </p>
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+
+      </Columns>
+      <PagerContent>
+        <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10,20,50]" />
+      </PagerContent>
+    </MudDataGrid>
+    <MudPaper>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
+        <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
+        <CarSelector @bind-SelectedCar="filterCar" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
+        <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
+      </MudStack>
+    </MudPaper>
+
   }
-</p>
 
-
-
+}
 
 @code {
 
-  private TimeEntry best;
-  private List<TimeEntry> timeEntries = [];
-  private Dictionary<Guid, int> generalPoints = [];
-  private Dictionary<Guid, int> carPoints = [];
   private int PageCnt;
+  private List<TimeEntryListItem> _items = [];
 
-  [SupplyParameterFromQuery] public int Page {get;set;}
+  public TimeEntry best;
+  public Dictionary<Guid, int> generalPoints = [];
+  public Dictionary<Guid, int> carPoints = [];
+
+  [SupplyParameterFromQuery] public int Page { get; set; }
   [Parameter] public int PerPage { get; set; }
   [Parameter] public int StageId { get; set; }
+  [Parameter] public Action OnLoaded { get; set; }
 
+  // async loading
+  private bool visible;
+  private bool dataLoaded;
+
+
+  // filters
+  public bool filterDriverCheckBox;
+  public string? filterDriverText;
+  public bool filterCarCheckBox;
+  public Car? filterCar;
+  public bool filterLabelsCheckBox;
+  public string? filterLabelsText;
+  public bool filterMfmiCheckBox;
+
+  protected override void OnInitialized()
+  {
+    visible = true;
+    dataLoaded = false;
+    base.OnInitialized();
+  }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
@@ -154,14 +173,38 @@
       return;
     }
 
-    timeEntries = await TimeEntryService.Get(StageId);
+
+    List<TimeEntry> timeEntries = await TimeEntryService.Get(StageId);
     PageCnt = (int)Math.Ceiling(((double)(timeEntries.Count())) / (double)PerPage);
     best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
 
+    var items = timeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
+
+    var places = PointsProvider.CalculatePlace(timeEntries);
+    var placesByCar = PointsProvider.CalculatePlaceByCar(timeEntries);
+
+    foreach (var itm in items)
+    {
+      itm.Place = places[itm.Data.Id];
+      itm.PlaceByCar = placesByCar[itm.Data.Id];
+    }
+
+    _items = items.OrderBy(x => x.Place).ToList();
+
+
     generalPoints = PointsProvider.CalculateGeneralStagePoints(timeEntries);
     carPoints = PointsProvider.CalculateCarStagePoints(timeEntries);
+
+    visible = false;
+    dataLoaded = true;
     StateHasChanged();
+    OnLoaded?.Invoke();
   }
+
+  private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>
+  {
+    return $"color: {(item.Verified ? "green" : "red")}";
+  };
 
   void GoToPage(int p)
   {
@@ -169,4 +212,79 @@
     NavigationManager.NavigateTo(newLocation);
   }
 
+
+  private Func<TimeEntryListItem, bool> _quickFilter => x =>
+   {
+     return
+    IsOkForDriverFilter(x) &&
+    IsOkForCarFilter(x) &&
+    IsOkForLabelsFilter(x) &&
+    IsOkForMfmiFilter(x);
+
+   };
+
+  private bool IsOkForDriverFilter(TimeEntryListItem item)
+  {
+    if (!filterDriverCheckBox) return true;
+    if (string.IsNullOrEmpty(filterDriverText)) return true;
+
+    return item.DisplayName.StartsWith(filterDriverText, StringComparison.InvariantCultureIgnoreCase);
+
+  }
+  private bool IsOkForCarFilter(TimeEntryListItem item)
+  {
+    if (!filterCarCheckBox) return true;
+    if (filterCar == null) return true;
+
+    return item.Data.CarId == filterCar.Id;
+
+  }
+
+  private bool IsOkForLabelsFilter(TimeEntryListItem item)
+  {
+    if (!filterLabelsCheckBox) return true;
+    if (string.IsNullOrEmpty(filterLabelsText)) return true;
+
+    var split = filterLabelsText.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    foreach (var s in split)
+    {
+      if (item.Labels.Any(l => string.Equals(l, s, StringComparison.InvariantCultureIgnoreCase)))
+        return true;
+    }
+    return false;
+  }
+
+  private bool IsOkForMfmiFilter(TimeEntryListItem item)
+  {
+    if (!filterMfmiCheckBox) return true;
+
+    if (item.Labels.Any(x => x.StartsWith("MFMI")))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  private Func<TimeEntryListItem, object> _sortByPoints => x =>
+    {
+      return (object)x.Points;
+    };
+
+  private string _rowStyleFunc(TimeEntryListItem item, int index)
+  {
+    string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+    if (name is not null)
+    {
+      if (item.DisplayName == name)
+      {
+        return "background-color: #ebff52;";
+      }
+    }
+
+    if (index % 2 != 0)
+    {
+      return "background-color: #a6a6a661;";
+    }
+    return string.Empty;
+  }
 }

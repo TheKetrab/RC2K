@@ -91,12 +91,48 @@ public class PointsProvider : IPointsProvider
         return res;
     }
 
-    private List<(TimeEntry timeEntry, int rank)> CalculateRanked(List<IGrouping<TimeOnly, TimeEntry>> bestOfDriverByTime)
+    public Dictionary<Guid, int> CalculatePlace(List<TimeEntry> timeEntries)
+    {
+        var standings =
+            timeEntries.OrderBy(x => x.Time)
+                       .GroupBy(x => x.Time)
+                       .ToList();
+
+        var ranked = CalculateRanked(standings);
+
+        return ranked.ToDictionary(x => x.timeEntry.Id, x => x.rank + 1);
+    }
+
+    public Dictionary<Guid, int> CalculatePlaceByCar(List<TimeEntry> timeEntries)
+    {
+        Dictionary<Guid, int> res = [];
+        foreach (var carGroup in timeEntries.GroupBy(x => x.CarId))
+        {
+            var timeEntriesPerCar = carGroup.ToList();
+            Car car = timeEntriesPerCar.First().Car!;
+
+            var standings =
+                timeEntriesPerCar.OrderBy(x => x.Time)
+                                 .GroupBy(x => x.Time)
+                                 .ToList();
+
+            var ranked = CalculateRanked(standings);
+
+            foreach (var r in ranked)
+            {
+                res.Add(r.timeEntry.Id, r.rank + 1);
+            }
+        }
+
+        return res;
+    }
+
+    private List<(TimeEntry timeEntry, int rank)> CalculateRanked(List<IGrouping<TimeOnly, TimeEntry>> standingsByTime)
     {
         List<(TimeEntry timeEntry, int rank)> ranked = [];        
 
         int rank = 0;
-        foreach (var g in bestOfDriverByTime)
+        foreach (var g in standingsByTime)
         {
             ranked.AddRange(g.Select(x => (x, rank)));
             rank += g.Count();
