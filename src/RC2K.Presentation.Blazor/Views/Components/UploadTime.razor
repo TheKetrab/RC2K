@@ -19,48 +19,35 @@
     <MudForm Class="gap-5">
       <div style="display: flex; gap: 1em;">
         <MudTextField T="int"
-        Label="min"
-        @bind-Value="UploadTimeModel.Min" />
+                      Label="min"
+                      @bind-Value="UploadTimeModel.Min" />
         <MudTextField T="int"
-        Label="sec"
-        @bind-Value="UploadTimeModel.Sec" />
+                      Label="sec"
+                      @bind-Value="UploadTimeModel.Sec" />
         <MudTextField T="int"
-        Label="cc"
-        @bind-Value="UploadTimeModel.Cc" />
+                      Label="cc"
+                      @bind-Value="UploadTimeModel.Cc" />
       </div>
       <MudTextField T="string"
-      Label="Driver name"
-      @bind-Value="UploadTimeModel.DriverName" />
+                    Label="Driver name"
+                    @bind-Value="UploadTimeModel.DriverName" />
 
-      <MudSelect T="Car"
-      @bind-Value="UploadTimeModel.Car"
-      Label="Car"
-      Variant="Variant.Outlined"
-      Dense="true">
-        @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
-        {
-          <MudSelectItem T="Car" Value="@car">
-            <div style="display: flex;">
-              <div class="car-big" data-car-id="@(car.Id-1)"></div>
-              <span>@($"A{car.Class} - {@car.Name}")</span>
-            </div>
-          </MudSelectItem>
-        }
-      </MudSelect>
+      <CarSelector SelectedCar="@UploadTimeModel.Car" />
+
       <MudTextField T="string"
-      Label="Proofs"
-      @bind-Value="UploadTimeModel.Proofs" />
+                    Label="Proofs"
+                    @bind-Value="UploadTimeModel.Proofs" />
 
       <MudButton Variant="Variant.Filled"
-      Color="Color.Primary"
-      Class="ml-auto"
-      OnClick="UploadClick">Upload</MudButton>
+                 Color="Color.Primary"
+                 Class="ml-auto"
+                 OnClick="UploadClick">Upload</MudButton>
     </MudForm>
   </MudPaper>
 
   <MudButton OnClick="OnCloseButtonClicked"
-  Class="ml-auto mr-n3 mb-1"
-  Color="Color.Error">Close</MudButton>
+             Class="ml-auto mr-n3 mb-1"
+             Color="Color.Error">Close</MudButton>
 
 </div>
 
@@ -69,7 +56,6 @@
 
 @code {
 
-  private List<Car> _cars;
 
   [Parameter] public int StageId { get; set; }
   [Parameter] public EventCallback<MouseEventArgs> OnCloseButtonClicked { get; set; }
@@ -84,11 +70,6 @@
     public Car Car { get; set; }
     public string Proofs { get; set; }
     public string DriverName { get; set; }
-  }
-
-  protected override async Task OnInitializedAsync()
-  {
-    _cars = await CarService.GetAll();
   }
 
   private async Task UploadClick()
@@ -107,7 +88,7 @@
       UploadTimeModel.Min,
       UploadTimeModel.Sec,
       UploadTimeModel.Cc,
-                  [],
+                    [],
       null
       );
   }
