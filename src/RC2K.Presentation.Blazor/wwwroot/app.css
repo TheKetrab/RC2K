@@ -327,3 +327,7 @@ h1:focus {
     .proof-item > span > svg {
         font-size: .75rem !important;
     }
+
+#time-entry-list-table .mud-table-cell {
+    padding: 0 3px;
+}
