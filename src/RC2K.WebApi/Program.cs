@@ -128,4 +128,26 @@ app.MapPost("/timeEntry/upload", async (UploadTimeEntryDto dto) =>
 }).WithOpenApi();
 
 
+app.MapPost("/bonusPoints/create", async (CreateBonusPointsDto dto) =>
+{
+    try
+    {
+        BonusPoints bonusPoints = new()
+        {
+            DriverId = dto.driverId,
+            Id = Guid.NewGuid(),
+            Comment = dto.comment,
+            Points = dto.points
+        };
+        var bonusPointsService = app.Services.GetService<IBonusPointsService>()!;
+        await bonusPointsService.Create(bonusPoints);
+    }
+    catch (Exception ex)
+    {
+
+    }
+
+}).WithOpenApi();
+
+
 app.Run();
