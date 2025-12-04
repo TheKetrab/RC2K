@@ -19,7 +19,7 @@ public class FillersBag : IFillersBag
                       IUserFiller userFiller,
                       IVerifyInfoFiller verifyInfoFiller)
     {
-        BonusPointsFiller = bonusPointsFiller,
+        BonusPointsFiller = bonusPointsFiller;
         DriverFiller = driverFiller;
         TimeEntryFiller = timeEntryFiller;
         UserFiller = userFiller;
