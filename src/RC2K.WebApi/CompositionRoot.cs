@@ -35,22 +35,27 @@ public static class CompositionRoot
         Database db = client.GetDatabase(database);
         builder.Services.AddSingleton(db);
 
+        builder.Services.AddSingleton<BonusPointsMapper>();
         builder.Services.AddSingleton<DriverMapper>();
         builder.Services.AddSingleton<UserMapper>();
         builder.Services.AddSingleton<TimeEntryMapper>();
         builder.Services.AddSingleton<VerifyInfoMapper>();
         builder.Services.AddSingleton<IFillersBag, FillersBag>();
 
+        builder.Services.AddSingleton<IBonusPointsRepository, BonusPointsRepository>();
         builder.Services.AddSingleton<IDriverRepository, DriverRepository>();
         builder.Services.AddSingleton<IUserRepository, UserRepository>();
         builder.Services.AddSingleton<ITimeEntryRepository, TimeEntryRepository>();
         builder.Services.AddSingleton<IVerifyInfoRepository, VerifyInfoRepository>();
 
 
+        builder.Services.AddSingleton<IBonusPointsFiller, BonusPointsFiller>();
         builder.Services.AddSingleton<IUserFiller, UserFiller>();
         builder.Services.AddSingleton<IDriverFiller, DriverFiller>();
         builder.Services.AddSingleton<IVerifyInfoFiller, VerifyInfoFiller>();
         builder.Services.AddSingleton<ITimeEntryFiller, TimeEntryFiller>();
+
+        builder.Services.AddSingleton<IBonusPointsService, BonusPointsService>();
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<ICarService, CarService>();
         builder.Services.AddSingleton<IStageService, StageService>();

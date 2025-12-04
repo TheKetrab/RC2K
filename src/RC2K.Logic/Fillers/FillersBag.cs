@@ -4,6 +4,7 @@ namespace RC2K.Logic.Fillers;
 
 public class FillersBag : IFillersBag
 {
+    public IBonusPointsFiller BonusPointsFiller { get; set; }
     public IDriverFiller DriverFiller { get; }
 
     public ITimeEntryFiller TimeEntryFiller { get; }
@@ -12,11 +13,13 @@ public class FillersBag : IFillersBag
 
     public IVerifyInfoFiller VerifyInfoFiller { get; }
 
-    public FillersBag(IDriverFiller driverFiller,
+    public FillersBag(IBonusPointsFiller bonusPointsFiller,
+                      IDriverFiller driverFiller,
                       ITimeEntryFiller timeEntryFiller,
                       IUserFiller userFiller,
                       IVerifyInfoFiller verifyInfoFiller)
     {
+        BonusPointsFiller = bonusPointsFiller;
         DriverFiller = driverFiller;
         TimeEntryFiller = timeEntryFiller;
         UserFiller = userFiller;

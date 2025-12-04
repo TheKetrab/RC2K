@@ -80,12 +80,14 @@ public static class BuilderConfiguration
         Database db = client.GetDatabase(database);
         builder.Services.AddSingleton(db);
 
+        builder.Services.AddScoped<BonusPointsMapper>();
         builder.Services.AddScoped<DriverMapper>();
         builder.Services.AddScoped<TimeEntryMapper>();
         builder.Services.AddScoped<UserMapper>();
         builder.Services.AddScoped<VerifyInfoMapper>();
 
 
+        builder.Services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
         builder.Services.AddScoped<IDriverRepository, DriverRepository>();
         builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -95,12 +97,14 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder RegisterLogicServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IBonusPointsFiller, BonusPointsFiller>();
         builder.Services.AddScoped<ITimeEntryFiller, TimeEntryFiller>();
         builder.Services.AddScoped<IDriverFiller, DriverFiller>();
         builder.Services.AddScoped<IUserFiller, UserFiller>();
         builder.Services.AddScoped<IVerifyInfoFiller, VerifyInfoFiller>();
 
         builder.Services.AddScoped<IFillersBag, FillersBag>();
+        builder.Services.AddScoped<IBonusPointsService, BonusPointsService>();
         builder.Services.AddScoped<IStageService, StageService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDriverService, DriverService>();
