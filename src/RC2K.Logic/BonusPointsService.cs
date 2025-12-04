@@ -26,4 +26,9 @@ public class BonusPointsService : IBonusPointsService
 
         return bonusPoints;
     }
+
+    public Task Create(BonusPoints bonusPoints)
+    {
+        return _bonusPointsRepository.Create(bonusPoints);
+    }
 }

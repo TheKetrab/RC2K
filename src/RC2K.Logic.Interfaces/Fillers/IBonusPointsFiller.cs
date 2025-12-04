@@ -2,7 +2,7 @@
 
 namespace RC2K.Logic.Interfaces.Fillers;
 
-public interface IVerifyInfoFiller
+public interface IBonusPointsFiller
 {
-    Task FillRecursive(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers);
+    Task FillRecursive(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers);
 }

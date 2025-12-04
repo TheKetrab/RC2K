@@ -34,6 +34,12 @@ public class PointsProvider : IPointsProvider
         10,8,6,4,2
     ];
 
+    // not used, but stored to be guide for points additions
+    internal static readonly int[] _mfmiPoints = [
+        500,400,300,250,200,
+        150,100,75,50,25
+    ];
+
     internal static readonly int[] _bonusCarPoints = _a5carPoints;
 
     public Dictionary<Guid, int> CalculateCarStagePoints(List<TimeEntry> timeEntries)
