@@ -30,8 +30,29 @@
         var result;
         if (!path) {
             const coordinates = waypoints.map(p => `${p.lng},${p.lat}`).join(';');
-            routeCoordinates = await this.getRoute(coordinates, api);
-            result = routeCoordinates.map(x => x.join(',')).join(';');
+            if (coordinates.indexOf("-1,-1") > 0) {
+                // multi-road
+                result = "";
+                var parts = coordinates.split(';-1,-1;');
+                for (let i = 0; i < parts.length; i++) {
+
+                    if (i % 2 == 0) { // waypoints
+                        var coords = await this.getRoute(parts[i], api);
+                        if (i != 0) {
+                            result += ";";
+                        }
+                        result += coords.map(x => x.join(',')).join(';');
+                    }
+                    else { // explicit path
+                        result += ";" + parts[i];
+                    }
+                }
+                routeCoordinates = result.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+            }
+            else {
+                routeCoordinates = await this.getRoute(coordinates, api);
+                result = routeCoordinates.map(x => x.join(',')).join(';');
+            }
         } else {
             routeCoordinates = path.split(';').map(x => x.split(',').map(y => parseFloat(y)));
             result = null;
@@ -55,7 +76,9 @@
         var osrmUrl;
         const osrmApiQueryParams = 'overview=full&geometries=geojson&generate_hints=false&alternatives=true'; 
         if (api == 'bike') {
-            osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordinates}?${osrmApiQueryParams}`;
+            osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/bike/${coordinates}?${osrmApiQueryParams}`;
+        } else if (api == 'foot') {
+            osrmUrl = `https://routing.openstreetmap.de/routed-foot/route/v1/foot//${coordinates}?${osrmApiQueryParams}`;
         } else {
             osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordinates}?${osrmApiQueryParams}`;
         }
