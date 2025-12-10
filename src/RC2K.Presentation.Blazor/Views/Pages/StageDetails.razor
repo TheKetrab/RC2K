@@ -51,7 +51,7 @@
           <br />
           <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
           <div style="max-width: @((int)_stageDetails.Length * 2)%;">
-          <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])"  />
+            <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])"  />
           </div>
           <br />
           <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
@@ -166,9 +166,6 @@
     _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
     _path = await StageService.GetPath(Id);
-    //_waypoints = [
-    //];
-    //string rawStr = string.Join(";", _waypoints.Select(x => string.Join(",", x.Select(d => Math.Round(d,7)))));
 
     _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
     _name = stage.StageData.Name;
