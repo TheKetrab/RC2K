@@ -18,9 +18,9 @@ public class TimeEntryListItem
     public bool Verified => this.Data.VerifyInfo is not null;
     public string TimeDisplay => this.Data.Time.ToString("m:ss.ff");
     public TimeSpan Gap => this.Data.Time - list.best.Time;
-    public string GapDisplay => Gap == TimeSpan.Zero ? "" : Gap.ToString("m\\:ss\\.ff");
-    public string UploadTimeDisplay => this.Data.UploadTime.ToString("yyyy/MM/dd");
-    public IEnumerable<string> Labels => this.Data.Labels.Split(",");
+    public string GapDisplay => Gap == TimeSpan.Zero ? "" : "-" + Gap.ToString("m\\:ss\\.ff");
+    public string UploadTimeDisplay => this.Data.UploadTime == new DateTime(1,1,1) ? "" : this.Data.UploadTime.ToString("yyyy/MM/dd");
+    public IEnumerable<string> Labels => this.Data.Labels.Split(",").Where(x => !string.IsNullOrEmpty(x));
 
     public string DisplayName => Data.Driver.Known ? Data.Driver.User!.Name : Data.Driver.Name;
 
