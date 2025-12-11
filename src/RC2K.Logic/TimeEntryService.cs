@@ -1,3 +1,4 @@
+﻿using Microsoft.Extensions.Logging;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
@@ -9,12 +10,20 @@ public class TimeEntryService : ITimeEntryService
 {
     private readonly ITimeEntryRepository _timeEntryRepository;
     private readonly IFillersBag _fillers;
+    private readonly ILogger<TimeEntryService> _logger;
 
     public TimeEntryService(ITimeEntryRepository timeEntryRepository,
-                            IFillersBag fillers)
+                            IFillersBag fillers,
+                            ILogger<TimeEntryService> logger)
     {
+        _logger = logger;
         _timeEntryRepository = timeEntryRepository;
         _fillers = fillers;
+
+        _timeEntryRepository.RequestUnitsHandler += (s, e) =>
+        {
+            _logger.LogInformation($"RU: {e.Item2}");
+        };
     }
 
     public async Task<List<TimeEntry>> Get(int stageId, int? carId = null)

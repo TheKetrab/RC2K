@@ -18,12 +18,37 @@ using RC2K.DataAccess.Interfaces.Cache;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Database.Repositories;
 using RC2K.Presentation.Blazor.AuthProxy;
+using Serilog;
+using Serilog.Events;
+using Microsoft.AspNetCore.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Metrics;
 
 
 namespace RC2K.Presentation.Blazor;
 
 public static class BuilderConfiguration
 {
+    public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
+    {
+
+
+        builder.Host.UseSerilog((ctx, lc) => lc
+            .WriteTo.Console());
+
+        var otel = builder.Services.AddOpenTelemetry();
+        otel.ConfigureResource(resource => resource
+            .AddService(serviceName: builder.Environment.ApplicationName));
+
+        otel.WithMetrics(metrics => metrics
+            .AddAspNetCoreInstrumentation()
+            .AddMeter("Microsoft.AspNetCore.Hosting")
+            .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+            .AddMeter("System.Net.Http")
+            .AddMeter("System.Net.NameResolution"));
+
+        return builder;
+    }
     public static WebApplicationBuilder ConfigureRazor(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorComponents()
