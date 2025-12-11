@@ -1,4 +1,4 @@
-﻿using RC2K.DataAccess.Interfaces.Repositories;
+using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
@@ -23,10 +23,7 @@ public class TimeEntryService : ITimeEntryService
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value)
             : await _timeEntryRepository.GetByStageId(stageId);
 
-        // TODO handle concurency
-        FillingContext context = new();
-        Task[] tasks = timeEntries.Select(x => _fillers.TimeEntryFiller.FillRecursive(x, context, _fillers)).ToArray();
-        await Task.WhenAll(tasks);
+        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
 
         return timeEntries;
     }

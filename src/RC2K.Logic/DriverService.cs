@@ -23,12 +23,7 @@ public class DriverService : IDriverService
     {
         Dictionary<Guid, string> res = [];
         var drivers = await _driverRepository.GetAll();
-
-        FillingContext context = new();
-        foreach (var driver in drivers)
-        {
-            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
-        }
+        await drivers.FillFullData(_fillers.DriverFiller, _fillers);
 
         foreach (var driver in drivers)
         {

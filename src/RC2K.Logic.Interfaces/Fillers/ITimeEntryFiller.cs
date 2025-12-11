@@ -2,7 +2,5 @@
 
 namespace RC2K.Logic.Interfaces.Fillers;
 
-public interface ITimeEntryFiller
-{
-    Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers);
-}
+public interface ITimeEntryFiller : IFiller<TimeEntry>;
+
