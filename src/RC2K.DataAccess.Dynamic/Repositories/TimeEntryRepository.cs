@@ -3,6 +3,7 @@ using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Dynamic.Models;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using System.Collections;
 using System.Collections.Generic;
 using static RC2K.Utils.Utils;
 
@@ -12,6 +13,7 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
     : CosmosRepository<TimeEntry, TimeEntryModel, TimeEntryMapper>(database, mapper), ITimeEntryRepository
 {
     public override string ContainerName => "TimeEntries";
+
 
     public override Task<List<TimeEntry>> GetAll()
     {
@@ -25,16 +27,7 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
             SELECT * FROM c WHERE c.stageId = @stageId")
             .WithParameter("@stageId", stageId);
 
-        using var it = Container.GetItemQueryIterator<TimeEntryModel>(query);
-
-        List<TimeEntry> result = new();
-        while (it.HasMoreResults)
-        {
-            var val = (await it.ReadNextAsync()).Resource;
-            result.AddRange(val.Select(Mapper.ToDomainModel));
-        }
-
-        return result;
+        return await FetchAll(query);
     }
 
     public async Task<List<TimeEntry>> GetByStageIdAndCarId(int stageId, int carId)
@@ -44,16 +37,7 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
             .WithParameter("@stageId", stageId)
             .WithParameter("@carId", carId);
 
-        using var it = Container.GetItemQueryIterator<TimeEntryModel>(query);
-
-        List<TimeEntry> result = new();
-        while (it.HasMoreResults)
-        {
-            var val = (await it.ReadNextAsync()).Resource;
-            result.AddRange(val.Select(Mapper.ToDomainModel));
-        }
-
-        return result;
+        return await FetchAll(query);
     }
 
     public async Task<List<TimeEntry>> GetByStageIdAndCarIdAndDriverIdAndTime(int stageId, int carId, Guid driverId, TimeOnly time)
@@ -71,16 +55,6 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
             .WithParameter("@driverId", driverId)
             .WithParameter("@centiseconds", centiseconds);
 
-        using var it = Container.GetItemQueryIterator<TimeEntryModel>(query);
-
-        List<TimeEntry> result = new();
-        while (it.HasMoreResults)
-        {
-            var val = (await it.ReadNextAsync()).Resource;
-            result.AddRange(val.Select(Mapper.ToDomainModel));
-        }
-
-        return result;
+        return await FetchAll(query);
     }
-
 }

@@ -14,6 +14,10 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public abstract string ContainerName { get; }
 
+    public event EventHandler<(string,double)>? RequestUnitsHandler;
+
+    private ItemQueryIteratorHelper _iterator = new();
+
     protected CosmosRepository(Database database, TMapper mapper)
     {
         Database = database;
@@ -31,27 +35,20 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         return Mapper.ToDomainModel(model);
     }
 
-   
+    protected async Task<List<TEntity>> FetchAll(QueryDefinition query)
+    {
+        using var it = Container.GetItemQueryIterator<TModel>(query);
+        var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel);
+        RequestUnitsHandler?.Invoke(this, (query.QueryText, ru));
+        return result;
+    }
 
     public virtual async Task<List<TEntity>> GetAll()
     {
         var query = new QueryDefinition(@"
             SELECT * FROM c");
 
-        using var it = Container.GetItemQueryIterator<TModel>(query);
-
-        List<TEntity> result = new();
-        while (it.HasMoreResults)
-        {
-            var response = await it.ReadNextAsync();
-
-            foreach (var v in response)
-            {
-                result.Add(Mapper.ToDomainModel(v));
-            }
-        }
-
-        return result;
+        return await FetchAll(query);
     }
 
     public virtual async Task Create(TEntity entity)

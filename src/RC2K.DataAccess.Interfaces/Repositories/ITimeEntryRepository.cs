@@ -4,6 +4,7 @@ namespace RC2K.DataAccess.Interfaces.Repositories;
 
 public interface ITimeEntryRepository
 {
+    event EventHandler<(string, double)>? RequestUnitsHandler;
     Task Create(TimeEntry entity);
     Task<List<TimeEntry>> GetAll();
     Task<TimeEntry?> GetById(Guid id);
