@@ -154,9 +154,10 @@ public static class BuilderConfiguration
     {
         builder.Services.AddScoped<RallyDbContext>();
 
-        builder.Services.AddScoped<IMemoryCache, MemoryCache>();
-        builder.Services.AddScoped<ICarCache, CarCache>();
-        builder.Services.AddScoped<IStageCache, StageCache>();
+        builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+        builder.Services.AddSingleton<ICarCache, CarCache>();
+        builder.Services.AddSingleton<IStageCache, StageCache>();
+
         builder.Services.AddScoped<ICarRepository, CarRepository>();
         builder.Services.AddScoped<IStageRepository, StageRepository>();
         builder.Services.AddScoped<IRallyUoW, RallyUoW>();

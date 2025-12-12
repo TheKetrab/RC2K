@@ -16,7 +16,7 @@ public class CarService : ICarService
     public Task<List<Car>> GetAll() => _rallyUoW.Cars.GetAll();
 
     public Task<List<Car>> GetAllByClass(int @class) =>
-        _rallyUoW.Cars.Get(x => x.Class == @class);
+        _rallyUoW.Cars.GetAllByClass(@class);
 
     public Task<List<Car>> GetBonusCars() =>
         _rallyUoW.Cars.GetBonusCars();
