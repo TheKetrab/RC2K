@@ -111,6 +111,16 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<UserMapper>();
         builder.Services.AddScoped<VerifyInfoMapper>();
 
+        builder.Services.AddScoped(
+            typeof(IEnvironmentProvider),
+            builder.Configuration["ASPNETCORE_ENVIRONMENT"] switch
+            {
+                "Development" => typeof(DevEnvironmentProvider),
+                "Production" => typeof(ProdEnvironmentProvider),
+                _ => throw new Exception(
+                    $"Unknown environment: {builder.Configuration["ASPNETCORE_ENVIRONMENT"]}"
+                    + " (Set up proper env var ASPNETCORE_ENVIRONMENT")
+            });
 
         builder.Services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
         builder.Services.AddScoped<IDriverRepository, DriverRepository>();

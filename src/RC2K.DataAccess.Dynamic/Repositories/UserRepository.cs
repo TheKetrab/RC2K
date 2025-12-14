@@ -1,17 +1,20 @@
 ﻿using Microsoft.Azure.Cosmos;
 using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Dynamic.Models;
+using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel.Exceptions;
+using User = RC2K.DomainModel.User;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
-public class UserRepository(Database database, UserMapper mapper)
-    : CosmosRepository<RC2K.DomainModel.User, UserModel, UserMapper>(database, mapper), IUserRepository
+public class UserRepository(Database database, UserMapper mapper, IEnvironmentProvider envProvider)
+    : CosmosRepository<User, UserModel, UserMapper>(database, mapper, envProvider)
+    , IUserRepository
 {
-    public override string ContainerName => "Users";
+    public override string EntityName => "Users";
 
-    public override async Task Create(DomainModel.User entity)
+    public override async Task Create(User entity)
     {
         try
         {
@@ -28,7 +31,7 @@ public class UserRepository(Database database, UserMapper mapper)
         }
     }
 
-    public async Task<DomainModel.User?> GetByName(string name)
+    public async Task<User?> GetByName(string name)
     {
         // TODO query by name
 

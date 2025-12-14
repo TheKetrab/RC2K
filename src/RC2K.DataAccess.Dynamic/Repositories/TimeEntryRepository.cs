@@ -1,18 +1,18 @@
 ﻿using Microsoft.Azure.Cosmos;
 using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Dynamic.Models;
+using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
-using System.Collections;
-using System.Collections.Generic;
 using static RC2K.Utils.Utils;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
-public class TimeEntryRepository(Database database, TimeEntryMapper mapper)
-    : CosmosRepository<TimeEntry, TimeEntryModel, TimeEntryMapper>(database, mapper), ITimeEntryRepository
+public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnvironmentProvider envProvider)
+    : CosmosRepository<TimeEntry, TimeEntryModel, TimeEntryMapper>(database, mapper, envProvider)
+    , ITimeEntryRepository
 {
-    public override string ContainerName => "TimeEntries";
+    public override string EntityName => "TimeEntries";
 
 
     public override Task<List<TimeEntry>> GetAll()

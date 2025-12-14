@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 using RC2K.DataAccess.Dynamic.Mappers;
+using RC2K.DataAccess.Interfaces;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
@@ -12,23 +13,28 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     protected Container Container { get; }
     protected TMapper Mapper { get; }
 
-    public abstract string ContainerName { get; }
+    public abstract string EntityName { get; }
 
     public event EventHandler<(string,double)>? RequestUnitsHandler;
 
     private ItemQueryIteratorHelper _iterator = new();
 
-    protected CosmosRepository(Database database, TMapper mapper)
+    protected CosmosRepository(
+        Database database,
+        TMapper mapper,
+        IEnvironmentProvider envProvider)
     {
         Database = database;
-        Container = Database.GetContainer(ContainerName);
         Mapper = mapper;
+
+        string containerName = envProvider.ResolveContainerName(EntityName);
+        Container = Database.GetContainer(containerName);
     }
 
     public virtual async Task<TEntity?> GetById(Guid id)
     {
         string key = id.ToString();
-        var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(ContainerName));
+        var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(EntityName));
         
         var model = response.Resource;
 
@@ -65,6 +71,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public virtual async Task Delete(string id)
     {
-        await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(ContainerName));
+        await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(EntityName));
     }
 }
