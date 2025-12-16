@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Interfaces;
+using RC2K.Extensions;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
@@ -45,7 +46,11 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     {
         using var it = Container.GetItemQueryIterator<TModel>(query);
         var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel);
-        RequestUnitsHandler?.Invoke(this, (query.QueryText, ru));
+        
+        string queryText = query.QueryText.Linearize();
+        string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
+        RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
+        
         return result;
     }
 

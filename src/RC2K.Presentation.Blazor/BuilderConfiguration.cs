@@ -1,51 +1,41 @@
+
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
-using RC2K.DataAccess.Database;
-using MudBlazor.Services;
-using RC2K.Presentation.Blazor.ViewModels.Layout;
-using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos;
-using RC2K.DataAccess.Dynamic.Mappers;
-using RC2K.DataAccess.Interfaces.Repositories;
-using RC2K.DataAccess.Dynamic.Repositories;
-using RC2K.Logic.Fillers;
-using RC2K.Logic.Interfaces.Fillers;
-using RC2K.Logic.Interfaces;
-using RC2K.Logic;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using MudBlazor.Services;
+using RC2K.DataAccess.Database;
 using RC2K.DataAccess.Database.Cache;
-using RC2K.DataAccess.Interfaces.Cache;
-using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Database.Repositories;
+using RC2K.DataAccess.Dynamic.EnvironmentProviders;
+using RC2K.DataAccess.Dynamic.Mappers;
+using RC2K.DataAccess.Dynamic.Repositories;
+using RC2K.DataAccess.Interfaces;
+using RC2K.DataAccess.Interfaces.Cache;
+using RC2K.DataAccess.Interfaces.Repositories;
+using RC2K.Logic;
+using RC2K.Logic.Fillers;
+using RC2K.Logic.Interfaces;
+using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Presentation.Blazor.AuthProxy;
+using RC2K.Presentation.Blazor.ViewModels.Layout;
 using Serilog;
-using Serilog.Events;
-using Microsoft.AspNetCore.Hosting;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Metrics;
+using Serilog.Exceptions;
 
 
 namespace RC2K.Presentation.Blazor;
 
 public static class BuilderConfiguration
 {
+
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
     {
-
-
         builder.Host.UseSerilog((ctx, lc) => lc
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.WithExceptionDetails()
+            .Enrich.WithEnvironmentName()
             .WriteTo.Console());
-
-        var otel = builder.Services.AddOpenTelemetry();
-        otel.ConfigureResource(resource => resource
-            .AddService(serviceName: builder.Environment.ApplicationName));
-
-        otel.WithMetrics(metrics => metrics
-            .AddAspNetCoreInstrumentation()
-            .AddMeter("Microsoft.AspNetCore.Hosting")
-            .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-            .AddMeter("System.Net.Http")
-            .AddMeter("System.Net.NameResolution"));
 
         return builder;
     }

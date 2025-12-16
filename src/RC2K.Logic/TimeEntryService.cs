@@ -22,12 +22,12 @@ public class TimeEntryService : ITimeEntryService
 
         _timeEntryRepository.RequestUnitsHandler += (s, e) =>
         {
-            _logger.LogInformation($"RU: {e.Item2}");
+            _logger.LogInformation($"RU: {e.Item2} for query: {e.Item1}");
         };
     }
 
     public async Task<List<TimeEntry>> Get(int stageId, int? carId = null)
-    {    
+    {
         var timeEntries = carId is not null
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value)
             : await _timeEntryRepository.GetByStageId(stageId);
