@@ -1,4 +1,5 @@
-﻿using RC2K.DataAccess.Interfaces.Repositories;
+﻿using Microsoft.Extensions.Logging;
+using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
@@ -9,24 +10,29 @@ public class TimeEntryService : ITimeEntryService
 {
     private readonly ITimeEntryRepository _timeEntryRepository;
     private readonly IFillersBag _fillers;
+    private readonly ILogger<TimeEntryService> _logger;
 
     public TimeEntryService(ITimeEntryRepository timeEntryRepository,
-                            IFillersBag fillers)
+                            IFillersBag fillers,
+                            ILogger<TimeEntryService> logger)
     {
+        _logger = logger;
         _timeEntryRepository = timeEntryRepository;
         _fillers = fillers;
+
+        _timeEntryRepository.RequestUnitsHandler += (s, e) =>
+        {
+            _logger.LogInformation($"RU: {e.Item2} for query: {e.Item1}");
+        };
     }
 
     public async Task<List<TimeEntry>> Get(int stageId, int? carId = null)
-    {    
+    {
         var timeEntries = carId is not null
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value)
             : await _timeEntryRepository.GetByStageId(stageId);
 
-        // TODO handle concurency
-        FillingContext context = new();
-        Task[] tasks = timeEntries.Select(x => _fillers.TimeEntryFiller.FillRecursive(x, context, _fillers)).ToArray();
-        await Task.WhenAll(tasks);
+        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
 
         return timeEntries;
     }

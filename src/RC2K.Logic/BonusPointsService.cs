@@ -19,11 +19,7 @@ public class BonusPointsService : IBonusPointsService
     public async Task<List<BonusPoints>> GetAll()
     {
         var bonusPoints = await _bonusPointsRepository.GetAll();
-
-        FillingContext context = new();
-        Task[] tasks = bonusPoints.Select(x => _fillers.BonusPointsFiller.FillRecursive(x, context, _fillers)).ToArray();
-        await Task.WhenAll(tasks);
-
+        await bonusPoints.FillFullData(_fillers.BonusPointsFiller, _fillers);
         return bonusPoints;
     }
 

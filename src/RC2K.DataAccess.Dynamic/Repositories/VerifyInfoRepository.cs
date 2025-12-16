@@ -7,8 +7,9 @@ using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
-public class VerifyInfoRepository(Database database, VerifyInfoMapper mapper)
-    : CosmosRepository<VerifyInfo, VerifyInfoModel, VerifyInfoMapper>(database, mapper), IVerifyInfoRepository
+public class VerifyInfoRepository(Database database, VerifyInfoMapper mapper, IEnvironmentProvider envProvider)
+    : CosmosRepository<VerifyInfo, VerifyInfoModel, VerifyInfoMapper>(database, mapper, envProvider)
+    , IVerifyInfoRepository
 {
-    public override string ContainerName => "VerifyInfos";
+    public override string EntityName => "VerifyInfos";
 }
