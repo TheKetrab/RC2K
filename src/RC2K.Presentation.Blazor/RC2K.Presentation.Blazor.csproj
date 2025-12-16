@@ -42,6 +42,7 @@
     <EFStartupProject>..\RC2K.Presentation.Blazor</EFStartupProject>
     <EFMigrationsProject>..\RC2K.DataAccess.Database</EFMigrationsProject>
     <UserSecretsId>7e4e3bb7-255b-4c1b-9613-916ad6e45bcd</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 	
   <ItemGroup>
