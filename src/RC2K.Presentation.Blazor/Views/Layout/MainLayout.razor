@@ -5,8 +5,22 @@
     <Header />
     <main>
         <BreadcrumbsNavigation />
-        <article class="content">@Body</article>
+        <article style="" class="content">@Body</article>
     </main>
+    @* footer *@
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudGrid Justify="Justify.FlexEnd">
+            <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
+                <MudText Typo="Typo.body2" Color="Color.Secondary" class="mr-5">
+                    Designed and Developed by 
+                    <MudLink href="https://github.com/theketrab" Color="Color.Primary" Class="ms-1">
+                        TheKetrab
+                    </MudLink> 
+                    &copy; 2025
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
 </div>
 
 <div id="blazor-error-ui">

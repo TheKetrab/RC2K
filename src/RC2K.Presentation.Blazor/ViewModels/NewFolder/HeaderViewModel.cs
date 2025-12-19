@@ -21,15 +21,15 @@ public class HeaderViewModel : BaseViewModel
             ("Stena Line Ulster Rally","stages/stena"),
             ("SONY Manx International Rally","stages/sony"),
         ] },
-        new MenuItem() { Item = "Contests", ItemLink = "/contests", Icon = Icon.Contest, Subitems = [
-            ("MFMI23","contests/mfmi23"),
-            ("The White Heat","contests/twh"),
-            ("MFMI22","contests/mfmi22"),
-        ] },
-        new MenuItem() { Item = "Mods", ItemLink = "/mods", Icon = Icon.Mod, Subitems = [
-            ("Skins","mods/skins"),
-            ("Maps","mods/maps"),
-        ] },
+        //new MenuItem() { Item = "Contests", ItemLink = "/contests", Icon = Icon.Contest, Subitems = [
+        //    ("MFMI23","contests/mfmi23"),
+        //    ("The White Heat","contests/twh"),
+        //    ("MFMI22","contests/mfmi22"),
+        //] },
+        //new MenuItem() { Item = "Mods", ItemLink = "/mods", Icon = Icon.Mod, Subitems = [
+        //    ("Skins","mods/skins"),
+        //    ("Maps","mods/maps"),
+        //] },
     ];
 
 

@@ -19,7 +19,7 @@
   {
     <div style="position: relative;">
       <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
-      <MudOverlay Visible="visible" Absolute="true">
+      <MudOverlay Visible="overlayVisible" Absolute="true">
         <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
       </MudOverlay>
     </div>
@@ -147,7 +147,7 @@
   [Parameter] public Action OnLoaded { get; set; }
 
   // async loading
-  private bool visible;
+  private bool overlayVisible;
   private bool dataLoaded;
 
 
@@ -162,18 +162,24 @@
 
   protected override void OnInitialized()
   {
-    visible = true;
-    dataLoaded = false;
+    OpenLoadingOverlay();
     base.OnInitialized();
   }
 
-  protected override async Task OnAfterRenderAsync(bool firstRender)
+  private void OpenLoadingOverlay()
   {
-    if (!firstRender)
-    {
-      return;
-    }
+    overlayVisible = true;
+    dataLoaded = false;
+  }
+  private void CloseLoadingOverlay()
+  {
+    overlayVisible = false;
+    dataLoaded = true;
+  }
 
+  public async Task ReloadTimeEntries()
+  {
+    OpenLoadingOverlay();
     using (Operation.Time("Fetch TimeEntryList | StageId = {StageId}", StageId))
     {
 
@@ -197,12 +203,21 @@
 
       generalPoints = PointsProvider.CalculateGeneralStagePoints(timeEntries);
       carPoints = PointsProvider.CalculateCarStagePoints(timeEntries);
-
-      visible = false;
-      dataLoaded = true;
-      StateHasChanged();
-      OnLoaded?.Invoke();
     }
+
+    CloseLoadingOverlay();
+    StateHasChanged();
+    OnLoaded?.Invoke();
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender)
+    {
+      return;
+    }
+
+    await ReloadTimeEntries();
   }
 
   private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>
@@ -281,13 +296,13 @@
     {
       if (item.DisplayName == name)
       {
-        return "background-color: #ebff52;";
+        return $"background-color: {App.MyColors.complementary200};";
       }
     }
 
     if (index % 2 != 0)
     {
-      return "background-color: #a6a6a661;";
+      return $"background-color: {App.MyColors.primary50};";
     }
     return string.Empty;
   }

@@ -33,27 +33,29 @@
 
     <div class="item left stage-info">
       <div class="card" style="position: relative;">
-        <div class="card-header">Stage details</div>
+        <div class="card-header">
+          <h3>Stage details</h3>
+        </div>
         <div class="card-body">
           <div style="position: absolute; top: 0; right: 0;">
             @if (IsArcade)
             {
-              <a href="@NavigationManager.GetUriWithQueryParameter("direction","Simulation")">Not arcade version</a>
+              <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">Simulation version</MudButton>
+              
             }
             else
             {
-              <a href="@NavigationManager.GetUriWithQueryParameter("direction","Arcade")">Arcade version</a>
+              <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">Arcade version</MudButton>
             }
           </div>
-          <h2>@($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")</h2>
-          <br />
+          <h1 Style=@($"color: {@App.MyColors.primary700}")>
+              @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
+          </h1>
           <p>Length: @_stageDetails.Length</p>
-          <br />
           <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
           <div style="max-width: @((int)_stageDetails.Length * 2)%;">
             <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])"  />
           </div>
-          <br />
           <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
         </div>
         <div class="card-footer"></div>
@@ -66,7 +68,7 @@
     </div>
     <div class="item right stage-description">
       <div class="card">
-        <div class="card-header">Description</div>
+        <div class="card-header"><h3>Description</h3></div>
         <div class="card-body">
           @_description
         </div>
@@ -75,12 +77,12 @@
     </div>
     <div class="item left stage-times">
       <div class="card">
-        <div class="card-header">Records</div>
+        <div class="card-header"><h3>Records</h3></div>
         <div class="card-body">
-          <TimeEntryList PerPage="20" StageId="@stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
+          <TimeEntryList PerPage ="20" StageId="@stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
         </div>
-        <div class="card-footer" style="display: flex; flex-direction: row-reverse; width: 100%;">
-          <MudButton OnClick="OpenUploadDialog">Upload time</MudButton>
+        <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
+          <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
         </div>
 
       </div>
@@ -106,7 +108,16 @@
 
 @code {
 
-
+  private void GoToArcadeVersion()
+  {
+    string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
+    NavigationManager.NavigateTo(uri, forceLoad: true);
+  }
+  private void GoToSimulationVersion()
+  {
+    string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
+    NavigationManager.NavigateTo(uri, forceLoad: true);
+  }
   private int stageId;
 
   private string _api;
@@ -135,7 +146,6 @@
 
   private List<DomainModel.TimeEntry> _timeEntries = new();
 
-
   private string _directionParameter;
   [SupplyParameterFromQuery(Name = "direction")]
   public string DirectionParameter
@@ -159,6 +169,7 @@
   private string? _path;
   protected override async Task OnInitializedAsync()
   {
+    //timeEntryListRef.ReloadTimeEntries();
 
     var stage = await StageService.GetByCode(Id, Direction);
     stageId = stage.Id;
