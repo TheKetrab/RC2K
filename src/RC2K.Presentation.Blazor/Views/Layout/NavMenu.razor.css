@@ -31,6 +31,7 @@ a {
 
 
 .menu-item > ul {
+
     visibility: hidden;
     opacity: 0%;
     list-style-type: none;
@@ -40,7 +41,7 @@ a {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding-bottom: 5px;
-    background-color: var(--mud-palette-primary-lighten2);
+    background-color: var(--gray100);
     position: absolute;
     top: 100%;
     left: 50%;

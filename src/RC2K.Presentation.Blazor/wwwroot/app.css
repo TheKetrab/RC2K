@@ -1,11 +1,63 @@
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 :root {
-    --mud-palette-primary-lighten2: rgb(239 238 255);
+    --primary50: #e8eaf7;
+    --primary100: #c5c9ea;
+    --primary200: #a0a6dc;
+    --primary300: #7a83ce;
+    --primary400: #5d67c3;
+    --primary500: #424cb8;
+    --primary600: #3c44ae;
+    --primary700: #333aa2;
+    --primary800: #2b3096;
+    --primary900: #1d1d82;
+    --complementary50: #fafbe8;
+    --complementary100: #f2f3c5;
+    --complementary200: #e9eca0;
+    --complementary300: #e1e57b;
+    --complementary400: #dade60;
+    --complementary500: #d4d946;
+    --complementary600: #c6c741;
+    --complementary700: #b4b139;
+    --complementary800: #a29b33;
+    --complementary900: #847528;
+    --primary: var(--primary700);
+    --secondary: var(--complementary800);
+    
+    --gray50: #FAFAFA;
+    --gray100: #F5F5F5;
+    --gray200: #EEEEEE;
+    --gray300: #E0E0E0;
+    --gray400: #BDBDBD;
+    --gray500: #757575;
+    --gray600: #757575;
+    --gray700: #616161;
+    --gray800: #424242;
+    --gray900: #212121;
+    
+    
+    --header-height: 3em;
+    --header-margin-top: .5em;
 }
 
+.pane {
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    border: 1px solid rgba(255, 255, 255, 0.74);
+}
+
+.pane2 {
+    background: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+}
 
 a, .btn-link {
     color: #006bb7;
@@ -23,6 +75,9 @@ a, .btn-link {
 
 .content {
     padding-top: 1.1rem;
+    margin-top: 50px;
+    padding: 10px;
+    padding-top: 30px;
 }
 
 h1:focus {
