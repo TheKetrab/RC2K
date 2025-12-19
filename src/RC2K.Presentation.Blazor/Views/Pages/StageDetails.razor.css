@@ -4,9 +4,10 @@
     margin: auto auto;
     border-radius: 0.375rem;
     padding: 0.5rem 0;
-    /*background-color: red;*/
     box-shadow: 0px 0.5px 0.7px rgba(0, 0, 0, 0.072), 0px 1.6px 2.5px rgba(0, 0, 0, 0.108), 0px 7px 11px rgba(0, 0, 0, 0.18);
-    background-color: #a79bff70;
+    /* background-color: #a79bff70; */
+    background-color: var(--primary50);
+    /* background-color: red; */
 }
 
 .card-body,
@@ -29,7 +30,7 @@
     .times-table > *:nth-child(18n+16),
     .times-table > *:nth-child(18n+17),
     .times-table > *:nth-child(18n+18) {
-        background-color: #a6a6a661;
+        background-color: var(--primary100);
     }
 
     .th-header {
