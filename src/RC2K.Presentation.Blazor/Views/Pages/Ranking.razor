@@ -5,7 +5,33 @@
 @using RC2K.DomainModel
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels;
-@inject ITimeEntryService TimeEntryService
+
+@inject IRankingService RankingService;
+
+
+
+@code
+{
+  protected override async Task OnInitializedAsync()
+  {
+    var result = await RankingService.GetLatest();
+    return;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @inject ITimeEntryService TimeEntryService
 @inject IPointsProvider PointsProvider
 @inject IStageService StageService
 @inject IBonusPointsService BonusPointsService
@@ -86,3 +112,4 @@
   }
 
 }
+ *@

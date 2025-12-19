@@ -1,0 +1,310 @@
+﻿@* @using RC2K.DomainModel
+@using RC2K.Logic
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels
+@using SerilogTimings;
+@rendermode InteractiveServer
+@inject IStageService StageService
+@inject ITimeEntryService TimeEntryService
+@inject IDriverService DriverService
+@inject ICarService CarService
+@inject IPointsProvider PointsProvider
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+  if (!dataLoaded)
+  {
+    <div style="position: relative;">
+      <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
+      <MudOverlay Visible="overlayVisible" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+      </MudOverlay>
+    </div>
+  }
+  else
+  {
+    <MudDataGrid SortMode="SortMode.Single"
+                 T="TimeEntryListItem"
+                 Items="@_items"
+                 id="time-entry-list-table"
+                 ShowColumnOptions="false"
+                 RowsPerPage="20"
+                 QuickFilter="_quickFilter"
+                 RowStyleFunc="_rowStyleFunc">
+      <Columns>
+        <TemplateColumn Title="#">
+          <CellTemplate>
+            @{
+              if (this.filterCarCheckBox && this.filterCar != null)
+              {
+                <span>@context.Item.PlaceByCar</span>
+              }
+              else
+              {
+                <span>@context.Item.Place</span>
+              }
+            }
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
+        <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+        <TemplateColumn Title="Driver">
+
+          <CellTemplate>
+            <MudStack Row>
+              <span class="fi @($"fi-{@context.Item.Data.Driver.Nationality}")"></span>
+              <span>@context.Item.DisplayName</span>
+            </MudStack>
+          </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Car">
+          <CellTemplate>
+            <div class="car" data-car-id="@(context.Item.Data.Car.Id-1)"></div>
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
+        <TemplateColumn Title="Proofs">
+          <CellTemplate>
+            <p style="display: flex;">
+              @{
+                foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
+                {
+                  <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                }
+              }
+            </p>
+          </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Labels">
+          <CellTemplate>
+            <p>
+              @{
+                foreach (var label in context.Item.Labels)
+                {
+                  string color = label switch
+                  {
+                    "BRC20" => "#e0c444ff",
+                    "MFMI18" => "#c71a99ff",
+                    "MFMI19" => "#d18fd9",
+                    "MFMI20" => "#83ba73ff",
+                    "MFMI21" => "#bfb84eff",
+                    "MFMI22" => "#99e63cff",
+                    "MFMI23" => "#4d69f7ff",
+                    "MFMI24" => "#6eb3db",
+                    "MFMI25" => "#f25a46ff",
+                    _ => "#1c7848ff"
+                  };
+                  <MudChip T="string" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
+                }
+              }
+            </p>
+          </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+
+      </Columns>
+      <PagerContent>
+        <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10,20,50]" />
+      </PagerContent>
+    </MudDataGrid>
+    <MudPaper>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
+        <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
+        <CarSelector @bind-SelectedCar="filterCar" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
+        <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
+      </MudStack>
+      <MudStack Row Style="align-items: center;">
+        <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
+      </MudStack>
+    </MudPaper>
+
+  }
+
+}
+
+@code {
+
+  private int PageCnt;
+  private List<TimeEntryListItem> _items = [];
+
+  public TimeEntry best;
+  public Dictionary<Guid, int> generalPoints = [];
+  public Dictionary<Guid, int> carPoints = [];
+
+  [SupplyParameterFromQuery] public int Page { get; set; }
+  [Parameter] public int PerPage { get; set; }
+  [Parameter] public int StageId { get; set; }
+  [Parameter] public Action OnLoaded { get; set; }
+
+  // async loading
+  private bool overlayVisible;
+  private bool dataLoaded;
+
+
+  // filters
+  public bool filterDriverCheckBox;
+  public string? filterDriverText;
+  public bool filterCarCheckBox;
+  public Car? filterCar;
+  public bool filterLabelsCheckBox;
+  public string? filterLabelsText;
+  public bool filterMfmiCheckBox;
+
+  protected override void OnInitialized()
+  {
+    OpenLoadingOverlay();
+    base.OnInitialized();
+  }
+
+  private void OpenLoadingOverlay()
+  {
+    overlayVisible = true;
+    dataLoaded = false;
+  }
+  private void CloseLoadingOverlay()
+  {
+    overlayVisible = false;
+    dataLoaded = true;
+  }
+
+  public async Task ReloadTimeEntries()
+  {
+    OpenLoadingOverlay();
+    using (Operation.Time("Fetch TimeEntryList | StageId = {StageId}", StageId))
+    {
+
+      List<TimeEntry> timeEntries = await TimeEntryService.Get(StageId);
+      PageCnt = (int)Math.Ceiling(((double)(timeEntries.Count())) / (double)PerPage);
+      best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
+
+      var items = timeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
+
+      var places = PointsProvider.CalculatePlace(timeEntries);
+      var placesByCar = PointsProvider.CalculatePlaceByCar(timeEntries);
+
+      foreach (var itm in items)
+      {
+        itm.Place = places[itm.Data.Id];
+        itm.PlaceByCar = placesByCar[itm.Data.Id];
+      }
+
+      _items = items.OrderBy(x => x.Place).ToList();
+
+
+      generalPoints = PointsProvider.CalculateGeneralStagePoints(timeEntries);
+      carPoints = PointsProvider.CalculateCarStagePoints(timeEntries);
+    }
+
+    CloseLoadingOverlay();
+    StateHasChanged();
+    OnLoaded?.Invoke();
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender)
+    {
+      return;
+    }
+
+    await ReloadTimeEntries();
+  }
+
+  private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>
+  {
+    return $"color: {(item.Verified ? "green" : "red")}";
+  };
+
+  void GoToPage(int p)
+  {
+    var newLocation = NavigationManager.GetUriWithQueryParameter("Page", p);
+    NavigationManager.NavigateTo(newLocation);
+  }
+
+
+  private Func<TimeEntryListItem, bool> _quickFilter => x =>
+   {
+     return
+    IsOkForDriverFilter(x) &&
+    IsOkForCarFilter(x) &&
+    IsOkForLabelsFilter(x) &&
+    IsOkForMfmiFilter(x);
+
+   };
+
+  private bool IsOkForDriverFilter(TimeEntryListItem item)
+  {
+    if (!filterDriverCheckBox) return true;
+    if (string.IsNullOrEmpty(filterDriverText)) return true;
+
+    return item.DisplayName.StartsWith(filterDriverText, StringComparison.InvariantCultureIgnoreCase);
+
+  }
+  private bool IsOkForCarFilter(TimeEntryListItem item)
+  {
+    if (!filterCarCheckBox) return true;
+    if (filterCar == null) return true;
+
+    return item.Data.CarId == filterCar.Id;
+
+  }
+
+  private bool IsOkForLabelsFilter(TimeEntryListItem item)
+  {
+    if (!filterLabelsCheckBox) return true;
+    if (string.IsNullOrEmpty(filterLabelsText)) return true;
+
+    var split = filterLabelsText.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    foreach (var s in split)
+    {
+      if (item.Labels.Any(l => string.Equals(l, s, StringComparison.InvariantCultureIgnoreCase)))
+        return true;
+    }
+    return false;
+  }
+
+  private bool IsOkForMfmiFilter(TimeEntryListItem item)
+  {
+    if (!filterMfmiCheckBox) return true;
+
+    if (item.Labels.Any(x => x.StartsWith("MFMI")))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  private Func<TimeEntryListItem, object> _sortByPoints => x =>
+    {
+      return (object)x.Points;
+    };
+
+  private string _rowStyleFunc(TimeEntryListItem item, int index)
+  {
+    string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+    if (name is not null)
+    {
+      if (item.DisplayName == name)
+      {
+        return $"background-color: {App.MyColors.complementary200};";
+      }
+    }
+
+    if (index % 2 != 0)
+    {
+      return $"background-color: {App.MyColors.primary50};";
+    }
+    return string.Empty;
+  }
+}
+ *@

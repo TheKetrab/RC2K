@@ -10,4 +10,11 @@ public static class FillFullDataExtensions
         Task[] tasks = entities.Select(x => topLevelFiller.FillRecursive(x, context, fillers)).ToArray();
         await Task.WhenAll(tasks);
     }
+
+    public async static Task FillFullData<T>(this T entity, IFiller<T> topLevelFiller, IFillersBag fillers)
+    {
+        FillingContext context = new();
+        await topLevelFiller.FillRecursive(entity, context, fillers);
+    }
+
 }

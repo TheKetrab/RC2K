@@ -8,6 +8,7 @@ public class FillersBag : IFillersBag
     public IDriverFiller DriverFiller { get; }
 
     public ITimeEntryFiller TimeEntryFiller { get; }
+    public IRankingFiller RankingFiller { get; }
 
     public IUserFiller UserFiller { get; }
 
@@ -15,12 +16,14 @@ public class FillersBag : IFillersBag
 
     public FillersBag(IBonusPointsFiller bonusPointsFiller,
                       IDriverFiller driverFiller,
+                      IRankingFiller rankingFiller,
                       ITimeEntryFiller timeEntryFiller,
                       IUserFiller userFiller,
                       IVerifyInfoFiller verifyInfoFiller)
     {
         BonusPointsFiller = bonusPointsFiller;
         DriverFiller = driverFiller;
+        RankingFiller = rankingFiller;
         TimeEntryFiller = timeEntryFiller;
         UserFiller = userFiller;
         VerifyInfoFiller = verifyInfoFiller;

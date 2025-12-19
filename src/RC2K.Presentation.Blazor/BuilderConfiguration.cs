@@ -98,6 +98,7 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<BonusPointsMapper>();
         builder.Services.AddScoped<DriverMapper>();
         builder.Services.AddScoped<TimeEntryMapper>();
+        builder.Services.AddScoped<RankingsMapper>();
         builder.Services.AddScoped<UserMapper>();
         builder.Services.AddScoped<VerifyInfoMapper>();
 
@@ -115,6 +116,7 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
         builder.Services.AddScoped<IDriverRepository, DriverRepository>();
         builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
+        builder.Services.AddScoped<IRankingsRepository, RankingsRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IVerifyInfoRepository, VerifyInfoRepository>();
         return builder;
@@ -127,12 +129,14 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IDriverFiller, DriverFiller>();
         builder.Services.AddScoped<IUserFiller, UserFiller>();
         builder.Services.AddScoped<IVerifyInfoFiller, VerifyInfoFiller>();
+        builder.Services.AddScoped<IRankingFiller, RankingFiller>();
 
         builder.Services.AddScoped<IFillersBag, FillersBag>();
         builder.Services.AddScoped<IBonusPointsService, BonusPointsService>();
         builder.Services.AddScoped<IStageService, StageService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDriverService, DriverService>();
+        builder.Services.AddScoped<IRankingService, RankingService>();
         builder.Services.AddScoped<IPointsProvider, PointsProvider>();
         builder.Services.AddScoped<IPasswordProvider, PasswordProvider>(provider =>
         {
