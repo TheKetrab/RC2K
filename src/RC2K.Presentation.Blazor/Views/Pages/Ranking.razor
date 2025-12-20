@@ -1,4 +1,5 @@
 ﻿@page "/ranking"
+@page "/ranking/{action}"
 
 @using RC2K.DataAccess.Interfaces
 @using RC2K.DataAccess.Interfaces.Repositories
@@ -12,8 +13,17 @@
 
 @code
 {
+  [Parameter]
+  public string? Action { get; set; }
+
   protected override async Task OnInitializedAsync()
   {
+    if (Action == "snapshot")
+    {
+      await RankingService.DoRankingSnapshot();
+      return;
+    }
+
     var result = await RankingService.GetLatest();
     return;
   }

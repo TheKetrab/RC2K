@@ -272,7 +272,18 @@ public class RankingService : IRankingService
         return snapshot;
     }
 
-
+    public async Task DoRankingSnapshot()
+    {
+        try
+        {
+            var current = await CalculateCurrentRankingSnapshot();
+            await _rankingRepository.Create(current);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
 }
 
 public static class Extensions
