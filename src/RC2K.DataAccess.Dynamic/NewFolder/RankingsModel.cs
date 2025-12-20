@@ -13,6 +13,10 @@ public class RankingSnapshotModel
     public required Guid Id { get; init; }
 
     [JsonRequired]
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = "ranking";
+
+    [JsonRequired]
     [JsonPropertyName("date")]
     public required string Date { get; init; }
 
