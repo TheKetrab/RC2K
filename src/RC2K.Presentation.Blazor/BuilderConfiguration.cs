@@ -136,7 +136,6 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IStageService, StageService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDriverService, DriverService>();
-        builder.Services.AddScoped<IRankingService, RankingService>();
         builder.Services.AddScoped<IPointsProvider, PointsProvider>();
         builder.Services.AddScoped<IPasswordProvider, PasswordProvider>(provider =>
         {
@@ -150,6 +149,9 @@ public static class BuilderConfiguration
 
         builder.Services.AddScoped<TimeEntryService>();
         builder.Services.AddScoped<ITimeEntryService, AuthTimeEntryServiceProxy>();
+
+        builder.Services.AddScoped<RankingService>();
+        builder.Services.AddScoped<IRankingService, AuthRankingServiceProxy>();
 
         return builder;
     }
