@@ -3,6 +3,7 @@ using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
+using SerilogTimings;
 
 namespace RC2K.Logic;
 
@@ -276,7 +277,11 @@ public class RankingService : IRankingService
     {
         try
         {
-            var current = await CalculateCurrentRankingSnapshot();
+            RankingSnapshot? current;
+            using (Operation.Time("Calculate Current Ranking Snapshot"))
+            {
+                current = await CalculateCurrentRankingSnapshot();
+            }
             await _rankingRepository.Create(current);
         }
         catch (Exception ex)
