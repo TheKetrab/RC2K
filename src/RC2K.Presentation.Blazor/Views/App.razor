@@ -31,9 +31,22 @@
 
 <body>
     <Routes />
+    <NavigationTracker />
     <MatPortalHost></MatPortalHost>
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
+    <script src="_content/Blazor-Analytics/blazor-analytics.js"></script>
+
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-TBW7LHNXJF"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-TBW7LHNXJF_ID');
+      </script>
+
 </body>
 
 </html>

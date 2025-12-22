@@ -1,4 +1,5 @@
 
+using Blazor.Analytics;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
@@ -31,6 +32,8 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
     {
+        builder.Services.AddGoogleAnalytics("G-TBW7LHNXJF");
+
         builder.Host.UseSerilog((ctx, lc) => lc
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.WithExceptionDetails()
