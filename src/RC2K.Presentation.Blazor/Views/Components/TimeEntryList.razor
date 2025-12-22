@@ -134,9 +134,7 @@
 
 @code {
 
-  private int PageCnt;
   private List<TimeEntryListItem> _items = [];
-
   public TimeEntry best;
   public Dictionary<Guid, int> generalPoints = [];
   public Dictionary<Guid, int> carPoints = [];
@@ -180,30 +178,21 @@
   public async Task ReloadTimeEntries()
   {
     OpenLoadingOverlay();
-    using (Operation.Time("Fetch TimeEntryList | StageId = {StageId}", StageId))
+
+    var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
+
+    best = info.Best;
+    generalPoints = info.GeneralPoints;
+    carPoints = info.CarPoints;
+
+    var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
+    foreach (var itm in items)
     {
-
-      List<TimeEntry> timeEntries = await TimeEntryService.Get(StageId);
-      PageCnt = (int)Math.Ceiling(((double)(timeEntries.Count())) / (double)PerPage);
-      best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
-
-      var items = timeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
-
-      var places = PointsProvider.CalculatePlace(timeEntries);
-      var placesByCar = PointsProvider.CalculatePlaceByCar(timeEntries);
-
-      foreach (var itm in items)
-      {
-        itm.Place = places[itm.Data.Id];
-        itm.PlaceByCar = placesByCar[itm.Data.Id];
-      }
-
-      _items = items.OrderBy(x => x.Place).ToList();
-
-
-      generalPoints = PointsProvider.CalculateGeneralStagePoints(timeEntries);
-      carPoints = PointsProvider.CalculateCarStagePoints(timeEntries);
+      itm.Place = info.Places[itm.Data.Id];
+      itm.PlaceByCar = info.PlacesByCar[itm.Data.Id];
     }
+
+    _items = items.OrderBy(x => x.Place).ToList();
 
     CloseLoadingOverlay();
     StateHasChanged();

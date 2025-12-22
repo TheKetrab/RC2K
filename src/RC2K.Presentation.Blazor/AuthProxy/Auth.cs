@@ -12,6 +12,12 @@ public static class Auth
         }
     }
 
+    public static bool TryAuthorize(AuthenticationState state)
+    {
+        return state.User.Identity?.IsAuthenticated ?? false;
+    }
+
+
     public static void Authorize(AuthenticationState state, string role)
     {
         if (!state.User.IsInRole(role))

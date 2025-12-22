@@ -3,6 +3,7 @@ using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic;
 using RC2K.Logic.Interfaces;
+using RC2K.Logic.Interfaces.Dtos;
 using RC2K.Logic.Interfaces.Fillers;
 
 namespace RC2K.Presentation.Blazor.AuthProxy
@@ -24,6 +25,21 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             _service = service;
             _driverRepository = driverRepository;
             _fillers = fillers;
+        }
+
+        public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            if (!Auth.TryAuthorize(auth))
+            {
+                if (maximum < 0 || maximum >= 20)
+                {
+                    maximum = 20;
+                }
+            }
+
+            var result = await _service.CalculateTimeEntriesWithPoints(stageId, maximum);
+            return result;
         }
 
         public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
