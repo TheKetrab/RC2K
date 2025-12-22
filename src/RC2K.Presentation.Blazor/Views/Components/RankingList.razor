@@ -43,27 +43,29 @@
         <PropertyColumn Property="x => x.Data.GeneralPoints" Title="GP" />
         <PropertyColumn Property="x => x.CarPoints" Title="CP" />
         <PropertyColumn Property="x => x.Data.BonusPoints" Title="BP" />
-        @*
-        <PropertyColumn Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
-        <PropertyColumn Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
-        *@
+        <AuthorizeView>
+          <Authorized>
+            <PropertyColumn Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
+            <PropertyColumn Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
+          </Authorized>
+        </AuthorizeView>
       </Columns>
       
     </MudDataGrid>
