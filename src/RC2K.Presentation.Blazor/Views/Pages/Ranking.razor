@@ -1,88 +1,36 @@
-﻿@page "/ranking"
+﻿@rendermode InteractiveServer
+
+@page "/ranking"
+@page "/ranking/{action}"
 
 @using RC2K.DataAccess.Interfaces
 @using RC2K.DataAccess.Interfaces.Repositories
 @using RC2K.DomainModel
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels;
-@inject ITimeEntryService TimeEntryService
-@inject IPointsProvider PointsProvider
-@inject IStageService StageService
-@inject IBonusPointsService BonusPointsService
-@inject IDriverService DriverService;
+@using RC2K.Presentation.Blazor.Views.Components
 
-<h3>Ranking</h3>
+@inject IRankingService RankingService;
 
-<ol style="display: grid; gap: 1em; grid-template-columns: 1fr 1fr;">
-  @foreach (var driverPoints in _driver2Points.OrderByDescending(kv => kv.Value))
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<RankingList />
+
+@code
+{
+  [Parameter]
+  public string? Action { get; set; }
+
+  protected override async Task OnInitializedAsync()
   {
-    <li>
-      <p>
-        <span>@(_allDrivers[driverPoints.Key])</span>
-        <span>@(driverPoints.Value)</span>
-      </p>
-    </li>
-  }
-</ol>
-
-
-@code {
-
-  Dictionary<Guid, int> _driver2Points = [];
-  Dictionary<Guid, string> _allDrivers = [];
-  protected override async Task OnInitializedAsync() 
-  {
-    var stages = await StageService.GetAll();
-    List<TimeEntry> totalTimeEntries = [];
-    _allDrivers = await DriverService.GetAllNames();
-
-    foreach (var stage in stages)
+    if (Action == "snapshot")
     {
-      var timeEntries = await TimeEntryService.Get(stage.Id);
-      Dictionary<Guid, Guid> _te2driver = timeEntries.ToDictionary(x => x.Id, x => x.DriverId);
-
-      var totalPoints = PointsProvider.CalculateGeneralStagePoints(timeEntries);
-      foreach (var (te,p) in totalPoints)
-      {
-        Guid driverId = _te2driver[te];
-        if (_driver2Points.ContainsKey(driverId))
-        {
-          _driver2Points[driverId] += p;
-        }
-        else
-        {
-          _driver2Points[driverId] = p;
-        }
-      }
-
-      var carPoints = PointsProvider.CalculateCarStagePoints(timeEntries);
-      foreach (var (te, p) in carPoints)
-      {
-        Guid driverId = _te2driver[te];
-        if (_driver2Points.ContainsKey(driverId))
-        {
-          _driver2Points[driverId] += p;
-        }
-        else
-        {
-          _driver2Points[driverId] = p;
-        }
-      }
+      await RankingService.DoRankingSnapshot();
+      return;
     }
 
-    var bonusPoints = await BonusPointsService.GetAll();
-    foreach (var bp in bonusPoints)
-    {      
-      if (_driver2Points.ContainsKey(bp.DriverId))
-      {
-        _driver2Points[bp.DriverId] += bp.Points;
-      }
-      else
-      {
-        _driver2Points[bp.DriverId] = bp.Points;
-      }
-    }
-
+    return;
   }
-
 }

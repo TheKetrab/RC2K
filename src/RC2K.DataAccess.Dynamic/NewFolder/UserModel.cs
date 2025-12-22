@@ -24,7 +24,7 @@ public class UserModel
     public string? PasswordHash { get; set; }
 
     [JsonPropertyName("roles")]
-    public List<string> Roles { get; } = [];
+    public List<string> Roles { get; set; } = [];
 
     [JsonRequired]
     [JsonPropertyName("email")]

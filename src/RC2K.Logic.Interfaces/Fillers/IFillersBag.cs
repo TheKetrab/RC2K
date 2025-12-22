@@ -5,6 +5,7 @@ public interface IFillersBag
 {
     IBonusPointsFiller BonusPointsFiller { get; }
     IDriverFiller DriverFiller { get; }
+    IRankingFiller RankingFiller { get; }
     ITimeEntryFiller TimeEntryFiller { get; }
     IUserFiller UserFiller { get; }
     IVerifyInfoFiller VerifyInfoFiller { get; }
