@@ -24,7 +24,8 @@ public enum Icon
     Twitch,
     Replay,
     Image,
-    Unknown
+    Unknown,
+    Ranking
 }
 
 public static class IconMapper
@@ -104,6 +105,7 @@ public static class IconMapper
             { Icon.Replay, (true, camera_slim, camera_fill) },
             { Icon.Image, (true, image_slim, image_fill) },
             { Icon.Unknown, (true, square_slim, square_fill) },
+            { Icon.Ranking, (true, MudBlazor.Icons.Material.Outlined.Leaderboard, MudBlazor.Icons.Material.Filled.Leaderboard) },
         };
     }
 

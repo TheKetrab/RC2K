@@ -6,13 +6,14 @@ public class HeaderViewModel : BaseViewModel
     public List<MenuItem> MenuItems = 
     [
         new MenuItem() { Item = "Home", ItemLink = "/home", Icon = Icon.Home },
-        new MenuItem() { Item = "Cars", ItemLink = "/cars", Icon = Icon.Car, Subitems = [
-            ("Class A5","cars/a5"),
-            ("Class A6","cars/a6"),
-            ("Class A7","cars/a7"),
-            ("Class A8","cars/a8"),
-            ("Bonus","cars/bonus"),
-        ] },
+        new MenuItem() { Item = "Ranking", ItemLink = "/ranking", Icon = Icon.Ranking },
+        //new MenuItem() { Item = "Cars", ItemLink = "/cars", Icon = Icon.Car, Subitems = [
+        //    ("Class A5","cars/a5"),
+        //    ("Class A6","cars/a6"),
+        //    ("Class A7","cars/a7"),
+        //    ("Class A8","cars/a8"),
+        //    ("Bonus","cars/bonus"),
+        //] },
         new MenuItem() { Item = "Stages", ItemLink = "/stages", Icon = Icon.Stage, Subitems = [
             ("Vauxhall Rally of Wales","stages/vauxhall"),
             ("Pirelli International Rally","stages/pirelli"),
