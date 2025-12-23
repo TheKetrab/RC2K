@@ -32,7 +32,7 @@
                     Label="Driver name"
                     @bind-Value="UploadTimeModel.DriverName" />
 
-      <CarSelector SelectedCar="@UploadTimeModel.Car" />
+      <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" /> 
 
       <MudTextField T="string"
                     Label="Proofs"
@@ -56,19 +56,40 @@
 
 @code {
 
+  CarSelector _carSelector;
 
-  [Parameter] public int StageId { get; set; }
-  [Parameter] public EventCallback<MouseEventArgs> OnCloseButtonClicked { get; set; }
+  protected override void OnAfterRender(bool firstRender)
+  {
+    if (!firstRender)
+    {
+      return;
+    }
+    _carSelector.OnSelectedCarChanged += (_,c) =>
+    {
+      UploadTimeModel.Car = c;
+    };
+  }
 
-  UploadTimeModelType UploadTimeModel = new();
+    [Parameter] public int StageId { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnCloseButtonClicked { get; set; }
+
+    UploadTimeModelType UploadTimeModel = new();
 
   public class UploadTimeModelType
   {
     public int Min { get; set; }
     public int Sec { get; set; }
     public int Cc { get; set; }
-    public Car Car { get; set; }
-    public string Proofs { get; set; }
+    private Car _car;
+    public Car Car 
+    { 
+        get => _car;
+        set
+      {
+        _car = value;
+      }
+    }
+  public string Proofs { get; set; }
     public string DriverName { get; set; }
   }
 
@@ -78,6 +99,7 @@
     if (driver is null || !driver.Known)
     {
       // TODO: handle adding times for anonymous drivers
+      throw new Exception("Currently adding times for not logged in drivers is not supported");
       return;
     }
 
@@ -88,7 +110,7 @@
       UploadTimeModel.Min,
       UploadTimeModel.Sec,
       UploadTimeModel.Cc,
-                    [],
+      [new Proof() { Url = UploadTimeModel.Proofs }],
       null
       );
   }

@@ -28,8 +28,8 @@
   private List<Car> _cars;
 
   [Parameter] public Car? SelectedCar { get; set; }
+  public event EventHandler<Car?> OnSelectedCarChanged;
   [Parameter] public EventCallback<Car?> SelectedCarChanged { get; set; }
-
   protected override async Task OnInitializedAsync()
   {
     _cars = await CarService.GetAll();
@@ -41,6 +41,7 @@
     {
       SelectedCar = newCar;
       await SelectedCarChanged.InvokeAsync(newCar); // Notify the parent
+      OnSelectedCarChanged?.Invoke(this, newCar); // Notify the parent
     }
   }
 

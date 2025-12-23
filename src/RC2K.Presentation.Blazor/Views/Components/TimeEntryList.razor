@@ -150,7 +150,7 @@
   [SupplyParameterFromQuery] public int Page { get; set; }
   [Parameter] public int PerPage { get; set; }
   [Parameter] public int StageId { get; set; }
-  [Parameter] public Action OnLoaded { get; set; }
+  [Parameter] public Func<Task> OnLoaded { get; set; }
 
   // async loading
   private bool overlayVisible;

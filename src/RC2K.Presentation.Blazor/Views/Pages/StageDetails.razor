@@ -26,6 +26,7 @@
 
 @page "/map"
 @using System.Collections.Generic
+@using RC2K.Presentation.Blazor.Views.Layout
 
 <div class="MAIN">
   <h1>@_raceName</h1>
@@ -94,13 +95,17 @@
     </div>
     <div class="break"></div>
   </div>
-  <MudPopover Open="uploadDialogVisible"
-  Fixed="true"
-  Class="px-4 pt-4"
-  AnchorOrigin="Origin.CenterCenter"
-  TransformOrigin="Origin.CenterCenter">
-    <UploadTime StageId="@stageId" OnCloseButtonClicked="CloseUploadDialog" />
-  </MudPopover>
+   <MudPopover Open="uploadDialogVisible"
+              Fixed="true"
+              Class="px-4 pt-4"
+              AnchorOrigin="Origin.CenterCenter"
+              TransformOrigin="Origin.CenterCenter">
+  <MyErrorBoundary>
+      <ChildContent>
+        <UploadTime StageId="@stageId" OnCloseButtonClicked="CloseUploadDialog" />
+      </ChildContent>
+  </MyErrorBoundary>
+  </MudPopover> 
 
 
 </div>
@@ -195,9 +200,14 @@
     await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
   }
 
-  private void HandleOnTimeEntryListLoaded()
+  private Task HandleOnTimeEntryListLoaded()
   {
-    RecalculateHeight();
+    Task.Run(async () =>
+    {
+      await Task.Delay(500);
+      await RecalculateHeight();
+    });
+    return Task.CompletedTask;
   }
 
 

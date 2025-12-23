@@ -8,7 +8,7 @@ public static class Auth
     {
         if (state.User.Identity?.IsAuthenticated is not true)
         {
-            throw new NotAuthorizedException();
+            throw new NotAuthorizedException("Required logged in user.");
         }
     }
 
@@ -22,7 +22,7 @@ public static class Auth
     {
         if (!state.User.IsInRole(role))
         {
-            throw new NotAuthorizedException();
+            throw new NotAuthorizedException($"Required role: {role}");
         }
     }
 
@@ -30,7 +30,7 @@ public static class Auth
     {
         if (state.User.Identity?.Name != username)
         {
-            throw new NotAuthorizedException();
+            throw new NotAuthorizedException($"Allowed only for user {username}");
         }
     }
 }
