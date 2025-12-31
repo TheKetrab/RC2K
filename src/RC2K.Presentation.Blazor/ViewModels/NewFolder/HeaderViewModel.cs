@@ -14,6 +14,9 @@ public class HeaderViewModel : BaseViewModel
         //    ("Class A8","cars/a8"),
         //    ("Bonus","cars/bonus"),
         //] },
+        new MenuItem() { Item = "Admin", ItemLink = "/admin", Icon = Icon.Settings, Subitems = [
+            ("Verify info","admin/verification"),
+        ] },
         new MenuItem() { Item = "Stages", ItemLink = "/stages", Icon = Icon.Stage, Subitems = [
             ("Vauxhall Rally of Wales","stages/vauxhall"),
             ("Pirelli International Rally","stages/pirelli"),
