@@ -10,7 +10,7 @@
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
-
+@inject ISnackbar Snackbar
 
 
 <div class="d-flex flex-column">
@@ -113,6 +113,12 @@
       [new Proof() { Url = UploadTimeModel.Proofs }],
       null
       );
+
+    Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>
+    {
+    config.ShowCloseIcon = true;
+    config.VisibleStateDuration = 10000;
+    });
   }
 
 }
