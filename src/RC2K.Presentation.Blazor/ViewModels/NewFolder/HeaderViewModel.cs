@@ -1,4 +1,7 @@
 ﻿
+using RC2K.DomainModel;
+using RC2K.Extensions;
+
 namespace RC2K.Presentation.Blazor.ViewModels.Layout;
 
 public class HeaderViewModel : BaseViewModel
@@ -18,12 +21,13 @@ public class HeaderViewModel : BaseViewModel
             ("Verify info","admin/verification"),
         ] },
         new MenuItem() { Item = "Stages", ItemLink = "/stages", Icon = Icon.Stage, Subitems = [
-            ("Vauxhall Rally of Wales","stages/vauxhall"),
-            ("Pirelli International Rally","stages/pirelli"),
-            ("Scottish Rally RSAC","stages/scottish"),
-            ("SEAT Jim Clark Memorial Rally","stages/seat"),
-            ("Stena Line Ulster Rally","stages/stena"),
-            ("SONY Manx International Rally","stages/sony"),
+            GetRallySubitem(RallyCode.Vauxhall),
+            GetRallySubitem(RallyCode.Pirelli),
+            GetRallySubitem(RallyCode.Scottish),
+            GetRallySubitem(RallyCode.Seat),
+            GetRallySubitem(RallyCode.Stena),
+            GetRallySubitem(RallyCode.Sony),
+            GetRallySubitem(RallyCode.Vauxhall),
         ] },
         //new MenuItem() { Item = "Contests", ItemLink = "/contests", Icon = Icon.Contest, Subitems = [
         //    ("MFMI23","contests/mfmi23"),
@@ -36,6 +40,8 @@ public class HeaderViewModel : BaseViewModel
         //] },
     ];
 
+    private static (string, string) GetRallySubitem(RallyCode code) =>
+        (LevelHelper.RallyCodeToRallyName(code), $"stages/{LevelHelper.RallyCodeToRallyShortName(code)}");
 
     private bool _navIsSticked;
     public bool NavIsSticked

@@ -1,0 +1,22 @@
+﻿@rendermode InteractiveServer
+
+@page "/admin/verification"
+
+@using RC2K.DataAccess.Interfaces
+@using RC2K.DataAccess.Interfaces.Repositories
+@using RC2K.DomainModel
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels;
+@using RC2K.Presentation.Blazor.Views.Components
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<TimeEntryList PerPage="20" VerificationMode="true" />
+
+
+@code
+{
+
+}
