@@ -42,6 +42,15 @@ public class TimeEntryService : ITimeEntryService
         return timeEntries;
     }
 
+    public async Task<List<TimeEntry>> GetAllNotVerified()
+    {
+        var timeEntries = await _timeEntryRepository.GetAllNotVerified();
+
+        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
+
+        return timeEntries;
+    }
+
     public async Task Upload(
         int stageId, int carId, Guid driverId,
         int min, int sec, int cc,

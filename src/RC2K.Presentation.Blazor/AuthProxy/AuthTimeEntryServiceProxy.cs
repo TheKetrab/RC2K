@@ -45,6 +45,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
             _service.Get(stageId, carId);
 
+        public Task<List<TimeEntry>> GetAllNotVerified() =>
+            _service.GetAllNotVerified();
 
         public async Task Upload(
             int stageId, int carId, Guid driverId,
