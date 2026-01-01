@@ -26,6 +26,11 @@ public class StageRepository(RallyDbContext dbContext, IStageCache cache)
         await _dbContext.SaveChangesAsync();
     }
 
+    public override async Task<Stage?> DbGet(int id)
+    {
+        return (await this.Get(x => x.Id == id, full: true)).FirstOrDefault();
+    }
+
     public async Task<Stage> GetByCode(int stageCode, Direction direction)
     {
         string cacheKey = $"{StageByCodeAndDirection}_{stageCode}_{direction}";

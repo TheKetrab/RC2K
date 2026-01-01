@@ -12,7 +12,11 @@ public class TimeEntryListItem
         this.list = list;
     }
 
-    public string StageLink => $"stages/{LevelHelper.RallyCodeToRallyShortName(LevelHelper.GetRallyCodeByStageCode(Data.Stage.Code))}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
+    public string StageName => 
+        Data.Stage.StageData is null
+            ? Data.Stage.ToString()
+            : Data.Stage.StageData.Name + " " + (Data.Stage.Direction == Direction.Simulation ? "(S)" : "(A)");
+    public string StageLink => $"stages/{LevelHelper.StageCodeToRallyShortName(Data.Stage.Code)}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
     public bool Checked { get; set; }
     public int PlaceByCar { get; set; }
     public int Place { get; set; }
