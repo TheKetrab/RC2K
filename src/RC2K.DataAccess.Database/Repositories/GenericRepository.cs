@@ -63,13 +63,18 @@ public abstract class GenericRepository<TEntity, TCache> : IGenericRepository<TE
             return cacheValue;
         }
 
-        var dbValue = await _dbSet.FindAsync(id);
+        var dbValue = await DbGet(id);
         if (dbValue is not null)
         {
             _cache.Set(id, dbValue);
         }
 
         return dbValue;
+    }
+
+    public virtual async Task<TEntity?> DbGet(int id)
+    {
+        return await _dbSet.FindAsync(id);
     }
 
     public virtual async Task Insert(TEntity entity) => await _dbSet.AddAsync(entity);

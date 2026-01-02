@@ -1,4 +1,5 @@
 ﻿@using RC2K.DomainModel
+@using RC2K.Extensions
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
@@ -26,7 +27,8 @@
   }
   else
   {
-    <MudDataGrid SortMode="SortMode.Single"
+    <MudDataGrid @ref="grid"
+                 SortMode="SortMode.Single"
                  T="TimeEntryListItem"
                  Items="@_items"
                  id="time-entry-list-table"
@@ -35,6 +37,19 @@
                  QuickFilter="_quickFilter"
                  RowStyleFunc="_rowStyleFunc">
       <Columns>
+      
+        @if (VerificationMode)
+        {
+          <TemplateColumn Title="Stage">
+            <CellTemplate>
+              <MudLink Href="@context.Item.StageLink">
+                @context.Item.StageName
+              </MudLink>
+            </CellTemplate>
+          </TemplateColumn>
+        }
+        @if (VerificationMode == false)
+        {
         <TemplateColumn Title="#">
           <CellTemplate>
             @{
@@ -49,8 +64,11 @@
             }
           </CellTemplate>
         </TemplateColumn>
+        }
         <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
-        <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+        @if (!VerificationMode) {
+          <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+        }
         <TemplateColumn Title="Driver">
 
           <CellTemplate>
@@ -103,8 +121,14 @@
             </p>
           </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
-
+        @if (!VerificationMode) {
+          <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+        }
+        @if (VerificationMode)
+        {
+          <SelectColumn T="TimeEntryListItem" />
+        }
+        
       </Columns>
       <PagerContent>
         <AuthorizeView>
@@ -142,6 +166,7 @@
 
 @code {
 
+  MudDataGrid<TimeEntryListItem> grid;
   private List<TimeEntryListItem> _items = [];
   public TimeEntry best;
   public Dictionary<Guid, int> generalPoints = [];
@@ -150,7 +175,8 @@
   [SupplyParameterFromQuery] public int Page { get; set; }
   [Parameter] public int PerPage { get; set; }
   [Parameter] public int StageId { get; set; }
-  [Parameter] public Func<Task> OnLoaded { get; set; }
+  [Parameter] public Func<Task>? OnLoaded { get; set; }
+  [Parameter] public bool VerificationMode { get; set; }
 
   // async loading
   private bool overlayVisible;
@@ -165,6 +191,14 @@
   public bool filterLabelsCheckBox;
   public string? filterLabelsText;
   public bool filterMfmiCheckBox;
+
+  public List<TimeEntry> GetSelectedTimeEntries()
+  {
+    var selectedTimeEntries = 
+        grid.SelectedItems.Select(x => x.Data).ToList();
+
+    return selectedTimeEntries;
+  }
 
   protected override void OnInitialized()
   {
@@ -207,6 +241,20 @@
     OnLoaded?.Invoke();
   }
 
+  public async Task ReloadTimeEntriesForVerification()
+  {
+    OpenLoadingOverlay();
+
+    var notVerified = await TimeEntryService.GetAllNotVerified();
+    var items = notVerified.Select(x => new TimeEntryListItem(this, x)).ToList();
+
+    _items = items;
+
+    CloseLoadingOverlay();
+    StateHasChanged();
+    OnLoaded?.Invoke();
+  }
+
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
     if (!firstRender)
@@ -214,7 +262,14 @@
       return;
     }
 
-    await ReloadTimeEntries();
+    if (VerificationMode)
+    {
+        await ReloadTimeEntriesForVerification();
+    }
+    else
+    {
+      await ReloadTimeEntries();
+    }
   }
 
   private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>

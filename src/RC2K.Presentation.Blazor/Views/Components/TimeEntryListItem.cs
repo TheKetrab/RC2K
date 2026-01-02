@@ -1,4 +1,5 @@
 ﻿using RC2K.DomainModel;
+using RC2K.Extensions;
 
 namespace RC2K.Presentation.Blazor.Views.Components;
 
@@ -11,13 +12,21 @@ public class TimeEntryListItem
         this.list = list;
     }
 
+    public string StageName => 
+        Data.Stage.StageData is null
+            ? Data.Stage.ToString()
+            : Data.Stage.StageData.Name + " " + (Data.Stage.Direction == Direction.Simulation ? "(S)" : "(A)");
+    public string StageLink => $"stages/{LevelHelper.StageCodeToRallyShortName(Data.Stage.Code)}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
+    public bool Checked { get; set; }
     public int PlaceByCar { get; set; }
     public int Place { get; set; }
     public TimeEntry Data { get; set; }
 
     public bool Verified => this.Data.VerifyInfo is not null;
     public string TimeDisplay => this.Data.Time.ToString("m:ss.ff");
-    public TimeSpan Gap => this.Data.Time - list.best.Time;
+    public TimeSpan Gap => list.best is not null
+        ? this.Data.Time - list.best.Time
+        : TimeSpan.Zero;
     public string GapDisplay => Gap == TimeSpan.Zero ? "" : "-" + Gap.ToString("m\\:ss\\.ff");
     public string UploadTimeDisplay => this.Data.UploadTime == new DateTime(1,1,1) ? "" : this.Data.UploadTime.ToString("yyyy/MM/dd");
     public IEnumerable<string> Labels => (this.Data.Labels ?? "").Split(",").Where(x => !string.IsNullOrEmpty(x));

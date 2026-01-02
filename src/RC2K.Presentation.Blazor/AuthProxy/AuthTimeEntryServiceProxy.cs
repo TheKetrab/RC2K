@@ -13,17 +13,20 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         private AuthenticationStateProvider _asp;
         private TimeEntryService _service;
         private IDriverRepository _driverRepository;
+        private IUserRepository _userRepository;
         private IFillersBag _fillers;
 
         public AuthTimeEntryServiceProxy(
             AuthenticationStateProvider asp,
             TimeEntryService service,
             IDriverRepository driverRepository,
+            IUserRepository userRepository,
             IFillersBag fillers)
         {
             _asp = asp;
             _service = service;
             _driverRepository = driverRepository;
+            _userRepository = userRepository;
             _fillers = fillers;
         }
 
@@ -42,9 +45,19 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             return result;
         }
 
+        public async Task Delete(List<TimeEntry> timeEntries)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            await _service.Delete(timeEntries);
+        }
+
         public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
             _service.Get(stageId, carId);
 
+        public Task<List<TimeEntry>> GetAllNotVerified() =>
+            _service.GetAllNotVerified();
 
         public async Task Upload(
             int stageId, int carId, Guid driverId,
@@ -69,6 +82,25 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         {
             await AuthorizeSelf(timeEntry.Driver!);
             await _service.Upload(timeEntry);
+        }
+
+        public async Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            await _service.Verify(timeEntries, verifierId, comment);
+        }
+
+        public async Task Verify(List<TimeEntry> timeEntries, string comment)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            string name = auth.User.Identity!.Name!;
+            var user = await _userRepository.GetByName(name);
+
+            await _service.Verify(timeEntries, user!.Id, comment);
         }
 
         private async Task AuthorizeSelf(Driver driver)

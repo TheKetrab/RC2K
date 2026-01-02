@@ -21,6 +21,14 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
         return Task.FromResult<List<TimeEntry>>([]);
     }
 
+    public async Task<List<TimeEntry>> GetAllNotVerified()
+    {
+        var query = new QueryDefinition(@"
+            SELECT * FROM c WHERE NOT IS_DEFINED(c.verifyInfoId) OR IS_NULL(c.verifyInfoId)");
+
+        return await FetchAll(query);
+    }
+
     public async Task<List<TimeEntry>> GetByStageId(int stageId)
     {
         var query = new QueryDefinition(@"
