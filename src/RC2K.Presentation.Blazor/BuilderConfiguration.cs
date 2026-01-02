@@ -137,7 +137,6 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IFillersBag, FillersBag>();
         builder.Services.AddScoped<IBonusPointsService, BonusPointsService>();
         builder.Services.AddScoped<IStageService, StageService>();
-        builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDriverService, DriverService>();
         builder.Services.AddScoped<IPointsProvider, PointsProvider>();
         builder.Services.AddScoped<IPasswordProvider, PasswordProvider>(provider =>
@@ -155,6 +154,9 @@ public static class BuilderConfiguration
 
         builder.Services.AddScoped<RankingService>();
         builder.Services.AddScoped<IRankingService, AuthRankingServiceProxy>();
+
+        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<IUserService, AuthUserServiceProxy>();
 
         return builder;
     }

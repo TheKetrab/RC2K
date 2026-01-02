@@ -11,6 +11,7 @@
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IUserService UserService
 
 
 <div class="d-flex flex-column">
@@ -68,6 +69,11 @@
     {
       UploadTimeModel.Car = c;
     };
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+    UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
   }
 
     [Parameter] public int StageId { get; set; }
