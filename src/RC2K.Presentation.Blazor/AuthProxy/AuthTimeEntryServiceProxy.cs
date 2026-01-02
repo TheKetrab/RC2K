@@ -45,6 +45,14 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             return result;
         }
 
+        public async Task Delete(List<TimeEntry> timeEntries)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            await _service.Delete(timeEntries);
+        }
+
         public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
             _service.Get(stageId, carId);
 

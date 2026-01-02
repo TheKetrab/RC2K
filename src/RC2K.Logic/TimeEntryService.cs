@@ -54,6 +54,21 @@ public class TimeEntryService : ITimeEntryService
         return timeEntries;
     }
 
+    public async Task Delete(List<TimeEntry> timeEntries)
+    {
+        foreach (var timeEntry in timeEntries)
+        {
+            try
+            {
+                await _timeEntryRepository.Delete(timeEntry.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete time entry {timeEntry.Id}");
+            }
+        }
+    }
+
     public Task Verify(List<TimeEntry> timeEntries, string comment)
     {
         _logger.LogWarning("Call Verify with verifierId");

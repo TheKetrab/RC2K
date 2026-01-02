@@ -7,6 +7,8 @@ public interface ITimeEntryService
 {
     Task Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels);
     Task Upload(TimeEntry timeEntry);
+    Task Delete(List<TimeEntry> timeEntries);
+
     Task<List<TimeEntry>> Get(int stageId, int? carId = null);
     Task<List<TimeEntry>> GetAllNotVerified();
     Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment);
