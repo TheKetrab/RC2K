@@ -2,6 +2,7 @@
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Layout
 @rendermode InteractiveServer
 @inject IStageService StageService
 @inject ITimeEntryService TimeEntryService
@@ -12,6 +13,10 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IUserService UserService
+
+    <MyErrorBoundary @ref="_errorBoundary">
+              <ChildContent >
+                
 
 
 <div class="d-flex flex-column">
@@ -35,9 +40,43 @@
 
       <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" /> 
 
-      <MudTextField T="string"
-                    Label="Proofs"
-                    @bind-Value="UploadTimeModel.Proofs" />
+      <MudRadioGroup @bind-Value="UploadTimeModel.Label">
+        <MudRadio Value="@("TA")" Color="Color.Primary" >Time Attack</MudRadio>
+        <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
+        <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
+        <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
+      </MudRadioGroup>
+
+      <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+        <MudText Typo="Typo.h6" Class="mb-4">Proofs</MudText>
+
+        @for (int i = 0; i < _proofItems.Count; i++)
+        {
+          int index = i;
+          <div class="d-flex align-center gap-4 mb-3">
+            <MudSelect T="ProofType" Label="Type"
+                                      Variant="Variant.Outlined" Margin="Margin.Dense" Style="width: 150px;">
+              @foreach (ProofType type in Enum.GetValues(typeof(ProofType)))
+              {
+                <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+              }
+            </MudSelect>
+            <MudTextField T="string"
+                          Label="@($"Link {index + 1}")"
+                          Value="_proofItems[index].Item2"
+                          ValueChanged="@(value => OnValueChanged(index, value))"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+
+            @if (_proofItems.Count > 1)
+            {
+              <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                             Color="Color.Error"
+                             OnClick="@(() => RemoveRow(index))" />
+            }
+          </div>
+        }
+      </MudContainer>
 
       <MudButton Variant="Variant.Filled"
                  Color="Color.Primary"
@@ -46,16 +85,39 @@
     </MudForm>
   </MudPaper>
 
-  <MudButton OnClick="OnCloseButtonClicked"
-             Class="ml-auto mr-n3 mb-1"
-             Color="Color.Error">Close</MudButton>
-
 </div>
-
-
-
+  </ChildContent>
+</MyErrorBoundary>
 
 @code {
+    ErrorBoundary _errorBoundary;
+
+  protected override void OnParametersSet()
+  {
+    _errorBoundary?.Recover();
+  }
+
+  private List<Tuple<ProofType,string>> _proofItems = new() { Tuple.Create<ProofType,string>(ProofType.Unknown, "") };
+
+  private void OnValueChanged(int index, string newValue)
+  {
+    ProofType currentProofType = _proofItems[index].Item1;
+    _proofItems[index] = Tuple.Create<ProofType, string>(currentProofType, newValue);
+
+    if (index == _proofItems.Count - 1 && !string.IsNullOrWhiteSpace(newValue))
+    {
+      _proofItems.Add(Tuple.Create(ProofType.Unknown, ""));
+    }
+  }
+
+  private void RemoveRow(int index)
+  {
+    if (_proofItems.Count > 1)
+    {
+      _proofItems.RemoveAt(index);
+    }
+  }
+
 
   CarSelector _carSelector;
 
@@ -76,10 +138,9 @@
     UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
   }
 
-    [Parameter] public int StageId { get; set; }
-    [Parameter] public EventCallback<MouseEventArgs> OnCloseButtonClicked { get; set; }
+  [Parameter] public int StageId { get; set; }
 
-    UploadTimeModelType UploadTimeModel = new();
+  UploadTimeModelType UploadTimeModel = new();
 
   public class UploadTimeModelType
   {
@@ -89,14 +150,15 @@
     private Car _car;
     public Car Car 
     { 
-        get => _car;
-        set
+      get => _car;
+      set
       {
         _car = value;
       }
     }
-  public string Proofs { get; set; }
+    public string Proofs { get; set; }
     public string DriverName { get; set; }
+    public string Label { get; set; } = "TA";
   }
 
   private async Task UploadClick()
@@ -109,6 +171,11 @@
       return;
     }
 
+    var proofs =
+      _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
+                 .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
+                 .ToList();
+
     await TimeEntryService.Upload(
       StageId,
       UploadTimeModel.Car.Id,
@@ -116,8 +183,8 @@
       UploadTimeModel.Min,
       UploadTimeModel.Sec,
       UploadTimeModel.Cc,
-      [new Proof() { Url = UploadTimeModel.Proofs }],
-      null
+      proofs,
+      UploadTimeModel.Label
       );
 
     Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>

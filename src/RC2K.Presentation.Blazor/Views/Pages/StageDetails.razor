@@ -15,6 +15,7 @@
 @inject ICarService CarService
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
+@inject IDialogService Dialog
 @inject NavigationManager NavigationManager
 <h3></h3>
 
@@ -95,19 +96,6 @@
     </div>
     <div class="break"></div>
   </div>
-   <MudPopover Open="uploadDialogVisible"
-              Fixed="true"
-              Class="px-4 pt-4"
-              AnchorOrigin="Origin.CenterCenter"
-              TransformOrigin="Origin.CenterCenter">
-  <MyErrorBoundary>
-      <ChildContent>
-        <UploadTime StageId="@stageId" OnCloseButtonClicked="CloseUploadDialog" />
-      </ChildContent>
-  </MyErrorBoundary>
-  </MudPopover> 
-
-
 </div>
 
 
@@ -210,15 +198,14 @@
     return Task.CompletedTask;
   }
 
-
-  private bool uploadDialogVisible;
   private void OpenUploadDialog()
   {
-    uploadDialogVisible = true;
-  }
-  private void CloseUploadDialog()
-  {
-    uploadDialogVisible = false;
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var parameters = new DialogParameters<UploadTime>
+    {
+        { x => x.StageId, this.stageId},
+    };
+    Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
   }
 
 }
