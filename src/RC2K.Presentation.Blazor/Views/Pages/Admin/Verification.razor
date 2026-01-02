@@ -8,15 +8,73 @@
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels;
 @using RC2K.Presentation.Blazor.Views.Components
+@using System.ComponentModel.DataAnnotations
+@inject ITimeEntryService TimeEntryService
+@inject ISnackbar Snackbar
 
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<TimeEntryList PerPage="20" VerificationMode="true" />
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+  <DataAnnotationsValidator />
 
+      <MudCard>
+        <MudCardContent>
+          <MudTextField Label="Comment" HelperText="Comment for verification"
+                        @bind-Value="model.Comment" For="@(() => model.Comment)" />
+        </MudCardContent>
+        <MudCardActions>
+          <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Verify</MudButton>
+        </MudCardActions>
+      </MudCard>
+  @if (!success)
+  {
+    <MudText Color="Color.Error">@error</MudText>
+    <ValidationSummary />
+  }
+</EditForm>
+
+<MudCard>
+  <MudText>Pending time entries to be verified or rejected:</MudText>
+  <TimeEntryList @ref="timeEntryList" PerPage="20" VerificationMode="true" />
+</MudCard>
 
 @code
 {
+  TimeEntryList timeEntryList = new();
+  ValidationForm model = new ValidationForm();
+  bool success;
+  string error;
 
+  public class ValidationForm
+  {
+    [Required]
+    public string Comment { get; set; } = $"Verification on {RC2K.Utils.Utils.DateTimeToString(DateTime.Now)}";
+  }
+
+  private async Task OnValidSubmit(EditContext context)
+  {
+    var selectedItems = timeEntryList.GetSelectedTimeEntries();
+    if (selectedItems.Count == 0)
+    {
+      error = "None item selected";
+      success = false;
+      StateHasChanged();
+      return;
+    }
+
+    error = "";
+    success = true;
+    StateHasChanged();
+    try
+    {
+      await TimeEntryService.Verify(selectedItems, model.Comment);
+      Snackbar.Add("Verified successfully", Severity.Success);
+    }
+    catch (Exception ex)
+    {
+      Snackbar.Add("Service failed to verify", Severity.Error);
+    }
+  }
 }

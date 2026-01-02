@@ -27,7 +27,8 @@
   }
   else
   {
-    <MudDataGrid SortMode="SortMode.Single"
+    <MudDataGrid @ref="grid"
+                 SortMode="SortMode.Single"
                  T="TimeEntryListItem"
                  Items="@_items"
                  id="time-entry-list-table"
@@ -165,6 +166,7 @@
 
 @code {
 
+  MudDataGrid<TimeEntryListItem> grid;
   private List<TimeEntryListItem> _items = [];
   public TimeEntry best;
   public Dictionary<Guid, int> generalPoints = [];
@@ -189,6 +191,14 @@
   public bool filterLabelsCheckBox;
   public string? filterLabelsText;
   public bool filterMfmiCheckBox;
+
+  public List<TimeEntry> GetSelectedTimeEntries()
+  {
+    var selectedTimeEntries = 
+        grid.SelectedItems.Select(x => x.Data).ToList();
+
+    return selectedTimeEntries;
+  }
 
   protected override void OnInitialized()
   {

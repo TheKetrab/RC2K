@@ -13,17 +13,20 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         private AuthenticationStateProvider _asp;
         private TimeEntryService _service;
         private IDriverRepository _driverRepository;
+        private IUserRepository _userRepository;
         private IFillersBag _fillers;
 
         public AuthTimeEntryServiceProxy(
             AuthenticationStateProvider asp,
             TimeEntryService service,
             IDriverRepository driverRepository,
+            IUserRepository userRepository,
             IFillersBag fillers)
         {
             _asp = asp;
             _service = service;
             _driverRepository = driverRepository;
+            _userRepository = userRepository;
             _fillers = fillers;
         }
 
@@ -87,10 +90,9 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             Auth.Authorize(auth, "admin");
 
             string name = auth.User.Identity!.Name!;
-            var driver = await _driverRepository.GetByName(name);
-            Guid userId = driver!.UserId!.Value;
+            var user = await _userRepository.GetByName(name);
 
-            await _service.Verify(timeEntries, userId, comment);
+            await _service.Verify(timeEntries, user!.Id, comment);
         }
 
         private async Task AuthorizeSelf(Driver driver)
