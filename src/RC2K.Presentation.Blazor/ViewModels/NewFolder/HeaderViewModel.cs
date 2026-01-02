@@ -27,7 +27,6 @@ public class HeaderViewModel : BaseViewModel
             GetRallySubitem(RallyCode.Seat),
             GetRallySubitem(RallyCode.Stena),
             GetRallySubitem(RallyCode.Sony),
-            GetRallySubitem(RallyCode.Vauxhall),
         ] },
         //new MenuItem() { Item = "Contests", ItemLink = "/contests", Icon = Icon.Contest, Subitems = [
         //    ("MFMI23","contests/mfmi23"),

@@ -18,6 +18,11 @@ public class UserService : IUserService
         _passwordProvider = passwordProvider;
     }
 
+    public Task<string> GetCurrentUserName()
+    {
+        return Task.FromResult("");
+    }
+
     public async Task<Result> Authenticate(string name, string password)
     {
         User? user = await _userRepository.GetByName(name);
