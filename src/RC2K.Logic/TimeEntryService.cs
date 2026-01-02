@@ -11,17 +11,20 @@ namespace RC2K.Logic;
 public class TimeEntryService : ITimeEntryService
 {
     private readonly ITimeEntryRepository _timeEntryRepository;
+    private readonly IVerifyInfoRepository _verifyInfoRepository;
     private readonly IPointsProvider _pointsProvider;
     private readonly IFillersBag _fillers;
     private readonly ILogger<TimeEntryService> _logger;
 
     public TimeEntryService(ITimeEntryRepository timeEntryRepository,
-        IPointsProvider pointsProvider,
+                            IVerifyInfoRepository verifyInfoRepository,
+                            IPointsProvider pointsProvider,
                             IFillersBag fillers,
                             ILogger<TimeEntryService> logger)
     {
         _logger = logger;
         _timeEntryRepository = timeEntryRepository;
+        _verifyInfoRepository = verifyInfoRepository;
         _pointsProvider = pointsProvider;
         _fillers = fillers;
 
@@ -49,6 +52,47 @@ public class TimeEntryService : ITimeEntryService
         await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
 
         return timeEntries;
+    }
+
+    public Task Verify(List<TimeEntry> timeEntries, string comment)
+    {
+        _logger.LogWarning("Call Verify with verifierId");
+        return Task.CompletedTask;
+    }
+
+    public async Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment)
+    {
+        if (timeEntries.Any(x => x.VerifyInfoId is not null))
+        {
+            string ids = string.Join(",",
+                timeEntries.Where(x => x.VerifyInfoId is not null)
+                           .Select(x => x.Id));
+            throw new Exception($"TimeEntries with ids [{ids}] are already verified.");
+        }
+
+        VerifyInfo verifyInfo = new()
+        {
+            Id = Guid.NewGuid(),
+            VerifierId = verifierId,
+            Comment = comment,
+            VerifyDate = DateTime.Now
+        };
+
+        await _verifyInfoRepository.Create(verifyInfo);
+
+        timeEntries.ForEach(x => x.VerifyInfoId = verifyInfo.Id);
+
+        foreach (var timeEntry in timeEntries)
+        {
+            try
+            {
+                await _timeEntryRepository.Update(timeEntry);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to update {timeEntry.Id}");
+            }
+        }
     }
 
     public async Task Upload(
@@ -126,7 +170,6 @@ public class TimeEntryService : ITimeEntryService
                 placesByCar);
         }
     }
-
 
 
 }

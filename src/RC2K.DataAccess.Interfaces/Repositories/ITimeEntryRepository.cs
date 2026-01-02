@@ -6,6 +6,7 @@ public interface ITimeEntryRepository
 {
     event EventHandler<(string, double)>? RequestUnitsHandler;
     Task Create(TimeEntry entity);
+    Task Update(TimeEntry entity);
     Task<List<TimeEntry>> GetAll();
     Task<List<TimeEntry>> GetAllNotVerified();
     Task<TimeEntry?> GetById(Guid id);

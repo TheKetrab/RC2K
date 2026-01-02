@@ -9,6 +9,8 @@ public interface ITimeEntryService
     Task Upload(TimeEntry timeEntry);
     Task<List<TimeEntry>> Get(int stageId, int? carId = null);
     Task<List<TimeEntry>> GetAllNotVerified();
+    Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment);
+    Task Verify(List<TimeEntry> timeEntries, string comment);
     Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1);
 
 }

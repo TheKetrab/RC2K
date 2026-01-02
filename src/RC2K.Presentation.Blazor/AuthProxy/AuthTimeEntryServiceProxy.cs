@@ -73,6 +73,26 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             await _service.Upload(timeEntry);
         }
 
+        public async Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            await _service.Verify(timeEntries, verifierId, comment);
+        }
+
+        public async Task Verify(List<TimeEntry> timeEntries, string comment)
+        {
+            var auth = await _asp.GetAuthenticationStateAsync();
+            Auth.Authorize(auth, "admin");
+
+            string name = auth.User.Identity!.Name!;
+            var driver = await _driverRepository.GetByName(name);
+            Guid userId = driver!.UserId!.Value;
+
+            await _service.Verify(timeEntries, userId, comment);
+        }
+
         private async Task AuthorizeSelf(Driver driver)
         {
             string name = driver.Known
