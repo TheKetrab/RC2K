@@ -36,6 +36,7 @@
       </div>
       <MudTextField T="string"
                     Label="Driver name"
+                    ReadOnly="true"
                     @bind-Value="UploadTimeModel.DriverName" />
 
       <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" /> 
@@ -90,7 +91,7 @@
 </MyErrorBoundary>
 
 @code {
-    ErrorBoundary _errorBoundary;
+  ErrorBoundary _errorBoundary;
 
   protected override void OnParametersSet()
   {
@@ -167,7 +168,7 @@
     if (driver is null || !driver.Known)
     {
       // TODO: handle adding times for anonymous drivers
-      throw new Exception("Currently adding times for not logged in drivers is not supported");
+      Snackbar.Add("Currently adding times for not logged in drivers is not supported", Severity.Error);
       return;
     }
 
@@ -175,6 +176,12 @@
       _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
                  .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
                  .ToList();
+
+    if (proofs.Count == 0)
+    {
+      Snackbar.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.", Severity.Error);
+      return;
+    }
 
     await TimeEntryService.Upload(
       StageId,
