@@ -49,12 +49,21 @@
           <h1 Style=@($"color: {@App.MyColors.primary700}")>
               @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
           </h1>
-          <p>Length: @_stageDetails.Length</p>
-          <p>Road: @_stageDetails.Asphalt / @_stageDetails.Dirt / @_stageDetails.Gravel / @_stageDetails.Snow</p>
+          <MudStack Row="true">
+            <MudText Typo="Typo.body1"><b>Length:</b></MudText>
+            <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
+          </MudStack>
+          <MudStack Row="true">
+            <MudText Typo="Typo.body1"><b>Road:</b></MudText>
+            <MudText Typo="Typo.body1">@_stageDetails.Asphalt % / @_stageDetails.Dirt % / @_stageDetails.Gravel % / @_stageDetails.Snow %</MudText>
+          </MudStack>
           <div style="max-width: @((int)_stageDetails.Length * 2)%;">
             <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])"  />
           </div>
-          <p>Weather: @_stageDetails.Temp &#0043;C, wind: @_stageDetails.Wind km/H</p>
+          <MudStack Row="true">
+            <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
+            <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
+          </MudStack>
         </div>
         <div class="card-footer"></div>
       </div>
