@@ -1,4 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="App.MyCustomTheme" />
+<MudPopoverProvider @rendermode="InteractiveServer" />
+<MudDialogProvider @rendermode="InteractiveServer" />
+<MudSnackbarProvider @rendermode="InteractiveServer" />
 
 
     <div class="page">
