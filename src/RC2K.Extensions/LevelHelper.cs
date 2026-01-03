@@ -68,4 +68,7 @@ public static class LevelHelper
 
     public static string StageCodeToRallyShortName(int stageCode) =>
         RallyCodeToRallyShortName(GetRallyCodeByStageCode(stageCode));
+
+    public static string StageCodeToRallyName(int stageCode) =>
+        RallyCodeToRallyName(GetRallyCodeByStageCode(stageCode));
 }
