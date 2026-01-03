@@ -11,7 +11,7 @@
         <Header />
         <main>
             <BreadcrumbsNavigation />
-    <MyErrorBoundary @ref="_errorBoundary">
+            <MyErrorBoundary @ref="_errorBoundary">
               <ChildContent >
                 <article style="" class="content">@Body</article>
               </ChildContent>
@@ -20,20 +20,8 @@
               </ErrorContent>
             </MyErrorBoundary>
         </main>
-        
-        <MudContainer MaxWidth="MaxWidth.Large">
-            <MudGrid Justify="Justify.FlexEnd">
-                <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
-                    <MudText Typo="Typo.body2" Color="Color.Secondary" class="mr-5">
-                        Designed and Developed by 
-                        <MudLink href="https://github.com/theketrab" Color="Color.Primary" Class="ms-1">
-                            TheKetrab
-                        </MudLink> 
-                        &copy; 2025
-                    </MudText>
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
+
+        <Footer />
     </div>
  
   
@@ -45,4 +33,4 @@
   {
     _errorBoundary?.Recover();
   }
-                }
+}
