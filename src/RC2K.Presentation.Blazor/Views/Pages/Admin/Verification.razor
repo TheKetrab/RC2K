@@ -113,7 +113,7 @@
     {
       return te.Stage.StageData.Name + 
         $" ({(te.Stage.Direction == DomainModel.Direction.Simulation ? "S" : "A")})" +
-        $" ({te.Time.ToString("m:ss.ff")}" +
+        $" {te.Time.ToString("m:ss.ff")}" +
         $" by {(te.Driver.Known ? te.Driver.User.Name : te.Driver.Name)}";
     }
 

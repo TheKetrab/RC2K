@@ -5,7 +5,6 @@ namespace RC2K.Logic.Interfaces;
 public interface INotificationService
 {
     Task NotifyMasterAdmin(string message);
-    Task<Notification?> GetById(Guid id);
     Task<List<Notification>> GetUserNotifications(string userName);
     Task Create(Guid userId, string message);
     Task Delete(Guid id);

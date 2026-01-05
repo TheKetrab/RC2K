@@ -49,9 +49,4 @@ public class NotificationService : INotificationService
     {
         await _notificationRepository.Delete(id.ToString());
     }
-
-    public async Task<Notification?> GetById(Guid id)
-    {
-        return await _notificationRepository.GetById(id);
-    }
 }

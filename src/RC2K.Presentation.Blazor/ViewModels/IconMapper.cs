@@ -25,7 +25,8 @@ public enum Icon
     Replay,
     Image,
     Unknown,
-    Ranking
+    Ranking,
+    Mail
 }
 
 public static class IconMapper
@@ -106,6 +107,7 @@ public static class IconMapper
             { Icon.Image, (true, image_slim, image_fill) },
             { Icon.Unknown, (true, square_slim, square_fill) },
             { Icon.Ranking, (true, MudBlazor.Icons.Material.Outlined.Leaderboard, MudBlazor.Icons.Material.Filled.Leaderboard) },
+            { Icon.Mail, (true, MudBlazor.Icons.Material.Outlined.Mail, MudBlazor.Icons.Material.Filled.Mail) },
         };
     }
 

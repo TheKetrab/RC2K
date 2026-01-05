@@ -100,6 +100,7 @@ public static class BuilderConfiguration
 
         builder.Services.AddScoped<BonusPointsMapper>();
         builder.Services.AddScoped<DriverMapper>();
+        builder.Services.AddScoped<NotificationMapper>();
         builder.Services.AddScoped<TimeEntryMapper>();
         builder.Services.AddScoped<RankingsMapper>();
         builder.Services.AddScoped<UserMapper>();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic;
 using RC2K.Logic.Interfaces;
@@ -9,15 +10,18 @@ public class AuthNotificationServiceProxy : INotificationService
 {
     private AuthenticationStateProvider _asp;
     private NotificationService _service;
+    private INotificationRepository _notificationRepository;
     private IUserService _userService;
 
     public AuthNotificationServiceProxy(
         AuthenticationStateProvider asp,
         NotificationService service,
+        INotificationRepository notificationRepository,
         IUserService userService)
     {
         _asp = asp;
         _service = service;
+        _notificationRepository = notificationRepository;
         _userService = userService;
     }
 
@@ -31,20 +35,20 @@ public class AuthNotificationServiceProxy : INotificationService
         await _service.Delete(id);
     }
 
-    public async Task<Notification?> GetById(Guid id)
+    public async Task<List<Notification>> GetUserNotifications(string userName)
     {
-        return await _service.GetById(id);
-    }
+        var auth = await _asp.GetAuthenticationStateAsync();
+        Auth.AuthorizeSelf(auth, userName);
 
-    public Task<List<Notification>> GetUserNotifications(string userName) =>
-        _service.GetUserNotifications(userName);
+        return await _service.GetUserNotifications(userName);
+    }
 
     public Task NotifyMasterAdmin(string message) =>
         _service.NotifyMasterAdmin(message);
 
     private async Task AuthorizeSelf(Guid notificationId)
     {
-        Notification? notification = await _service.GetById(notificationId);
+        Notification? notification = await _notificationRepository.GetById(notificationId);
         if (notification == null) 
         {
             return;
