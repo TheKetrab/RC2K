@@ -26,6 +26,12 @@ public class NotificationService : INotificationService
         return await _notificationRepository.GetNotifications(user.Id);
     }
 
+    public async Task NotifyMasterAdmin(string message)
+    {
+        var theKetrab = await _userRepository.GetByName("TheKetrab");
+        await Create(theKetrab.Id, message);
+    }
+
     public async Task Create(Guid userId, string message)
     {
         Notification notification = new Notification()

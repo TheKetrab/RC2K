@@ -39,6 +39,9 @@ public class AuthNotificationServiceProxy : INotificationService
     public Task<List<Notification>> GetUserNotifications(string userName) =>
         _service.GetUserNotifications(userName);
 
+    public Task NotifyMasterAdmin(string message) =>
+        _service.NotifyMasterAdmin(message);
+
     private async Task AuthorizeSelf(Guid notificationId)
     {
         Notification? notification = await _service.GetById(notificationId);
