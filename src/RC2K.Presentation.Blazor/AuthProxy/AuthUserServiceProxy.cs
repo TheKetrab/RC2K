@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+using RC2K.DomainModel;
 using RC2K.Logic;
 using RC2K.Logic.Interfaces;
 
@@ -25,6 +26,9 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
         public Task<Result> CreateUserWithPassword(string name, string password, string? nationality, string email) =>
             _service.CreateUserWithPassword(name, password, nationality, email);
+
+        public Task<User?> GetById(Guid id) =>
+            _service.GetById(id);
 
         public async Task<string> GetCurrentUserName()
         {

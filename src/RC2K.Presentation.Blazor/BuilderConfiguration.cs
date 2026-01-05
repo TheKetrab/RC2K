@@ -118,6 +118,7 @@ public static class BuilderConfiguration
 
         builder.Services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
         builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
         builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
         builder.Services.AddScoped<IRankingsRepository, RankingsRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -151,6 +152,9 @@ public static class BuilderConfiguration
 
         builder.Services.AddScoped<TimeEntryService>();
         builder.Services.AddScoped<ITimeEntryService, AuthTimeEntryServiceProxy>();
+
+        builder.Services.AddScoped<NotificationService>();
+        builder.Services.AddScoped<INotificationService, AuthNotificationServiceProxy>();
 
         builder.Services.AddScoped<RankingService>();
         builder.Services.AddScoped<IRankingService, AuthRankingServiceProxy>();

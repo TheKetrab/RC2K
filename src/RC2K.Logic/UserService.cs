@@ -93,4 +93,9 @@ public class UserService : IUserService
             };
         }
     }
+
+    public async Task<User?> GetById(Guid id)
+    {
+        return await _userRepository.GetById(id);
+    }
 }
