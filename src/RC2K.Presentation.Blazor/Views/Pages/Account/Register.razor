@@ -16,6 +16,8 @@
 @inject IMailProvider MailProvider
 @inject NavigationManager NavigationManager
 @inject IDialogService Dialog
+@inject IJSRuntime JSRuntime
+@inject ICaptchaVerifier CaptchaVerifier
 
 @page "/register"
 
@@ -70,9 +72,20 @@
       <div class="d-flex align-center justify-space-between">
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Disabled="@(!registerSuccess)"
+                   Disabled="@(!registerSuccess || _isProcessing)"
                    Class="ml-auto"
-                   OnClick="RegisterClick">Register</MudButton>
+                   OnClick="RegisterClick">
+
+          @if (_isProcessing)
+          {
+            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            <MudText Class="ms-2">Processing...</MudText>
+          }
+          else
+          {
+            <MudText>Register</MudText>
+          }
+                 </MudButton>
       </div>
       <div>
         <p class="d-flex" style="justify-self: center;">
@@ -106,6 +119,7 @@
 
 @code {
 
+  bool _isProcessing;
   RegisterAccountDto Model { get; set; } = new();
   IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
   bool registerSuccessOpen;
@@ -153,30 +167,26 @@
 
   private async Task RegisterClick()
   {
+    _isProcessing = true;
+    await DoRegisterAction();
+    _isProcessing = false;
+
+  }
+
+  private async Task DoRegisterAction()
+  {
+    if (await IsRobot())
+    {
+      return;
+    }
+
+    if (!(await EmailVerificationSucceed()))
+    {
+      return;
+    }
+
     string? country = Model.Nationality.HasValue
       ? Model.Nationality.Value.Item1 : null;
-
-    string emailCode = PasswordProvider.GenerateTemporaryPassword();
-    MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
-    UserService.SetEmailConfirmationCode(Model.Email, emailCode);
-
-    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-    var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
-    var dialogResult = await dialog.Result;
-
-    if (dialogResult.Canceled)
-    {
-      return;
-    }
-
-    string userEnteredCode = dialogResult.Data.ToString();
-
-    if (userEnteredCode != emailCode)
-    {
-      return;
-    }
-
-
 
     var result = await UserService.CreateUserWithPassword(
       Model.Username!, Model.Password!, country, Model.Email!);
@@ -189,5 +199,50 @@
     {
       errors = [result?.Message ?? "Unknown error"];
     }
+  }
+
+  private async Task<bool> IsRobot()
+  {
+    string token = await JSRuntime.InvokeAsync<string>("runCaptcha");
+    int isRobot = await CaptchaVerifier.IsRobot(token);
+    if (isRobot == 1)
+    {
+      errors = ["You are a robot! Aren't you? - try again or contact TheKetrab via discord."];
+      return true;
+    }
+    if (isRobot == -1)
+    {
+      errors = ["You failed reCAPTCHA verification and we are not sure if you are a robot. Try again or contact TheKetrab via discord."];
+      return true;
+    }
+
+    return false;
+  }
+
+  private async Task<bool> EmailVerificationSucceed()
+  {
+    string emailCode = PasswordProvider.GenerateTemporaryPassword();
+    MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
+    UserService.SetEmailConfirmationCode(Model.Email, emailCode);
+
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
+    var dialogResult = await dialog.Result;
+
+    if (dialogResult.Canceled)
+    {
+      errors = ["You cancelled email verification."];
+      return false;
+    }
+
+    string userEnteredCode = dialogResult.Data.ToString();
+
+    if (userEnteredCode != emailCode)
+    {
+      errors = ["Email code is wrong."];
+      return false;
+    }
+
+    return true;
   }
 }
