@@ -8,13 +8,21 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Http
 @using CodeName = (string code, string name);
+@using RC2K.Presentation.Blazor.Views.Components
 
 @rendermode InteractiveServer
 @inject IUserService UserService;
+@inject IPasswordProvider PasswordProvider
+@inject IMailProvider MailProvider
 @inject NavigationManager NavigationManager
-
+@inject IDialogService Dialog
+@inject IJSRuntime JSRuntime
+@inject ICaptchaVerifier CaptchaVerifier
+@inject IDriverService DriverService
 
 @page "/register"
+
+<TrackCaptcha />
 
 <h1>Login to see more stats!</h1>
 
@@ -67,9 +75,20 @@
       <div class="d-flex align-center justify-space-between">
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Disabled="@(!registerSuccess)"
+                   Disabled="@(!registerSuccess || _isProcessing)"
                    Class="ml-auto"
-                   OnClick="RegisterClick">Register</MudButton>
+                   OnClick="RegisterClick">
+
+          @if (_isProcessing)
+          {
+            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            <MudText Class="ms-2">Processing...</MudText>
+          }
+          else
+          {
+            <MudText>Register</MudText>
+          }
+                 </MudButton>
       </div>
       <div>
         <p class="d-flex" style="justify-self: center;">
@@ -103,6 +122,7 @@
 
 @code {
 
+  bool _isProcessing;
   RegisterAccountDto Model { get; set; } = new();
   IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
   bool registerSuccessOpen;
@@ -150,11 +170,52 @@
 
   private async Task RegisterClick()
   {
+    _isProcessing = true;
+    await DoRegisterAction();
+    _isProcessing = false;
+
+  }
+
+  private async Task DoRegisterAction()
+  {
+    if (await IsRobot())
+    {
+      return;
+    }
+
+    var driver = await DriverService.GetByName(Model.Username);
+
+    string? driverCode = null;
+    if (driver is not null && !driver.Known)
+    {
+      var driverCodeFromUser = await GetDriverCodeFromUser();
+      if (driverCodeFromUser.Item1 == false)
+      {
+        return;
+      }
+      driverCode = driverCodeFromUser.Item2;
+    }
+
+    if (!(await EmailVerificationSucceed()))
+    {
+      return;
+    }
+
     string? country = Model.Nationality.HasValue
       ? Model.Nationality.Value.Item1 : null;
 
-    var result = await UserService.CreateUserWithPassword(
-      Model.Username!, Model.Password!, country, Model.Email!);
+    Result result;
+    if (driverCode is null)
+    {
+      result = await UserService.CreateUserWithPassword(
+        Model.Username!, Model.Password!, country, Model.Email!);
+
+    }
+    else
+    {
+      result = await UserService.UpgradeDriverToUser(Model.Username, driverCode, Model.Password, Model.Email);
+    }
+
 
     if (result.Success)
     {
@@ -164,5 +225,67 @@
     {
       errors = [result?.Message ?? "Unknown error"];
     }
+  }
+
+  private async Task<bool> IsRobot()
+  {
+    string token = await JSRuntime.InvokeAsync<string>("runCaptcha");
+    int isRobot = await CaptchaVerifier.IsRobot(token);
+    if (isRobot == 1)
+    {
+      errors = ["You are a robot! Aren't you? - try again or contact TheKetrab via discord."];
+      return true;
+    }
+    if (isRobot == -1)
+    {
+      errors = ["You failed reCAPTCHA verification and we are not sure if you are a robot. Try again or contact TheKetrab via discord."];
+      return true;
+    }
+
+    return false;
+  }
+
+  private async Task<bool> EmailVerificationSucceed()
+  {
+    string emailCode = PasswordProvider.GenerateTemporaryPassword();
+    MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
+    UserService.SetEmailConfirmationCode(Model.Email, emailCode);
+
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
+    var dialogResult = await dialog.Result;
+
+    if (dialogResult.Canceled)
+    {
+      errors = ["You cancelled email verification."];
+      return false;
+    }
+
+    string userEnteredCode = dialogResult.Data.ToString();
+
+    if (userEnteredCode != emailCode)
+    {
+      errors = ["Email code is wrong."];
+      return false;
+    }
+
+    return true;
+  }
+
+  private async Task<(bool,string)> GetDriverCodeFromUser()
+  {
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await Dialog.ShowAsync<UpgradeDriverToUserDialog>("Upgrade driver to user", options);
+    var dialogResult = await dialog.Result;
+
+    if (dialogResult.Canceled)
+    {
+      errors = ["You cancelled upgrading driver to user."];
+      return (false, "");
+    }
+
+    string driverCode = dialogResult.Data.ToString();
+
+    return (true, driverCode);
   }
 }

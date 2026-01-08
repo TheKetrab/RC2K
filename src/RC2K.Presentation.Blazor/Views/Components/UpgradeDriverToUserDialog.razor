@@ -1,0 +1,50 @@
+﻿@using RC2K.DomainModel
+@using RC2K.Logic
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Layout
+@rendermode InteractiveServer
+@inject IStageService StageService
+@inject ITimeEntryService TimeEntryService
+@inject IDriverService DriverService
+@inject ICarService CarService
+@inject IPointsProvider PointsProvider
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IUserService UserService
+
+
+<MudDialog>
+  <TitleContent>
+    <MudText Typo="Typo.h6">
+      Put driver pass code
+    </MudText>
+  </TitleContent>
+  <DialogContent>
+    <MudText> There is already existing driver (not a registered user) with this nick name. You own were given driver-pass-key when driver was created. Pass it here. In case of any problems contact TheKetrab via discord.</MudText>
+    <MudTextField T="string"
+                  Label="Driver pass code"
+                  @bind-Value="DriverPassCode" />
+  </DialogContent>
+  <DialogActions>
+    <MudButton OnClick="Cancel">Cancel</MudButton>
+    <MudButton Color="Color.Error" OnClick="Ok">Create account</MudButton>
+  </DialogActions>
+</MudDialog>
+
+@code {
+
+  [CascadingParameter]
+  private IMudDialogInstance MudDialog { get; set; }
+
+  private void Cancel() => MudDialog.Cancel();
+
+  private void Ok()
+  {
+    MudDialog.Close(DialogResult.Ok(DriverPassCode));
+  }
+
+  public string DriverPassCode { get; set; }
+
+}
