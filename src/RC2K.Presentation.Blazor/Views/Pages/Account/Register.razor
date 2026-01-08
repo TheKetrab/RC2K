@@ -8,11 +8,14 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Http
 @using CodeName = (string code, string name);
+@using RC2K.Presentation.Blazor.Views.Components
 
 @rendermode InteractiveServer
 @inject IUserService UserService;
+@inject IPasswordProvider PasswordProvider
+@inject IMailProvider MailProvider
 @inject NavigationManager NavigationManager
-
+@inject IDialogService Dialog
 
 @page "/register"
 
@@ -152,6 +155,28 @@
   {
     string? country = Model.Nationality.HasValue
       ? Model.Nationality.Value.Item1 : null;
+
+    string emailCode = PasswordProvider.GenerateTemporaryPassword();
+    MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
+    UserService.SetEmailConfirmationCode(Model.Email, emailCode);
+
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
+    var dialogResult = await dialog.Result;
+
+    if (dialogResult.Canceled)
+    {
+      return;
+    }
+
+    string userEnteredCode = dialogResult.Data.ToString();
+
+    if (userEnteredCode != emailCode)
+    {
+      return;
+    }
+
+
 
     var result = await UserService.CreateUserWithPassword(
       Model.Username!, Model.Password!, country, Model.Email!);

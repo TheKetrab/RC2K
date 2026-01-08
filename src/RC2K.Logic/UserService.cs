@@ -7,6 +7,8 @@ namespace RC2K.Logic;
 
 public class UserService : IUserService
 {
+    internal static Dictionary<string, string> _emailConfirmationKeys = [];
+
     private readonly IUserRepository _userRepository;
     private readonly IDriverRepository _driverRepository;
     private readonly IPasswordProvider _passwordProvider;
@@ -92,5 +94,10 @@ public class UserService : IUserService
                 Message = "User with given name or email already exists"
             };
         }
+    }
+
+    public void SetEmailConfirmationCode(string email, string code)
+    {
+        _emailConfirmationKeys[email] = code;
     }
 }

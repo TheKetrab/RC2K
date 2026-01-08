@@ -36,5 +36,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
             return auth.User.Identity!.Name!;
         }
+
+        public void SetEmailConfirmationCode(string email, string code) =>
+            _service.SetEmailConfirmationCode(email, code);
     }
 }
