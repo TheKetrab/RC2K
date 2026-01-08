@@ -147,6 +147,14 @@ public static class BuilderConfiguration
 
             return new PasswordProvider(iterations, salt);
         });
+        builder.Services.AddScoped<IMailProvider, GmailProvider>(provider =>
+        {
+            var mailingSection = builder.Configuration.GetSection("Mailing");
+            string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword");
+            string senderEmail = mailingSection.GetValue<string>("SenderEmail");
+
+            return new GmailProvider(senderEmail, sftpAppPassword);
+        });
         builder.Services.AddScoped<ICarService, CarService>();
 
         builder.Services.AddScoped<TimeEntryService>();
