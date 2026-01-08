@@ -43,6 +43,23 @@ public class UserService : IUserService
         return new Result() { Success = false };
     } 
 
+    public async Task<Result> UpgradeDriverToUser(string name, string driverPassCode, string password, string email)
+    {
+        Driver? driver = await _driverRepository.GetByName(name);
+        if (driver is null)
+        {
+            return new Result() { Success = false, Message = $"Driver with name {name} not found" };
+        }
+
+        if (driverPassCode != driver.Key) 
+        {
+            return new Result() { Success = false, Message = $"Driver pass code is not valid" };
+        }
+
+        string passwordHash = _passwordProvider.CalculatePasswordHash(password);
+        return await UpgradeDriverToUserInternal(driver, passwordHash, email);
+    }
+
     public async Task<Result> CreateUserWithPassword(string name, string? password, string? nationality, string email)
     {
         password ??= _passwordProvider.GenerateTemporaryPassword();
@@ -79,6 +96,49 @@ public class UserService : IUserService
         {
             await _userRepository.Create(user);
             await _driverRepository.Create(driver);
+
+            return new Result()
+            {
+                Success = true
+            };
+        }
+        catch (UserExistsException)
+        {
+            return new Result()
+            {
+                Success = false,
+                ErrorCode = (int)ErrorCodes.UserAlreadyExists,
+                Message = "User with given name or email already exists"
+            };
+        }
+    }
+
+    private async Task<Result> UpgradeDriverToUserInternal(Driver driver, string? passwordHash, string email)
+    {
+        Guid userId = Guid.NewGuid();
+
+        Driver updatedDriver = new Driver()
+        {
+            Id = driver.Id,
+            Known = true,
+            Nationality = driver.Nationality,
+            UserId = userId
+        };
+
+        User user = new User()
+        {
+            DriverId = driver.Id,
+            Id = userId,
+            Name = driver.Name,
+            PasswordHash = passwordHash,
+            Roles = ["user"],
+            Email = email,
+        };
+
+        try
+        {
+            await _userRepository.Create(user);
+            await _driverRepository.Update(updatedDriver);
 
             return new Result()
             {

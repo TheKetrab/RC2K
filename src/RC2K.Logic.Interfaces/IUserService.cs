@@ -4,6 +4,7 @@ namespace RC2K.Logic.Interfaces;
 
 public interface IUserService
 {
+    Task<Result> UpgradeDriverToUser(string name, string driverPassCode, string password, string email);
     void SetEmailConfirmationCode(string email, string code);
     Task<Result> Authenticate(string name, string password);
     Task<Result> CreateUserWithPassword(string name, string password, string? nationality, string email);

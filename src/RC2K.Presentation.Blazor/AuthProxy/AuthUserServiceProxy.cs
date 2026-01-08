@@ -39,5 +39,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
         public void SetEmailConfirmationCode(string email, string code) =>
             _service.SetEmailConfirmationCode(email, code);
+
+        public Task<Result> UpgradeDriverToUser(string name, string driverPassCode, string password, string email)
+            => _service.UpgradeDriverToUser(name, driverPassCode, password, email);
     }
 }
