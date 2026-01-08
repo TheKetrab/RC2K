@@ -10,8 +10,9 @@
 @using RC2K.Presentation.Blazor.Views.Components
 @using System.ComponentModel.DataAnnotations
 @inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
 @inject ISnackbar Snackbar
-
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
   <DataAnnotationsValidator />
@@ -68,6 +69,7 @@
     try
     {
       await TimeEntryService.Delete(selectedItems);
+      await Notify(selectedItems, false, model.Comment);
       Snackbar.Add("Rejected successfully", Severity.Success);
     }
     catch (Exception ex)
@@ -93,11 +95,44 @@
     try
     {
       await TimeEntryService.Verify(selectedItems, model.Comment);
+      await Notify(selectedItems, true, model.Comment);
       Snackbar.Add("Verified successfully", Severity.Success);
     }
     catch (Exception ex)
     {
       Snackbar.Add("Service failed to verify", Severity.Error);
+    }
+  }
+
+  private async Task Notify(List<TimeEntry> timeEntries, bool isVerify, string comment)
+  {
+    string verb = isVerify ? "verified" : "rejected";
+    string verifier = await UserService.GetCurrentUserName();
+
+    string GetInfo(TimeEntry te)
+    {
+      return te.Stage.StageData.Name + 
+        $" ({(te.Stage.Direction == DomainModel.Direction.Simulation ? "S" : "A")})" +
+        $" {te.Time.ToString("m:ss.ff")}" +
+        $" by {(te.Driver.Known ? te.Driver.User.Name : te.Driver.Name)}";
+    }
+
+    string masterAdminInfo = string.Join(" ; ", timeEntries.Select(x => $"[{GetInfo(x)}]"));
+    string masterAdminMsg = $"{verifier} {verb} time entries: {masterAdminInfo} (with comment: {comment})";
+    await NotificationService.NotifyMasterAdmin(masterAdminMsg);
+
+    foreach (var group in timeEntries.GroupBy(x => x.DriverId))
+    {
+      if (!group.First().Driver.Known)
+      {
+        continue;
+      }
+
+      Guid userId = group.First().Driver.UserId.Value;
+      string userInfo = string.Join(" ; ", group.Select(x => $"[{GetInfo(x)}]"));
+      string userMsg = $"{verifier} {verb} time entries: {userInfo} (with comment: {comment})";
+      await NotificationService.Create(userId, userMsg);
+
     }
   }
 }

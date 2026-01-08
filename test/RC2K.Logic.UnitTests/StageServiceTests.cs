@@ -8,20 +8,14 @@ namespace RC2K.Logic.UnitTests;
 public class StageServiceTests
 {
     private StageService _sut;
-    private Mock<IRallyUoW> _rallyUoWMock;
     private Mock<IStageRepository> _stageRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
-        _rallyUoWMock = new Mock<IRallyUoW>();
         _stageRepositoryMock = new Mock<IStageRepository>();
-        
-        _rallyUoWMock
-            .Setup(x => x.Stages)
-            .Returns(_stageRepositoryMock.Object);
-        
-        _sut = new(_rallyUoWMock.Object);
+                
+        _sut = new(_stageRepositoryMock.Object);
     }
 
     [Test]

@@ -113,6 +113,11 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<User?> GetById(Guid id)
+    {
+        return await _userRepository.GetById(id);
+    }
+    
     private async Task<Result> UpgradeDriverToUserInternal(Driver driver, string? passwordHash, string email)
     {
         Guid userId = Guid.NewGuid();
