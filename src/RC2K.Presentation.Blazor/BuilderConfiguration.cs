@@ -155,6 +155,15 @@ public static class BuilderConfiguration
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
+        builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
+        {
+            var captchaSection = builder.Configuration.GetSection("Captcha");
+            string secretKey = captchaSection.GetValue<string>("SecretKey");
+            var logger = provider.GetRequiredService<ILogger<ReCaptchaV3Verifier>>();
+
+            return new ReCaptchaV3Verifier(secretKey, logger);
+        });
+
         builder.Services.AddScoped<ICarService, CarService>();
 
         builder.Services.AddScoped<TimeEntryService>();

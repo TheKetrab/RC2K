@@ -48,6 +48,19 @@
         gtag('config', 'G-TBW7LHNXJF_ID');
       </script>
 
+      <!-- Google reCAPTCHA -->
+  <script src=@($"https://www.google.com/recaptcha/api.js?render={_recaptchaSiteKey}")></script>
+  <script>
+    runCaptcha = function (actionName) {
+      return new Promise((resolve, reject) => {
+        grecaptcha.ready(function () {
+          grecaptcha.execute('@($"{_recaptchaSiteKey}")', { action: 'submit' }).then(function (token) {
+            resolve(token);
+          });
+        });
+      });
+    };
+  </script>
 </body>
 
 </html>
@@ -57,6 +70,12 @@
 
 @code
 {
+  private readonly string _recaptchaSiteKey;
+  public App(IConfiguration configuration)
+  {
+    _recaptchaSiteKey = configuration["Captcha:SiteKey"];
+  }
+
   public class MyColors
   {
     public const string primary50 = "#e8eaf7";
