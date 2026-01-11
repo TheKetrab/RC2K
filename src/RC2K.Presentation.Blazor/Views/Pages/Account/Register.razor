@@ -229,20 +229,7 @@
 
   private async Task<bool> IsRobot()
   {
-    string token = await JSRuntime.InvokeAsync<string>("runCaptcha");
-    int isRobot = await CaptchaVerifier.IsRobot(token);
-    if (isRobot == 1)
-    {
-      errors = ["You are a robot! Aren't you? - try again or contact TheKetrab via discord."];
-      return true;
-    }
-    if (isRobot == -1)
-    {
-      errors = ["You failed reCAPTCHA verification and we are not sure if you are a robot. Try again or contact TheKetrab via discord."];
-      return true;
-    }
-
-    return false;
+      return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => errors = [msg]);
   }
 
   private async Task<bool> EmailVerificationSucceed()
