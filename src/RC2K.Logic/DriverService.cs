@@ -11,12 +11,36 @@ public class DriverService : IDriverService
     private readonly IUserRepository _userRepository;
     private readonly IDriverRepository _driverRepository;
     private readonly IFillersBag _fillers;
+    private readonly IPasswordProvider _passwordProvider;
 
-    public DriverService(IUserRepository userRepository, IDriverRepository driverRepository, IFillersBag fillers)
+    public DriverService(IUserRepository userRepository, IDriverRepository driverRepository, IFillersBag fillers, IPasswordProvider passwordProvider)
     {
         _userRepository = userRepository;
         _driverRepository = driverRepository;
         _fillers = fillers;
+        _passwordProvider = passwordProvider;
+    }
+
+    public async Task<Result<Driver>> CreateAnonymous(string name, string? nationality)
+    {
+        Driver driver = new Driver()
+        {
+            Id = Guid.NewGuid(),
+            Known = false,
+            Name = name,
+            Key = _passwordProvider.GenerateTemporaryPassword(),
+            Nationality = nationality
+        };
+
+        try
+        {
+            await _driverRepository.Create(driver);
+            return new Result<Driver>() { Success = true, Payload = driver };
+        }
+        catch (DriverExistsException)
+        {
+            return new Result<Driver>() { Success = false, Message = "Driver exists" };
+        }
     }
 
     public async Task<Dictionary<Guid, string>> GetAllNames()

@@ -110,7 +110,17 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public async Task Upload(
+    public async Task<Result> Upload(
+       int stageId, int carId, Guid driverId,
+       int min, int sec, int cc,
+       List<Proof> proofs, string? labels,
+       string driverKey)
+    {
+        await Upload(stageId, carId, driverId, min, sec, cc, proofs, labels);
+        return new Result() { Success = true };
+    }
+
+    public async Task<Result> Upload(
         int stageId, int carId, Guid driverId,
         int min, int sec, int cc,
         List<Proof> proofs, string? labels)
@@ -128,6 +138,7 @@ public class TimeEntryService : ITimeEntryService
         };
 
         await Upload(timeEntry);
+        return new Result() { Success = true };
     }
 
     public async Task Upload(TimeEntry timeEntry)

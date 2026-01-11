@@ -59,7 +59,7 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public Task<List<TimeEntry>> GetAllNotVerified() =>
             _service.GetAllNotVerified();
 
-        public async Task Upload(
+        public async Task<Result> Upload(
             int stageId, int carId, Guid driverId,
             int min, int sec, int cc,
             List<Proof> proofs, string? labels)
@@ -70,12 +70,44 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             FillingContext context = new();
             await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
 
-            await AuthorizeSelf(driver);
+            try
+            {
+                await AuthorizeSelf(driver);
+
+                await _service.Upload(
+                    stageId, carId, driverId,
+                    min, sec, cc,
+                    proofs, labels);
+
+                return new Result() { Success = true };
+            }
+            catch (NotAuthorizedException ex)
+            {
+                return new Result { Success = false, Message = ex.Message };
+            }
+        }
+
+        public async Task<Result> Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels, string driverKey)
+        {
+            Driver driver = await _driverRepository.GetById(driverId)
+                ?? throw new ArgumentException();
+
+            if (driver.Known)
+            {
+                throw new Exception("For registered users use method without driver key");
+            }
+
+            if (driver.Key != driverKey)
+            {
+                return new Result() { Success = false, Message = "Invalid driver code" };
+            }
 
             await _service.Upload(
                 stageId, carId, driverId,
                 min, sec, cc,
                 proofs, labels);
+
+            return new Result() { Success = true };
         }
 
         public async Task Upload(TimeEntry timeEntry)
