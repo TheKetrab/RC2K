@@ -5,29 +5,6 @@
 
 <!-- The goal of this component is to render reCAPTCHA badge only on pages where CAPTCHA mechanism is required -->
 
-<!-- Google reCAPTCHA -->
-<script src=@($"https://www.google.com/recaptcha/api.js?render={_recaptchaSiteKey}")></script>
-<script>
-  runCaptcha = function (actionName) {
-    return new Promise((resolve, reject) => {
-      grecaptcha.ready(function () {
-        grecaptcha.execute('@($"{_recaptchaSiteKey}")', { action: 'submit' }).then(function (token) {
-          resolve(token);
-        });
-      });
-    });
-  };
-</script>
-<script>
-  setRecaptchaVisibility = function (visible) {
-    const badge = document.querySelector('.grecaptcha-badge');
-    if (badge) {
-        debugger;
-        badge.style.display = visible ? 'block' : 'none';
-    }
-  };
-</script>
-
 @code {
 
   private string _recaptchaSiteKey;

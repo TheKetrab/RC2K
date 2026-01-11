@@ -12,3 +12,8 @@ public class Result
     public string? Message { get; set; }
     public int ErrorCode { get; set; } = 0;
 }
+
+public class Result<T> : Result
+{
+    public T? Payload { get; set; }
+}

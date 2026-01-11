@@ -30,7 +30,7 @@
     <HeadOutlet />
 </head>
 
-<body>
+<body onload="(() => setRecaptchaVisibility(false))()">
     <Routes />
     <NavigationTracker />
     <MatPortalHost></MatPortalHost>
@@ -48,6 +48,29 @@
         gtag('config', 'G-TBW7LHNXJF_ID');
       </script>
 
+
+  <!-- Google reCAPTCHA -->
+  <script src=@($"https://www.google.com/recaptcha/api.js?render={_recaptchaSiteKey}")></script>
+  <script>
+    runCaptcha = function() {
+      return new Promise((resolve, reject) => {
+        grecaptcha.ready(function () {
+          grecaptcha.execute('@($"{_recaptchaSiteKey}")', { action: 'submit' }).then(function (token) {
+            resolve(token);
+          });
+        });
+      });
+    };
+  </script>
+  <script>
+    setRecaptchaVisibility = function (visible) {
+      const badge = document.querySelector('.grecaptcha-badge');
+      if (badge) {
+          debugger;
+          badge.style.display = visible ? 'block' : 'none';
+      }
+    };
+  </script>
 
 </body>
 
@@ -97,6 +120,11 @@
     public const string complementary = complementary800;
   }
 
+  string _recaptchaSiteKey;
+  public App(IConfiguration configuration)
+  {
+    _recaptchaSiteKey = configuration["Captcha:SiteKey"];
+  }
 
   public static MudTheme MyCustomTheme = new MudTheme()
   {

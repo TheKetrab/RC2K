@@ -18,22 +18,37 @@
 <MudDialog>
   <TitleContent>
     <MudText Typo="Typo.h6">
-      Put driver pass code
+      @_title
     </MudText>
   </TitleContent>
   <DialogContent>
-    <MudText> There is already existing driver (not a registered user) with this nick name. You own were given driver-pass-key when driver was created. Pass it here. In case of any problems contact TheKetrab via discord.</MudText>
+    <MudText>@_msg</MudText>
     <MudTextField T="string"
-                  Label="Driver pass code"
-                  @bind-Value="DriverPassCode" />
+                  Label="@_textBoxLabel"
+                  @bind-Value="TextBoxValue" />
   </DialogContent>
   <DialogActions>
-    <MudButton OnClick="Cancel">Cancel</MudButton>
-    <MudButton Color="Color.Error" OnClick="Ok">Create account</MudButton>
+    <MudButton OnClick="Cancel">@_cancel</MudButton>
+    <MudButton Color="Color.Primary" OnClick="Ok">@_yes</MudButton>
   </DialogActions>
 </MudDialog>
 
 @code {
+
+  private string _title;
+  private string _msg;
+  private string _textBoxLabel;
+  private string _yes;
+  private string _cancel;
+  public TextBoxDialog(string title, string msg, string textBoxLabel, string yes = "Yes", string cancel = "Cancel")
+  {
+    _title = title;
+    _msg = msg;
+    _textBoxLabel = textBoxLabel;
+    _yes = yes;
+    _cancel = cancel;
+  }
+
 
   [CascadingParameter]
   private IMudDialogInstance MudDialog { get; set; }
@@ -42,9 +57,9 @@
 
   private void Ok()
   {
-    MudDialog.Close(DialogResult.Ok(DriverPassCode));
+    MudDialog.Close(DialogResult.Ok(TextBoxValue));
   }
 
-  public string DriverPassCode { get; set; }
+  public string TextBoxValue { get; set; }
 
 }
