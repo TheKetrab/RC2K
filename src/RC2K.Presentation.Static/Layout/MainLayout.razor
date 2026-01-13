@@ -1,0 +1,19 @@
+﻿@using MudBlazor
+@using RC2K.Presentation.Shared
+@using RC2K.Presentation.Shared.Layout
+@inherits LayoutComponentBase
+@inject IConfiguration Config
+<MudThemeProvider Theme="Rc2kColorPallete.MyCustomTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="page">
+    <Header TNavMenu="StaticNavMenu"  />
+    <main>
+        <BreadcrumbsNavigation />
+        <article class="content">@Body</article>
+    </main>
+
+    <Footer />
+</div>

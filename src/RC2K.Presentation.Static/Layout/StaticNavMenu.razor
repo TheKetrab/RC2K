@@ -1,0 +1,13 @@
+﻿
+@using RC2K.Presentation.Shared.Layout
+@using RC2K.Presentation.Shared.ViewModels
+
+@inherits BaseNavMenu
+
+<nav>
+  @foreach (var menuItem in MenuItems.Where(x => x.Item != "Admin"))
+  {
+      @RenderMenuItem(menuItem)
+  }
+  <LoginButton/>
+</nav>

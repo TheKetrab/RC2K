@@ -1,5 +1,5 @@
 ﻿
-namespace RC2K.Presentation.Blazor.ViewModels;
+namespace RC2K.Presentation.Shared.ViewModels;
 
 public class MenuItem
 {

@@ -20,7 +20,7 @@ using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Presentation.Blazor.AuthProxy;
-using RC2K.Presentation.Blazor.ViewModels.Layout;
+using RC2K.Presentation.Blazor.ViewModels;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -61,7 +61,7 @@ public static class BuilderConfiguration
             .RegisterDynamicDataAccess()
             .RegisterLogicServices();
 
-        builder.Services.AddSingleton<HeaderViewModel>();
+        builder.Services.AddSingleton<Shared.ViewModels.HeaderViewModel>();
 
         return builder;
     }

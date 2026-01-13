@@ -1,7 +1,7 @@
 ﻿
 using RC2K.DomainModel;
 
-namespace RC2K.Presentation.Blazor.ViewModels;
+namespace RC2K.Presentation.Shared.ViewModels;
 
 public enum Icon
 {

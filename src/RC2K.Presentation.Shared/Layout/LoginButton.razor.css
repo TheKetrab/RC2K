@@ -1,0 +1,96 @@
+﻿.profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-btn {
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-svg {
+    width: 2em; /* TODO align width to height */
+    height: 2em;
+    color: black;
+}
+
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 0fr;
+    transition: grid-template-columns .5s;
+}
+
+.profile-content-wrapper {
+    border-bottom-left-radius: 1em;
+    border-top-left-radius: 1em;
+    /*border: solid 3px black;*/
+    box-shadow: rgb(255, 255, 255) 10px 10px inset;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.profile-content-wrapper > * {
+    margin: 0em .5em;
+    height: 100%;
+    display: flex;
+}
+
+
+.profile-content.allow-overflow-visible > .profile-content-wrapper {
+    overflow: visible !important;
+    }
+
+.profile-content.visible {
+    grid-template-columns: 1fr;
+}
+
+
+.tooltip:hover .tooltiptext {
+    transition-delay: .75s; /* delay only in */
+    visibility: visible;
+}
+
+.tooltip {
+    
+    position: relative;
+    display: block;
+
+}
+
+.tooltip .tooltiptext {
+
+    min-width: 100%;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+}
+
+.login-btn {
+
+    border-radius: 5em;
+    margin: 10px;
+    
+    transition: transform .2s ease;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+}
+
+.login-btn:hover {
+    /*transform: scale(1.02);*/
+    transform: scale(0.5);
+}
