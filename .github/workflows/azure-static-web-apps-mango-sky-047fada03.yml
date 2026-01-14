@@ -3,11 +3,11 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - feat/RC2K-67-static-home-page
+      - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - feat/RC2K-67-static-home-page
+      - main
 
 jobs:
   build_and_deploy_job:
