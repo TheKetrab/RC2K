@@ -61,10 +61,13 @@
             transition: all ease .2s;
             transform: translateX(calc(-100% + var(--blazor-load-percentage,0%)));
         }
+
+
     </style>
 </head>
 
 <body>
+    
     <div id="app">
         <div id="preload">
             <div class="loading-card">
@@ -76,10 +79,7 @@
     </div>
 
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>
-        console.log("Wake up trigger...");
-        fetch('https://app.rc2khub.com/').catch(err => console.log("Wake up trigger sent"));
-    </script>
+
 
 </body>
 

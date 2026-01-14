@@ -1,0 +1,71 @@
+﻿@inject HttpClient HttpCLient
+
+<div class="app-loading" data-state="@_appLoaded">
+    <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <p>
+        @_text
+    </p>
+</div>
+@code {
+
+  private int _appLoaded = 0;
+  private string _text = "App is loading...";
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender)
+    {
+      return;
+    }
+    await LoadApp();
+  }
+
+  private async Task LoadApp()
+  {
+    if (await TryHealthCheckApp())
+    {
+      _appLoaded = 1;
+      _text = "App available";
+    }
+    else
+    {
+      _appLoaded = -1;
+      _text = "App unavailable";
+    }
+    StateHasChanged();
+  }
+
+  private async Task<bool> TryHealthCheckApp()
+  {
+    var res = await HttpCLient.GetAsync("/ping");
+
+    try
+    {
+      if (res.IsSuccessStatusCode)
+      {
+        var resStr = await res.Content.ReadAsStringAsync();
+        if (resStr == "Healty")
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch (Exception)
+    {
+        return false;
+    }
+  }
+}

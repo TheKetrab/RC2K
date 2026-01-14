@@ -5,6 +5,7 @@
 @inherits BaseNavMenu
 
 <nav>
+  <AppLoading />
   @foreach (var menuItem in MenuItems.Where(x => x.Item != "Admin"))
   {
       @RenderMenuItem(menuItem)

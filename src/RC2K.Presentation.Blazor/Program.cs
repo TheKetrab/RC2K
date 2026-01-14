@@ -7,10 +7,12 @@ var builder = WebApplication.CreateBuilder(args)
     .RegisterServices()
     .ConfigureLogging()
     .AddAuthorization();
-
+builder.Services.AddHealthChecks();
 var app = builder.Build()
     .ConfigureExceptionHandler()
     .ConfigureApplication();
+
+app.MapHealthChecks("/ping");
 
 if (builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"] is null)
 {
