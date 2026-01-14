@@ -207,8 +207,22 @@ public static class BuilderConfiguration
         return builder;
     }
 
+    public const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     public static WebApplicationBuilder AddAuthorization(this WebApplicationBuilder builder)
     {
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(
+                name: MyAllowSpecificOrigins,
+                policy =>
+                {
+                    policy.WithOrigins(
+                        "https://mango-sky-047fada03-featrc2k67static.westeurope.4.azurestaticapps.net",
+                        "https://rc2khub.com",
+                        "https://www.rc2khub.com");
+                });
+        });
+
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 

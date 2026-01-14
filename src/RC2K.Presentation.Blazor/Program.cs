@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args)
     .ConfigureLogging()
     .AddAuthorization();
 builder.Services.AddHealthChecks();
+
+
 var app = builder.Build()
     .ConfigureExceptionHandler()
     .ConfigureApplication();
