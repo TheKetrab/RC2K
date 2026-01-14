@@ -1,39 +1,19 @@
-﻿@rendermode InteractiveServer
-@using RC2K.Presentation.Blazor.ViewModels
-
-<nav>
-  @foreach (var menuItem in MenuItems)
-  {
-    if (menuItem.Item == "Admin")
-    {
-      <AuthorizeView Roles="admin">
-        <Authorized>
-          @RenderMenuItem(menuItem);
-        </Authorized>
-      </AuthorizeView>
-    }
-    else
-    {
-      @RenderMenuItem(menuItem)
-      ;
-    }
-  }
-
-  <Profile />
-
-</nav>
+﻿
+@using Microsoft.Extensions.Configuration
+@using RC2K.Presentation.Shared.ViewModels
+@inject IConfiguration Config
 
 @code {
 
   [Parameter]
   public List<MenuItem> MenuItems { get; set; }
 
-  RenderFragment RenderMenuItem(MenuItem menuItem) => __builder =>
+  public RenderFragment RenderMenuItem(MenuItem menuItem) => __builder =>
   {
     <div class="menu-item">
       <MudButton Link="@menuItem.ItemLink"
                  StartIcon="@(IconMapper.IsMudBlazor(menuItem.Icon) ? IconMapper.Thin(menuItem.Icon) : string.Empty)"
-                 Href="@menuItem.ItemLink">
+                 Href="@($"{Config["AppBaseUrl"]}/{menuItem.ItemLink}")">
         @{
           if (!IconMapper.IsMudBlazor(menuItem.Icon))
           {
@@ -48,7 +28,7 @@
           @foreach (var subitem in menuItem.Subitems)
           {
             <li class="menu-item-li">
-              <MudButton Href="@subitem.link" Style="width: 100%">
+              <MudButton Href="@($"{Config["AppBaseUrl"]}/{subitem.link}")" Style="width: 100%">
                 <MudText Style="font-size: 10pt;">@subitem.label</MudText>
               </MudButton>
             </li>

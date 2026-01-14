@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace RC2K.Presentation.Blazor.ViewModels;
+namespace RC2K.Presentation.Shared.ViewModels;
 
 public class BaseViewModel : INotifyPropertyChanged
 {

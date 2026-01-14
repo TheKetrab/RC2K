@@ -24,6 +24,7 @@
 @page "/map"
 @using System.Collections.Generic
 @using RC2K.Presentation.Blazor.Views.Layout
+@using RC2K.Presentation.Shared
 
 <div class="MAIN">
   <h1>@_raceName</h1>
@@ -46,7 +47,7 @@
               <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">Arcade version</MudButton>
             }
           </div>
-          <h1 Style=@($"color: {@App.MyColors.primary700}")>
+          <h1 Style=@($"color: {@Rc2kColorPallete.primary700}")>
               @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
           </h1>
           <MudStack Row="true">

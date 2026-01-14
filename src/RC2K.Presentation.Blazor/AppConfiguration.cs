@@ -23,6 +23,7 @@ public static class AppConfiguration
 
         app.UseStaticFiles();
         app.UseAuthentication();
+        app.UseCors(BuilderConfiguration.MyAllowSpecificOrigins);
         app.UseAuthorization();
         app.UseAntiforgery();
 
