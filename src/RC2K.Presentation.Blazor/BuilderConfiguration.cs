@@ -217,7 +217,8 @@ public static class BuilderConfiguration
                 policy =>
                 {
                     policy.WithOrigins(
-                        "https://mango-sky-047fada03-featrc2k67static.westeurope.4.azurestaticapps.net",
+                        "https://mango-sky-047fada03-featrc2k67static.westeurope.4.azurestaticapps.net", // feature branch featrc2k67
+                        "https://mango-sky-047fada03.4.azurestaticapps.net", // prod/main
                         "https://rc2khub.com",
                         "https://www.rc2khub.com");
                 });
