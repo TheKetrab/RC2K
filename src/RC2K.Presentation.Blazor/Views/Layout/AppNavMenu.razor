@@ -1,0 +1,32 @@
+﻿@rendermode InteractiveServer
+@using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Shared.Layout
+@using RC2K.Presentation.Shared.ViewModels
+
+@inherits BaseNavMenu
+
+<nav>
+  @foreach (var menuItem in MenuItems)
+  {
+    if (menuItem.Item == "Admin")
+    {
+      <AuthorizeView Roles="admin">
+        <Authorized>
+          @RenderMenuItem(menuItem)
+        </Authorized>
+      </AuthorizeView>
+    }
+    else
+    {
+      @RenderMenuItem(menuItem)
+      ;
+    }
+  }
+
+  <Profile />
+
+</nav>
+
+@code {
+
+}

@@ -1,14 +1,17 @@
-﻿@using RC2K.Presentation.Blazor.ViewModels.Layout
-@rendermode InteractiveServer
+﻿@using RC2K.Presentation.Shared.Layout
+@using RC2K.Presentation.Shared.ViewModels
+@using Microsoft.JSInterop
+
 @inject HeaderViewModel viewModel
+@typeparam TNavMenu where TNavMenu : BaseNavMenu
 
 <header @ref=headerElement class="@(NavClass)">
     <div class="header-pre-box"></div>
     <div class="header-main-box">
-        <img src="/img/Logo2.png" />
+        <img src="_content/RC2K.Presentation.Shared/img/layout/Logo2.png" />
         <div class="header-nav-menu">
             <div class="header-nav-fake-gradient" />
-            <NavMenu MenuItems="viewModel.MenuItems" />
+      <DynamicComponent Type="typeof(TNavMenu)" Parameters="_navMenuParams" />
         </div>
     </div>
     <div class="header-post-box"></div>
@@ -21,7 +24,7 @@
         const observer = new IntersectionObserver(
             async ([e]) => {
                 let isSticked = e.intersectionRatio < 0.99;
-                await dotNetObjRef.invokeMethodAsync('@nameof(SetIsSticked)', isSticked);
+              await dotNetObjRef.invokeMethodAsync('SetIsSticked', isSticked);
             },
             { threshold: [0.99] });
 
@@ -35,6 +38,7 @@
     @inject IJSRuntime JSRuntime;
     public ElementReference headerElement;
 
+
     [JSInvokable]
     public Task SetIsSticked(bool sticked)
     {
@@ -42,11 +46,17 @@
         return Task.CompletedTask;
     }
 
+  private Dictionary<string, object> _navMenuParams;
+
     protected override void OnInitialized()
     {
         viewModel.PropertyChanged += (s, e) =>
         {
             InvokeAsync(() => StateHasChanged());
+        };
+
+    _navMenuParams = new() {
+      { "MenuItems", viewModel.MenuItems }
         };
     }
 

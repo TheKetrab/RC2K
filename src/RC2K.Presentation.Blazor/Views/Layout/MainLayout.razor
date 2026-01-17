@@ -1,19 +1,21 @@
-﻿
+﻿@using RC2K.Presentation.Shared
+@using RC2K.Presentation.Shared.Layout
+
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="App.MyCustomTheme" />
+<MudThemeProvider Theme="Rc2kColorPallete.MyCustomTheme" />
 <MudPopoverProvider @rendermode="InteractiveServer" />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
 
 
     <div class="page">
-        <Header />
+        <Header TNavMenu="AppNavMenu" @rendermode="InteractiveServer" />
         <main>
             <BreadcrumbsNavigation />
             <MyErrorBoundary @ref="_errorBoundary">
               <ChildContent >
-                <article style="" class="content">@Body</article>
+                <article class="content">@Body</article>
               </ChildContent>
               <ErrorContent>
                 <div background="red">ERROR</div>

@@ -3,6 +3,8 @@
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Shared
+@using RC2K.Presentation.Shared.ViewModels
 @using SerilogTimings;
 @rendermode InteractiveServer
 @inject IStageService StageService
@@ -357,13 +359,13 @@
     {
       if (item.DisplayName == name)
       {
-        return $"background-color: {App.MyColors.complementary200};";
+        return $"background-color: {Rc2kColorPallete.complementary200};";
       }
     }
 
     if (index % 2 != 0)
     {
-      return $"background-color: {App.MyColors.primary50};";
+      return $"background-color: {Rc2kColorPallete.primary50};";
     }
     return string.Empty;
   }

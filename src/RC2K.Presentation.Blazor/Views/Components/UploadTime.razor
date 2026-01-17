@@ -13,12 +13,17 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IUserService UserService
+@inject IDialogService DialogService
+
+@inject ICaptchaVerifier CaptchaVerifier
+
+
 
     <MyErrorBoundary @ref="_errorBoundary">
               <ChildContent >
-                
 
 
+    <TrackCaptcha />
 <div class="d-flex flex-column">
 
   <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
@@ -36,7 +41,6 @@
       </div>
       <MudTextField T="string"
                     Label="Driver name"
-                    ReadOnly="true"
                     @bind-Value="UploadTimeModel.DriverName" />
 
       <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" /> 
@@ -99,6 +103,10 @@
   }
 
   private List<Tuple<ProofType,string>> _proofItems = new() { Tuple.Create<ProofType,string>(ProofType.Unknown, "") };
+  private List<Proof> Proofs =>
+    _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
+               .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
+               .ToList();
 
   private void OnValueChanged(int index, string newValue)
   {
@@ -157,47 +165,165 @@
         _car = value;
       }
     }
-    public string Proofs { get; set; }
+
     public string DriverName { get; set; }
     public string Label { get; set; } = "TA";
   }
 
+  private async Task<bool> IsRobot()
+  {
+    return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => Snackbar.Add(msg, Severity.Error));
+  }
+
   private async Task UploadClick()
   {
-    var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
-    if (driver is null || !driver.Known)
+    if (await IsRobot())
     {
-      // TODO: handle adding times for anonymous drivers
-      Snackbar.Add("Currently adding times for not logged in drivers is not supported", Severity.Error);
       return;
     }
 
-    var proofs =
-      _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
-                 .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
-                 .ToList();
-
-    if (proofs.Count == 0)
+    if (Proofs.Count == 0)
     {
       Snackbar.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.", Severity.Error);
       return;
     }
 
-    await TimeEntryService.Upload(
+    var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
+    if (driver is null)
+    {
+      await HandleNewDriverUploadTime();
+    }
+    else if (!driver.Known)
+    {
+      await HandleExistingDriverUploadTime(driver.Id);
+    }
+    else
+    {
+      await HandleUserUploadTime(driver.Id);
+    }
+
+  }
+
+  private async Task HandleNewDriverUploadTime()
+  {
+    var res = await DialogService.ShowMessageBox("Driver creation", "There is no driver with this name yet. If you continue, you will get a unique pass-code for this driver, that you will have to enter every time when you will upload another time entry using your nickname. Do you want to continue?", yesText: "Yes", cancelText: "No");
+    if (res is null || res.Value is not true)
+    {
+      return;
+    }
+
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options);
+    var dialogResult = await dialog.Result;
+
+    string? nat = null;
+    if (!dialogResult.Canceled)
+    {
+      nat = dialogResult.Data?.ToString();
+    }
+    var result = await DriverService.CreateAnonymous(UploadTimeModel.DriverName, nat);
+    if (!result.Success)
+    {
+      Snackbar.Add(result.Message!, Severity.Error);
+      return;
+    }
+
+    Driver newDriver = result.Payload!;
+    await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
+
+    var uploadResult = await TimeEntryService.Upload(
       StageId,
       UploadTimeModel.Car.Id,
-      driver.Id,
+      newDriver.Id,
       UploadTimeModel.Min,
       UploadTimeModel.Sec,
       UploadTimeModel.Cc,
-      proofs,
+      Proofs,
+      UploadTimeModel.Label,
+      newDriver.Key!
+      );
+
+    if (uploadResult.Success)
+    {
+      ShowUploadedMessage();
+    }
+    else
+    {
+      ShowUploadedFailureMessage(uploadResult.Message);
+    }
+  }
+  private async Task HandleExistingDriverUploadTime(Guid driverId)
+  {
+    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+    var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
+    var dialogResult = await dialog.Result;
+
+    if (dialogResult.Canceled)
+    {
+      return;
+    }
+
+    string driverCode = dialogResult.Data.ToString();
+    var uploadResult = await TimeEntryService.Upload(
+      StageId,
+      UploadTimeModel.Car.Id,
+      driverId,
+      UploadTimeModel.Min,
+      UploadTimeModel.Sec,
+      UploadTimeModel.Cc,
+      Proofs,
+      UploadTimeModel.Label,
+      driverCode
+      );
+
+    if (uploadResult.Success)
+    {
+      ShowUploadedMessage();
+    }
+    else
+    {
+      ShowUploadedFailureMessage(uploadResult.Message);
+    }
+
+  }
+  private async Task HandleUserUploadTime(Guid driverId)
+  {
+    var uploadResult = await TimeEntryService.Upload(
+      StageId,
+      UploadTimeModel.Car.Id,
+      driverId,
+      UploadTimeModel.Min,
+      UploadTimeModel.Sec,
+      UploadTimeModel.Cc,
+      Proofs,
       UploadTimeModel.Label
       );
 
+    if (uploadResult.Success)
+    {
+      ShowUploadedMessage();
+    }
+    else
+    {
+      ShowUploadedFailureMessage(uploadResult.Message);
+    }
+  }
+
+  private void ShowUploadedMessage()
+  {
     Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>
     {
-    config.ShowCloseIcon = true;
-    config.VisibleStateDuration = 10000;
+      config.ShowCloseIcon = true;
+      config.VisibleStateDuration = 10000;
+    });
+  }
+
+  private void ShowUploadedFailureMessage(string? msg)
+  {
+    Snackbar.Add($"Upload failed. {msg}", Severity.Error, config =>
+    {
+      config.ShowCloseIcon = true;
+      config.VisibleStateDuration = 10000;
     });
   }
 

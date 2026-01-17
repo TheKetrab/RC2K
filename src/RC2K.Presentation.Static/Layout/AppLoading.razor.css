@@ -1,0 +1,93 @@
+﻿
+
+
+    .lds-ring,
+    .lds-ring div {
+        box-sizing: border-box;
+    }
+
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+    .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin: 2px;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: currentColor transparent transparent transparent;
+    }
+
+        .lds-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+            transform: rotate(90deg);
+        }
+
+        .lds-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+            transform: rotate(180deg);
+        }
+
+        .lds-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+            transform: rotate(270deg);
+        }
+
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.app-loading {
+    align-items: center;
+    display: flex;
+    width: 20ch;
+}
+.app-loading p {
+    margin-left: 1ch;
+}
+.app-loading[data-state="0"] .lds-ring {
+    color: var(--mud-palette-warning);
+}
+.app-loading[data-state="1"] .lds-ring {
+    color: var(--mud-palette-success);
+}
+.app-loading[data-state="-1"] .lds-ring {
+    color: var(--mud-palette-error);
+}
+
+.app-loading[data-state="1"] .lds-ring div:nth-child(4),
+.app-loading[data-state="-1"] .lds-ring div:nth-child(4) {
+    animation: none;
+    transform: rotate(0deg);
+}
+.app-loading[data-state="1"] .lds-ring div:nth-child(1),
+.app-loading[data-state="-1"] .lds-ring div:nth-child(1) {
+    animation: none;
+    transform: rotate(90deg);
+}
+
+.app-loading[data-state="1"] .lds-ring div:nth-child(2),
+.app-loading[data-state="-1"] .lds-ring div:nth-child(2) {
+    animation: none;
+    transform: rotate(180deg);
+}
+
+.app-loading[data-state="1"] .lds-ring div:nth-child(3),
+.app-loading[data-state="-1"] .lds-ring div:nth-child(3) {
+    animation: none;
+    transform: rotate(270deg);
+}

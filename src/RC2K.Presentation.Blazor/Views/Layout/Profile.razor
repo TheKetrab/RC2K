@@ -1,21 +1,13 @@
 ﻿@using RC2K.Presentation.Blazor.ViewModels
-@using RC2K.Presentation.Blazor.ViewModels.Layout;
 @using RC2K.Presentation.Blazor.Views.Components;
+@using RC2K.Presentation.Shared.ViewModels
+@using RC2K.Presentation.Shared.Layout
 @rendermode InteractiveServer
 
 <div class="profile">
     <AuthorizeView>
         <NotAuthorized>
-            <MudButton Href="login" Color="Color.Primary" Variant="Variant.Filled" 
-             Style="border-radius: 5em;
-                    margin: 10px;
-                    transition: transform .2s ease;
-                    padding: 0;
-                    margin: 0;
-                    height: auto;
-                    border-radius: 20px 10px 10px 20px;">
-                Login
-            </MudButton>
+            <LoginButton/>
         </NotAuthorized>
         <Authorized>
 

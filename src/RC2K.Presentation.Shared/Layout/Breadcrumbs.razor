@@ -1,8 +1,8 @@
-﻿@using RC2K.Presentation.Blazor.ViewModels
+﻿@using RC2K.Presentation.Shared.ViewModels
 
 <nav style="margin-top: 10px;">
     <ol class="breadcrumb">
-        @foreach (var link in Links.OrderBy(x => x.OrderIndex))
+        @foreach (var link in Links.DistinctBy(x => x.Title).OrderBy(x => x.OrderIndex))
         {
             if (link.IsActive)
             {

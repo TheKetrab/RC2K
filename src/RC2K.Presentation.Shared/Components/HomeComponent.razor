@@ -1,0 +1,274 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Config
+
+<PageTitle>Home</PageTitle>
+
+<style>
+  .content {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  padding-top: 0 !important;
+  }
+
+
+    span.emph {
+        color: var(--primary);
+        font-weight: bold;
+    }
+
+  span.emph2 {
+    color: var(--secondary);
+    font-weight: bold;
+  }
+
+
+</style>
+
+<div style="@($@"
+background-image: url(_content/RC2K.Presentation.Shared/img/home/home{DayTime}.png);
+background-size: cover;
+background-size: 100% 100%;
+min-height: calc(100vh - var(--header-margin-top) - var(--header-height));
+padding-top: 80px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+")">
+
+<div style="width: 100%; padding: 1em 2em;" class="pane2">
+    <h1 Class="font-weight-bold mb-4" Color="Color.Primary">
+      RC2K Hub
+    </h1>
+
+    <MudText Class="mb-4">
+      Welcome to the giant portal for fans of the great game <strong>Mobil 1 Rally Championship 2000</strong>.
+      We are dedicated to bringing the community together by tracking and celebrating driver performance across the globe.
+    </MudText>
+
+    <MudText Typo="Typo.body1" Class="mb-2">
+      Our database features the full list of <span class="emph">72 official stages</span> known as simulation & arcade versions,
+      alongside an is dedicated to contain ever-growing collection of <span class="emph">community-created maps</span>.
+    </MudText>
+</div>
+
+<div>
+<div>
+      <MudGrid Class="mb-6" Justify="Justify.FlexEnd">
+          <MudItem xs="12" sm="3" >
+          <MudPaper Outlined="true" Class="pa-4" Style="@($"background: {Rc2kColorPallete.gray200}")">
+          <MudText Class="font-weight-bold" Color="Color.Primary">» Global Standings</MudText>
+          <MudText>Compete for the fastest overall time on every stage in the game.</MudText>
+        </MudPaper>
+          <MudPaper Outlined="true" Class="pa-4 mt-2" Style="@($"background: {Rc2kColorPallete.gray50}")">
+            <MudText Class="font-weight-bold" Color="Color.Secondary">» Car-Specific Rankings</MudText>
+            <MudText>Master individual vehicles and top the charts for every class.</MudText>
+          </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+    <MudAlert Class="mb-12" Severity="Severity.Normal" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" NoIcon="true"
+              Style="font-style: italic; background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.1), transparent); border-top: 1px solid rgba(255, 204, 0, 0.3); border-bottom: 1px solid rgba(255, 204, 0, 0.3);">
+      „With nearly <span class="emph2">2,000 unique classifications</span> to conquer,<br /> there is always a new record to break.”
+
+      <MudText Color="Color.Secondary" Align="Align.Center" Class="mt-1" Style="font-style: italic;">
+        In which one will you prove to be the best?
+      </MudText>
+    </MudAlert>
+  </div>
+</div>
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-5">
+
+  <MudText Typo="Typo.h4" GutterBottom="true">Users, Drivers & Verification</MudText>
+  <MudText Typo="Typo.body1">
+    We welcome all drivers to the RC2K Hub. Whether you want a quick time entry or a full profile, the choice is yours.
+  </MudText>
+
+  <MudList T="string" Class="my-4">
+    <MudListItem Icon="@Icons.Material.Filled.PersonOutline">
+      <MudText Typo="Typo.body1">
+        <strong>Guest Drivers:</strong> No registration required. Just provide a nickname to receive a unique access token for future uploads. Without an account you are able to surf among all tracks and view top 20 times in general classification in order to compare them with your pb!
+      </MudText>
+    </MudListItem>
+    <MudListItem Icon="@Icons.Material.Filled.VerifiedUser">
+      <MudText Typo="Typo.body1">
+        <strong>Registered Members:</strong> Create an account to unlock full classification, <strong>advanced statistics</strong>, custom filtering, and personal progress tracking. With provided identity, you will be able also to give and receive kudos for nice media!
+      </MudText>
+    </MudListItem>
+  </MudList>
+
+  <MudDivider DividerType="DividerType.Middle" Class="my-6" Style="background-color: rgba(255,255,255,0.1);" />
+
+  <MudText Typo="Typo.h5" GutterBottom="true">Be fair and reliable!</MudText>
+  <MudText Typo="Typo.body1" Class="mb-4">
+    Every second counts, but honesty comes first. All submissions are reviewed by our moderation team based on provided screenshots or replays.
+    Right after upload your time entry it will display as not verified and highlighted on red. You need to wait for an approve untill your time will become green and points will be recalculated.
+  </MudText>
+
+</MudContainer>
+
+<MudDivider />
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8 mb-8">
+  <MudText Typo="Typo.h4" GutterBottom="true">Ranking Points System</MudText>
+  <MudText Typo="Typo.body1" Class="mb-6">
+    Every driver earns points across various disciplines. Whether you're a speed demon or a creative modder, there’s a path to the top of the leaderboard.
+  </MudText>
+
+  <MudGrid Spacing="4">
+    <MudItem xs="12" sm="4">
+      <MudCard Elevation="2" Class="pa-4 h-100" Style="height: 100%">
+        <MudText Color="Color.Primary" Typo="Typo.caption" Class="fw-bold">High Priority</MudText>
+        <MudText Typo="Typo.h6">Overall Rankings</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+          The most prestigious points for the fastest times.
+        </MudText>
+        <MudText Typo="Typo.body2">
+          For each stage we have a general classification (separate for simulation and for arcade version).
+          Top 30 different drivers will receive points depending on place they are taking according to the points system known from
+          <a href="https://en.wikipedia.org/wiki/FIS_Ski_Jumping_World_Cup">ski jumping</a> (100, 80, 60, 50, ...).
+          If any driver has two best times gain with separate cars, third time entry will gain points for 2nd place 
+
+          <div style="margin-left: 20px;">
+          <ul>
+            <li>1. A | 1:00 | Subaru (+100)</li>
+            <li>2. A | 1:03 | Seat</li>
+            <li>3. B | 1:05 | Peugeot (+80)</li>
+            <li>3. C | 1:05 | Seat  (+80)</li>
+            <li>5. D | 1:09 | Subaru (+50)</li>
+          </ul>
+          </div>
+          In the example above ene though player B is third, he is 2nd in general classification
+          distinct by drivers so he gets 80 points - the same as player C,
+          because their times are equal. Player D is 4th, so he gets 50 points.
+        </MudText>
+      </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+      <MudCard Elevation="2" Class="pa-4 h-100" Style="height: 100%">
+        <MudText Color="Color.Primary" Typo="Typo.caption" Class="fw-bold">Tiered</MudText>
+        <MudText Typo="Typo.h6">Car Classes</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+          The more important is class, more points you get.
+        </MudText>
+        <MudText Typo="Typo.body2">
+          What if you like to drive with car that is not the fastest in the game... you won't be able to get a lot of points in general classification,
+          but still you can be the best in per-car classification. Every car is different, so every car has it's own ranking.
+          But we used a heuristic, that there will be the most time entries with "the best cars",
+          so being competitive in A8 cars league seams to be more advanced than being top player in A6 cars league with few players.         
+          To be precise: for every car top 5 players will receive points depending on car class.
+          <div style="margin-left: 20px;">
+          <ul>
+            <li>A8: 30, 24, 18, 12, 6</li>
+            <li>A7: 20, 16, 12, 8, 4</li>
+            <li>A6: 20, 16, 12, 8, 4</li>
+            <li>A5: 10, 8, 6, 4, 2</li>
+            <li>Bonus: 10, 8, 6, 4, 2</li>
+          </ul>
+          </div>
+          We do encourage you to put multiple times on the same stage with different car, it will be fun!
+        </MudText>
+
+      </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+      <MudCard Elevation="2" Class="pa-4 h-100" Style="height: 100%">
+        <MudText Color="Color.Success" Typo="Typo.caption" Class="fw-bold">+500 PTS</MudText>
+        <MudText Typo="Typo.h6">Contest Victory</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+          Massive bonuses for winning official tournaments.
+        </MudText>
+        <MudText Typo="Typo.body2">
+          Events in our community are extremely important so we want to award winners. For winning competitions drivers will receive one-time bonus points.
+          Of course the most prestige competition is MFMI, so every top 10 players gets points: 500, 400, 300, 250, 200, 150, 100, 75, 50, 25.
+          Feel free to organize more competitions so that we can note and add bonus points for best players!
+        </MudText>
+      </MudCard>
+    </MudItem>
+  </MudGrid>
+
+  <div class="mt-8">
+    <div class="d-flex align-center mb-2">
+      <MudText Typo="Typo.h5" Class="me-3">Showcases & Kudos</MudText>
+      <MudChip T="string" Color="Color.Info" Variant="Variant.Text" Size="Size.Small">COMING SOON</MudChip>
+    </div>
+    <MudText Typo="Typo.body1">
+      For Rally Championship community it is not only about being the fastests, but it also matters if you have some nice screenshots, videos with crashes or flips and other medias.
+      Or maybe you are a talented skin-maker...? Soon, you'll be able to publish your <strong>videos, photos, mods, and skins</strong>. Other users will be able to view your work
+      and award it via kudos that will give you ranking points!
+    </MudText>
+  </div>
+</MudContainer>
+
+<MudDivider />
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+  <MudText Typo="Typo.h4" GutterBottom="true">Interactive Stage Maps</MudText>
+  <MudText Typo="Typo.body1" Class="mb-4">
+    Experience the realism of <em>Rally Championship 2000</em> like never before. Those stages aren't just pixels — they are real-world locations preserved in history.
+  </MudText>
+
+  <MudPaper Variant="Variant.Outlined" Class="pa-4 mb-4" Style="background-color: rgba(255,255,255,0.02);">
+    <MudStack Spacing="3">
+      <div class="d-flex">
+        <MudIcon Icon="@Icons.Material.Filled.Search" Color="Color.Primary" Class="me-3" />
+        <div>
+          <MudText Typo="Typo.body1"><strong>Real-World Discovery:</strong></MudText>
+          <MudText Typo="Typo.body2" Color="Color.Secondary">
+            In 2018 <span style="color: var(--primary300);">anonimowy1121</span> identified the original rally stages within Google Maps coordinates and presented them <a href="https://rc2000.forumotion.com/t27-localisations-maps-of-the-stages-on-google-maps-lokalizacje-mapy-etapow-na-google-maps">on the forum</a>.
+          </MudText>
+        </div>
+      </div>
+
+      <div class="d-flex">
+        <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" Class="me-3" />
+        <div>
+          <MudText Typo="Typo.body1"><strong>Digital Reconstruction:</strong></MudText>
+          <MudText Typo="Typo.body2" Color="Color.Secondary">
+            In 2025 <span style="color: var(--primary300);">TheKetrab</span> moved found coordinates to interactive maps that trace the routes through terrain where standard roads don't even exist on Google Maps.
+          </MudText>
+        </div>
+      </div>
+    </MudStack>
+  </MudPaper>
+
+  <div style="display: flex; justify-content: space-around;">
+    <img style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/SC_004.PNG" />
+    <img style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/gmap.jpg" />
+    <img style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/osm.jpg" />
+  </div>
+
+  <MudGrid Justify="Justify.FlexEnd">
+    <MudItem xs="12" sm="3">
+      <MudButton Variant="Variant.Filled"
+      Class="ma-4"
+                 Href="@($"{Config["AppBaseUrl"]}/stages")"
+                 Color="Color.Primary"
+                 FullWidth="true"
+                 EndIcon="@Icons.Material.Filled.Explore"
+                 Size="Size.Large">
+        Explore Maps
+      </MudButton>
+    </MudItem>
+  </MudGrid>
+</MudContainer>
+
+@code {
+  public int DayTime {
+    get
+    {
+      int now = DateTime.Now.Hour;
+      return now switch
+      {
+        >= 0 and < 11 => 1,
+        >= 11 and < 16 => 2,
+        >= 16 and < 20 => 3,
+        _ => 4
+      };
+    }
+  }
+}

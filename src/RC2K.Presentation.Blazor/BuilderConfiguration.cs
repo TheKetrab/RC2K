@@ -20,7 +20,7 @@ using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Presentation.Blazor.AuthProxy;
-using RC2K.Presentation.Blazor.ViewModels.Layout;
+using RC2K.Presentation.Blazor.ViewModels;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -61,7 +61,7 @@ public static class BuilderConfiguration
             .RegisterDynamicDataAccess()
             .RegisterLogicServices();
 
-        builder.Services.AddSingleton<HeaderViewModel>();
+        builder.Services.AddSingleton<Shared.ViewModels.HeaderViewModel>();
 
         return builder;
     }
@@ -207,8 +207,23 @@ public static class BuilderConfiguration
         return builder;
     }
 
+    public const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     public static WebApplicationBuilder AddAuthorization(this WebApplicationBuilder builder)
     {
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(
+                name: MyAllowSpecificOrigins,
+                policy =>
+                {
+                    policy.WithOrigins(
+                        "https://mango-sky-047fada03-featrc2k67static.westeurope.4.azurestaticapps.net", // feature branch featrc2k67
+                        "https://mango-sky-047fada03.4.azurestaticapps.net", // prod/main
+                        "https://rc2khub.com",
+                        "https://www.rc2khub.com");
+                });
+        });
+
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 
