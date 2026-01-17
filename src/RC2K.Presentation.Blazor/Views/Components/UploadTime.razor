@@ -181,10 +181,10 @@
     {
       return;
     }
-
-    if (Proofs.Count == 0)
+    List<string> validationResult = DoValidation();
+    if (validationResult.Count > 0)
     {
-      Snackbar.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.", Severity.Error);
+      Snackbar.Add(string.Join(" ", validationResult), Severity.Error);
       return;
     }
 
@@ -202,6 +202,30 @@
       await HandleUserUploadTime(driver.Id);
     }
 
+  }
+
+  private List<string> DoValidation()
+  {
+    List<string> errors = [];
+    if (UploadTimeModel.Car is null)
+    {
+      errors.Add("You must select a car.");
+    }
+    if (UploadTimeModel.Min == 0 &&
+        UploadTimeModel.Sec == 0 &&
+        UploadTimeModel.Cc == 0)
+    {
+      errors.Add("You need to set a time!");
+    }
+    if (string.IsNullOrWhiteSpace(UploadTimeModel.DriverName))
+    {
+      errors.Add("You need to put your name.");
+    }
+    if (Proofs.Count == 0)
+    {
+      errors.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.");
+    }
+    return errors;
   }
 
   private async Task HandleNewDriverUploadTime()
