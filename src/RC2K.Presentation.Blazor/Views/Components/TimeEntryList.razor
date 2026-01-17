@@ -36,6 +36,7 @@
   else
   {
     <MudDataGrid @ref="grid"
+                 MultiSelection="@(VerificationMode)"
                  SortMode="SortMode.Single"
                  T="TimeEntryListItem"
                  Items="@_items"
