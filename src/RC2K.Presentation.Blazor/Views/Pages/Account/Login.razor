@@ -28,10 +28,14 @@
             <DataAnnotationsValidator />
             <MudStaticTextField T="string"
                                 Label="Username"
-                                @bind-Value="@Model.UserName" For="() => Model.UserName" />
+                                @bind-Value="Model.UserName"
+                                For="() => Model.UserName"
+                                ShrinkLabel="true" />
             <MudStaticTextField T="string"
                                 Label="Password"
-                                @bind-Value="@Model.Password" For="() => Model.Password"
+                                @bind-Value="Model.Password"
+                                For="() => Model.Password"
+                                ShrinkLabel="true"
                                 InputType="InputType.Password" />
             <div class="d-flex align-center justify-space-between">
                 <MudStaticButton FormAction="FormAction.Submit"
@@ -59,8 +63,6 @@
 </div>
 
 @code {
-
-
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
