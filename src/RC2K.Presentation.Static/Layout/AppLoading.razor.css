@@ -51,7 +51,7 @@
 .app-loading {
     align-items: center;
     display: flex;
-    width: 20ch;
+    width: 25ch;
 }
 
 .app-loading p {
