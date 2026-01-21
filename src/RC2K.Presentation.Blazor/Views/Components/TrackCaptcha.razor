@@ -4,26 +4,25 @@
 @inject IJSRuntime JS
 
 <!-- The goal of this component is to render reCAPTCHA badge only on pages where CAPTCHA mechanism is required -->
-
 @code {
 
-  private string _recaptchaSiteKey;
+    private string _recaptchaSiteKey;
 
-  public TrackCaptcha(IConfiguration configuration)
-  {
-    _recaptchaSiteKey = configuration["Captcha:SiteKey"];
-  }
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
+    public TrackCaptcha(IConfiguration configuration)
     {
-      await JS.InvokeVoidAsync("setRecaptchaVisibility", true);
+        _recaptchaSiteKey = configuration["Captcha:SiteKey"];
     }
-  }
 
-  public void Dispose()
-  {
-    _ = JS.InvokeVoidAsync("setRecaptchaVisibility", false);
-  }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("setRecaptchaVisibility", true);
+        }
+    }
+
+    public void Dispose()
+    {
+        _ = JS.InvokeVoidAsync("setRecaptchaVisibility", false);
+    }
 }

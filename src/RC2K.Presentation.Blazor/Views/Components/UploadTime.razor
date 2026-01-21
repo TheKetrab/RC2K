@@ -17,338 +17,331 @@
 
 @inject ICaptchaVerifier CaptchaVerifier
 
+<MyErrorBoundary @ref="_errorBoundary">
+    <ChildContent>
+        <TrackCaptcha />
+        <div class="d-flex flex-column">
+            <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+                <MudForm Class="gap-5">
+                    <div style="display: flex; gap: 1em;">
+                        <MudTextField T="int"
+                                      Label="min"
+                                      @bind-Value="UploadTimeModel.Min" />
+                        <MudTextField T="int"
+                                      Label="sec"
+                                      @bind-Value="UploadTimeModel.Sec" />
+                        <MudTextField T="int"
+                                      Label="cc"
+                                      @bind-Value="UploadTimeModel.Cc" />
+                    </div>
+                    <MudTextField T="string"
+                                  Label="Driver name"
+                                  @bind-Value="UploadTimeModel.DriverName" />
 
+                    <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" />
 
-    <MyErrorBoundary @ref="_errorBoundary">
-              <ChildContent >
+                    <MudRadioGroup @bind-Value="UploadTimeModel.Label">
+                        <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
+                        <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
+                        <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
+                        <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
+                    </MudRadioGroup>
 
+                    <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+                        <MudText Typo="Typo.h6" Class="mb-4">Proofs</MudText>
 
-    <TrackCaptcha />
-<div class="d-flex flex-column">
+                        @for (int i = 0; i < _proofItems.Count; i++)
+                        {
+                            int index = i;
+                            <div class="d-flex align-center gap-4 mb-3">
+                                <MudSelect T="ProofType" Label="Type"
+                                           Variant="Variant.Outlined" Margin="Margin.Dense" Style="width: 150px;">
+                                    @foreach (ProofType type in Enum.GetValues(typeof(ProofType)))
+                                    {
+                                        <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudTextField T="string"
+                                              Label="@($"Link {index + 1}")"
+                                              Value="_proofItems[index].Item2"
+                                              ValueChanged="@(value => OnValueChanged(index, value))"
+                                              Variant="Variant.Outlined"
+                                              Margin="Margin.Dense" />
 
-  <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
-    <MudForm Class="gap-5">
-      <div style="display: flex; gap: 1em;">
-        <MudTextField T="int"
-                      Label="min"
-                      @bind-Value="UploadTimeModel.Min" />
-        <MudTextField T="int"
-                      Label="sec"
-                      @bind-Value="UploadTimeModel.Sec" />
-        <MudTextField T="int"
-                      Label="cc"
-                      @bind-Value="UploadTimeModel.Cc" />
-      </div>
-      <MudTextField T="string"
-                    Label="Driver name"
-                    @bind-Value="UploadTimeModel.DriverName" />
+                                @if (_proofItems.Count > 1)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   OnClick="@(() => RemoveRow(index))" />
+                                }
+                            </div>
+                        }
+                    </MudContainer>
 
-      <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" /> 
-
-      <MudRadioGroup @bind-Value="UploadTimeModel.Label">
-        <MudRadio Value="@("TA")" Color="Color.Primary" >Time Attack</MudRadio>
-        <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
-        <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
-        <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
-      </MudRadioGroup>
-
-      <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
-        <MudText Typo="Typo.h6" Class="mb-4">Proofs</MudText>
-
-        @for (int i = 0; i < _proofItems.Count; i++)
-        {
-          int index = i;
-          <div class="d-flex align-center gap-4 mb-3">
-            <MudSelect T="ProofType" Label="Type"
-                                      Variant="Variant.Outlined" Margin="Margin.Dense" Style="width: 150px;">
-              @foreach (ProofType type in Enum.GetValues(typeof(ProofType)))
-              {
-                <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-              }
-            </MudSelect>
-            <MudTextField T="string"
-                          Label="@($"Link {index + 1}")"
-                          Value="_proofItems[index].Item2"
-                          ValueChanged="@(value => OnValueChanged(index, value))"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense" />
-
-            @if (_proofItems.Count > 1)
-            {
-              <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                             Color="Color.Error"
-                             OnClick="@(() => RemoveRow(index))" />
-            }
-          </div>
-        }
-      </MudContainer>
-
-      <MudButton Variant="Variant.Filled"
-                 Color="Color.Primary"
-                 Class="ml-auto"
-                 OnClick="UploadClick">Upload</MudButton>
-    </MudForm>
-  </MudPaper>
-
-</div>
-  </ChildContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto"
+                               OnClick="UploadClick">Upload</MudButton>
+                </MudForm>
+            </MudPaper>
+        </div>
+    </ChildContent>
 </MyErrorBoundary>
 
 @code {
-  ErrorBoundary _errorBoundary;
+    ErrorBoundary? _errorBoundary;
+    CarSelector? _carSelector;
 
-  protected override void OnParametersSet()
-  {
-    _errorBoundary?.Recover();
-  }
-
-  private List<Tuple<ProofType,string>> _proofItems = new() { Tuple.Create<ProofType,string>(ProofType.Unknown, "") };
-  private List<Proof> Proofs =>
-    _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
-               .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
-               .ToList();
-
-  private void OnValueChanged(int index, string newValue)
-  {
-    ProofType currentProofType = _proofItems[index].Item1;
-    _proofItems[index] = Tuple.Create<ProofType, string>(currentProofType, newValue);
-
-    if (index == _proofItems.Count - 1 && !string.IsNullOrWhiteSpace(newValue))
+    protected override void OnParametersSet()
     {
-      _proofItems.Add(Tuple.Create(ProofType.Unknown, ""));
-    }
-  }
-
-  private void RemoveRow(int index)
-  {
-    if (_proofItems.Count > 1)
-    {
-      _proofItems.RemoveAt(index);
-    }
-  }
-
-
-  CarSelector _carSelector;
-
-  protected override void OnAfterRender(bool firstRender)
-  {
-    if (!firstRender)
-    {
-      return;
-    }
-    _carSelector.OnSelectedCarChanged += (_,c) =>
-    {
-      UploadTimeModel.Car = c;
-    };
-  }
-
-  protected override async Task OnInitializedAsync()
-  {
-    UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
-  }
-
-  [Parameter] public int StageId { get; set; }
-
-  UploadTimeModelType UploadTimeModel = new();
-
-  public class UploadTimeModelType
-  {
-    public int Min { get; set; }
-    public int Sec { get; set; }
-    public int Cc { get; set; }
-    private Car _car;
-    public Car Car 
-    { 
-      get => _car;
-      set
-      {
-        _car = value;
-      }
+        _errorBoundary?.Recover();
     }
 
-    public string DriverName { get; set; }
-    public string Label { get; set; } = "TA";
-  }
+    private List<Tuple<ProofType, string>> _proofItems = new() { Tuple.Create<ProofType, string>(ProofType.Unknown, "") };
+    private List<Proof> Proofs =>
+      _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
+                 .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
+                 .ToList();
 
-  private async Task<bool> IsRobot()
-  {
-    return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => Snackbar.Add(msg, Severity.Error));
-  }
+    private void OnValueChanged(int index, string newValue)
+    {
+        ProofType currentProofType = _proofItems[index].Item1;
+        _proofItems[index] = Tuple.Create<ProofType, string>(currentProofType, newValue);
 
-  private async Task UploadClick()
-  {
-    if (await IsRobot())
-    {
-      return;
-    }
-    List<string> validationResult = DoValidation();
-    if (validationResult.Count > 0)
-    {
-      Snackbar.Add(string.Join(" ", validationResult), Severity.Error);
-      return;
+        if (index == _proofItems.Count - 1 && !string.IsNullOrWhiteSpace(newValue))
+        {
+            _proofItems.Add(Tuple.Create(ProofType.Unknown, ""));
+        }
     }
 
-    var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
-    if (driver is null)
+    private void RemoveRow(int index)
     {
-      await HandleNewDriverUploadTime();
-    }
-    else if (!driver.Known)
-    {
-      await HandleExistingDriverUploadTime(driver.Id);
-    }
-    else
-    {
-      await HandleUserUploadTime(driver.Id);
+        if (_proofItems.Count > 1)
+        {
+            _proofItems.RemoveAt(index);
+        }
     }
 
-  }
 
-  private List<string> DoValidation()
-  {
-    List<string> errors = [];
-    if (UploadTimeModel.Car is null)
-    {
-      errors.Add("You must select a car.");
-    }
-    if (UploadTimeModel.Min == 0 &&
-        UploadTimeModel.Sec == 0 &&
-        UploadTimeModel.Cc == 0)
-    {
-      errors.Add("You need to set a time!");
-    }
-    if (string.IsNullOrWhiteSpace(UploadTimeModel.DriverName))
-    {
-      errors.Add("You need to put your name.");
-    }
-    if (Proofs.Count == 0)
-    {
-      errors.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.");
-    }
-    return errors;
-  }
 
-  private async Task HandleNewDriverUploadTime()
-  {
-    var res = await DialogService.ShowMessageBox("Driver creation", "There is no driver with this name yet. If you continue, you will get a unique pass-code for this driver, that you will have to enter every time when you will upload another time entry using your nickname. Do you want to continue?", yesText: "Yes", cancelText: "No");
-    if (res is null || res.Value is not true)
+    protected override void OnAfterRender(bool firstRender)
     {
-      return;
+        if (!firstRender)
+        {
+            return;
+        }
+        _carSelector.OnSelectedCarChanged += (_, c) =>
+        {
+            UploadTimeModel.Car = c;
+        };
     }
 
-    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-    var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options);
-    var dialogResult = await dialog.Result;
-
-    string? nat = null;
-    if (!dialogResult.Canceled)
+    protected override async Task OnInitializedAsync()
     {
-      nat = dialogResult.Data?.ToString();
-    }
-    var result = await DriverService.CreateAnonymous(UploadTimeModel.DriverName, nat);
-    if (!result.Success)
-    {
-      Snackbar.Add(result.Message!, Severity.Error);
-      return;
+        UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
     }
 
-    Driver newDriver = result.Payload!;
-    await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
+    [Parameter] public int StageId { get; set; }
 
-    var uploadResult = await TimeEntryService.Upload(
-      StageId,
-      UploadTimeModel.Car.Id,
-      newDriver.Id,
-      UploadTimeModel.Min,
-      UploadTimeModel.Sec,
-      UploadTimeModel.Cc,
-      Proofs,
-      UploadTimeModel.Label,
-      newDriver.Key!
-      );
+    UploadTimeModelType UploadTimeModel = new();
 
-    if (uploadResult.Success)
+    public class UploadTimeModelType
     {
-      ShowUploadedMessage();
-    }
-    else
-    {
-      ShowUploadedFailureMessage(uploadResult.Message);
-    }
-  }
-  private async Task HandleExistingDriverUploadTime(Guid driverId)
-  {
-    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-    var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
-    var dialogResult = await dialog.Result;
+        public int Min { get; set; }
+        public int Sec { get; set; }
+        public int Cc { get; set; }
+        private Car? _car;
+        public Car Car
+        {
+            get => _car;
+            set
+            {
+                _car = value;
+            }
+        }
 
-    if (dialogResult.Canceled)
-    {
-      return;
+        public string DriverName { get; set; } = string.Empty;
+        public string Label { get; set; } = "TA";
     }
 
-    string driverCode = dialogResult.Data.ToString();
-    var uploadResult = await TimeEntryService.Upload(
-      StageId,
-      UploadTimeModel.Car.Id,
-      driverId,
-      UploadTimeModel.Min,
-      UploadTimeModel.Sec,
-      UploadTimeModel.Cc,
-      Proofs,
-      UploadTimeModel.Label,
-      driverCode
-      );
-
-    if (uploadResult.Success)
+    private async Task<bool> IsRobot()
     {
-      ShowUploadedMessage();
-    }
-    else
-    {
-      ShowUploadedFailureMessage(uploadResult.Message);
+        return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => Snackbar.Add(msg, Severity.Error));
     }
 
-  }
-  private async Task HandleUserUploadTime(Guid driverId)
-  {
-    var uploadResult = await TimeEntryService.Upload(
-      StageId,
-      UploadTimeModel.Car.Id,
-      driverId,
-      UploadTimeModel.Min,
-      UploadTimeModel.Sec,
-      UploadTimeModel.Cc,
-      Proofs,
-      UploadTimeModel.Label
-      );
-
-    if (uploadResult.Success)
+    private async Task UploadClick()
     {
-      ShowUploadedMessage();
+        if (await IsRobot())
+        {
+            return;
+        }
+        List<string> validationResult = DoValidation();
+        if (validationResult.Count > 0)
+        {
+            Snackbar.Add(string.Join(" ", validationResult), Severity.Error);
+            return;
+        }
+
+        var driver = await DriverService.GetByName(UploadTimeModel.DriverName);
+        if (driver is null)
+        {
+            await HandleNewDriverUploadTime();
+        }
+        else if (!driver.Known)
+        {
+            await HandleExistingDriverUploadTime(driver.Id);
+        }
+        else
+        {
+            await HandleUserUploadTime(driver.Id);
+        }
     }
-    else
+
+    private List<string> DoValidation()
     {
-      ShowUploadedFailureMessage(uploadResult.Message);
+        List<string> errors = [];
+        if (UploadTimeModel.Car is null)
+        {
+            errors.Add("You must select a car.");
+        }
+        if (UploadTimeModel.Min == 0 &&
+            UploadTimeModel.Sec == 0 &&
+            UploadTimeModel.Cc == 0)
+        {
+            errors.Add("You need to set a time!");
+        }
+        if (string.IsNullOrWhiteSpace(UploadTimeModel.DriverName))
+        {
+            errors.Add("You need to put your name.");
+        }
+        if (Proofs.Count == 0)
+        {
+            errors.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.");
+        }
+        return errors;
     }
-  }
 
-  private void ShowUploadedMessage()
-  {
-    Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>
+    private async Task HandleNewDriverUploadTime()
     {
-      config.ShowCloseIcon = true;
-      config.VisibleStateDuration = 10000;
-    });
-  }
+        var res = await DialogService.ShowMessageBox("Driver creation", "There is no driver with this name yet. If you continue, you will get a unique pass-code for this driver, that you will have to enter every time when you will upload another time entry using your nickname. Do you want to continue?", yesText: "Yes", cancelText: "No");
+        if (res is null || res.Value is not true)
+        {
+            return;
+        }
 
-  private void ShowUploadedFailureMessage(string? msg)
-  {
-    Snackbar.Add($"Upload failed. {msg}", Severity.Error, config =>
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options);
+        var dialogResult = await dialog.Result;
+
+        string? nat = null;
+        if (!dialogResult.Canceled)
+        {
+            nat = dialogResult.Data?.ToString();
+        }
+        var result = await DriverService.CreateAnonymous(UploadTimeModel.DriverName, nat);
+        if (!result.Success)
+        {
+            Snackbar.Add(result.Message!, Severity.Error);
+            return;
+        }
+
+        Driver newDriver = result.Payload!;
+        await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
+
+        var uploadResult = await TimeEntryService.Upload(
+          StageId,
+          UploadTimeModel.Car.Id,
+          newDriver.Id,
+          UploadTimeModel.Min,
+          UploadTimeModel.Sec,
+          UploadTimeModel.Cc,
+          Proofs,
+          UploadTimeModel.Label,
+          newDriver.Key!
+          );
+
+        if (uploadResult.Success)
+        {
+            ShowUploadedMessage();
+        }
+        else
+        {
+            ShowUploadedFailureMessage(uploadResult.Message);
+        }
+    }
+    private async Task HandleExistingDriverUploadTime(Guid driverId)
     {
-      config.ShowCloseIcon = true;
-      config.VisibleStateDuration = 10000;
-    });
-  }
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled)
+        {
+            return;
+        }
+
+        string driverCode = dialogResult.Data.ToString();
+        var uploadResult = await TimeEntryService.Upload(
+          StageId,
+          UploadTimeModel.Car.Id,
+          driverId,
+          UploadTimeModel.Min,
+          UploadTimeModel.Sec,
+          UploadTimeModel.Cc,
+          Proofs,
+          UploadTimeModel.Label,
+          driverCode
+          );
+
+        if (uploadResult.Success)
+        {
+            ShowUploadedMessage();
+        }
+        else
+        {
+            ShowUploadedFailureMessage(uploadResult.Message);
+        }
+
+    }
+    private async Task HandleUserUploadTime(Guid driverId)
+    {
+        var uploadResult = await TimeEntryService.Upload(
+          StageId,
+          UploadTimeModel.Car.Id,
+          driverId,
+          UploadTimeModel.Min,
+          UploadTimeModel.Sec,
+          UploadTimeModel.Cc,
+          Proofs,
+          UploadTimeModel.Label
+          );
+
+        if (uploadResult.Success)
+        {
+            ShowUploadedMessage();
+        }
+        else
+        {
+            ShowUploadedFailureMessage(uploadResult.Message);
+        }
+    }
+
+    private void ShowUploadedMessage()
+    {
+        Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>
+        {
+            config.ShowCloseIcon = true;
+            config.VisibleStateDuration = 10000;
+        });
+    }
+
+    private void ShowUploadedFailureMessage(string? msg)
+    {
+        Snackbar.Add($"Upload failed. {msg}", Severity.Error, config =>
+        {
+            config.ShowCloseIcon = true;
+            config.VisibleStateDuration = 10000;
+        });
+    }
 
 }

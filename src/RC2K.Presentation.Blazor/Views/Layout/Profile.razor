@@ -7,7 +7,7 @@
 <div class="profile">
     <AuthorizeView>
         <NotAuthorized>
-            <LoginButton/>
+            <LoginButton />
         </NotAuthorized>
         <Authorized>
 
@@ -31,12 +31,12 @@
                     </div>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Logout)"
                                    Color="Color.Error"
-                                   Href="logout" 
-                                   Style="padding: 0; margin: auto 10px;"/>
+                                   Href="logout"
+                                   Style="padding: 0; margin: auto 10px;" />
                 </div>
             </div>
             <button class="profile-btn" @onclick="ToggleProfileVisible">
-                <ion-icon name="person-circle-outline" class="btn-svg"/>
+                <ion-icon name="person-circle-outline" class="btn-svg" />
             </button>
 
 
@@ -51,7 +51,7 @@
     bool allowOverflowVisibleBool = false;
     string mode = "Light/Auto/Dark";
 
-    private async Task ToggleProfileVisible() 
+    private async Task ToggleProfileVisible()
     {
         profileContentIsVisible = !profileContentIsVisible;
         if (profileContentIsVisible)

@@ -15,124 +15,124 @@
 @inject ISnackbar Snackbar
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-  <DataAnnotationsValidator />
+    <DataAnnotationsValidator />
 
-      <MudCard>
+    <MudCard>
         <MudCardContent>
-          <MudTextField Label="Comment" HelperText="Comment for verification"
-                        @bind-Value="model.Comment" For="@(() => model.Comment)" />
+            <MudTextField Label="Comment" HelperText="Comment for verification"
+                          @bind-Value="model.Comment" For="@(() => model.Comment)" />
         </MudCardContent>
         <MudCardActions>
-          <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" OnClick="OnReject" Class="ml-auto mr-1">Reject</MudButton>
-          <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="">Verify</MudButton>
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" OnClick="OnReject" Class="ml-auto mr-1">Reject</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="">Verify</MudButton>
         </MudCardActions>
-      </MudCard>
-  @if (!success)
-  {
-    <MudText Color="Color.Error">@error</MudText>
-    <ValidationSummary />
-  }
+    </MudCard>
+    @if (!success)
+    {
+        <MudText Color="Color.Error">@error</MudText>
+        <ValidationSummary />
+    }
 </EditForm>
 
 <MudCard>
-  <MudText>Pending time entries to be verified or rejected:</MudText>
-  <TimeEntryList @ref="timeEntryList" PerPage="20" VerificationMode="true" />
+    <MudText>Pending time entries to be verified or rejected:</MudText>
+    <TimeEntryList @ref="timeEntryList" PerPage="20" VerificationMode="true" />
 </MudCard>
 
 @code
 {
-  TimeEntryList timeEntryList = new();
-  ValidationForm model = new ValidationForm();
-  bool success;
-  string error;
+    TimeEntryList timeEntryList = new();
+    ValidationForm model = new ValidationForm();
+    bool success;
+    string? error;
 
-  public class ValidationForm
-  {
-    [Required]
-    public string Comment { get; set; } = $"Verification on {RC2K.Utils.Utils.DateTimeToString(DateTime.Now)}";
-  }
-
-  private async Task OnReject()
-  {
-    var selectedItems = timeEntryList.GetSelectedTimeEntries();
-    if (selectedItems.Count == 0)
+    public class ValidationForm
     {
-      error = "None item selected";
-      success = false;
-      StateHasChanged();
-      return;
+        [Required]
+        public string Comment { get; set; } = $"Verification on {RC2K.Utils.Utils.DateTimeToString(DateTime.Now)}";
     }
 
-    error = "";
-    success = true;
-    StateHasChanged();
-    try
+    private async Task OnReject()
     {
-      await TimeEntryService.Delete(selectedItems);
-      await Notify(selectedItems, false, model.Comment);
-      Snackbar.Add("Rejected successfully", Severity.Success);
-    }
-    catch (Exception ex)
-    {
-      Snackbar.Add("Service failed to reject", Severity.Error);
-    }
-  }
+        var selectedItems = timeEntryList.GetSelectedTimeEntries();
+        if (selectedItems.Count == 0)
+        {
+            error = "None item selected";
+            success = false;
+            StateHasChanged();
+            return;
+        }
 
-  private async Task OnValidSubmit(EditContext context)
-  {
-    var selectedItems = timeEntryList.GetSelectedTimeEntries();
-    if (selectedItems.Count == 0)
-    {
-      error = "None item selected";
-      success = false;
-      StateHasChanged();
-      return;
-    }
-
-    error = "";
-    success = true;
-    StateHasChanged();
-    try
-    {
-      await TimeEntryService.Verify(selectedItems, model.Comment);
-      await Notify(selectedItems, true, model.Comment);
-      Snackbar.Add("Verified successfully", Severity.Success);
-    }
-    catch (Exception ex)
-    {
-      Snackbar.Add("Service failed to verify", Severity.Error);
-    }
-  }
-
-  private async Task Notify(List<TimeEntry> timeEntries, bool isVerify, string comment)
-  {
-    string verb = isVerify ? "verified" : "rejected";
-    string verifier = await UserService.GetCurrentUserName();
-
-    string GetInfo(TimeEntry te)
-    {
-      return te.Stage.StageData.Name + 
-        $" ({(te.Stage.Direction == DomainModel.Direction.Simulation ? "S" : "A")})" +
-        $" {te.Time.ToString("m:ss.ff")}" +
-        $" by {(te.Driver.Known ? te.Driver.User.Name : te.Driver.Name)}";
+        error = "";
+        success = true;
+        StateHasChanged();
+        try
+        {
+            await TimeEntryService.Delete(selectedItems);
+            await Notify(selectedItems, false, model.Comment);
+            Snackbar.Add("Rejected successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Service failed to reject", Severity.Error);
+        }
     }
 
-    string masterAdminInfo = string.Join(" ; ", timeEntries.Select(x => $"[{GetInfo(x)}]"));
-    string masterAdminMsg = $"{verifier} {verb} time entries: {masterAdminInfo} (with comment: {comment})";
-    await NotificationService.NotifyMasterAdmin(masterAdminMsg);
-
-    foreach (var group in timeEntries.GroupBy(x => x.DriverId))
+    private async Task OnValidSubmit(EditContext context)
     {
-      if (!group.First().Driver.Known)
-      {
-        continue;
-      }
+        var selectedItems = timeEntryList.GetSelectedTimeEntries();
+        if (selectedItems.Count == 0)
+        {
+            error = "None item selected";
+            success = false;
+            StateHasChanged();
+            return;
+        }
 
-      Guid userId = group.First().Driver.UserId.Value;
-      string userInfo = string.Join(" ; ", group.Select(x => $"[{GetInfo(x)}]"));
-      string userMsg = $"{verifier} {verb} time entries: {userInfo} (with comment: {comment})";
-      await NotificationService.Create(userId, userMsg);
-
+        error = "";
+        success = true;
+        StateHasChanged();
+        try
+        {
+            await TimeEntryService.Verify(selectedItems, model.Comment);
+            await Notify(selectedItems, true, model.Comment);
+            Snackbar.Add("Verified successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Service failed to verify", Severity.Error);
+        }
     }
-  }
+
+    private async Task Notify(List<TimeEntry> timeEntries, bool isVerify, string comment)
+    {
+        string verb = isVerify ? "verified" : "rejected";
+        string verifier = await UserService.GetCurrentUserName();
+
+        string GetInfo(TimeEntry te)
+        {
+            return te.Stage!.StageData!.Name +
+              $" ({(te.Stage.Direction == DomainModel.Direction.Simulation ? "S" : "A")})" +
+              $" {te.Time.ToString("m:ss.ff")}" +
+              $" by {(te.Driver!.Known ? te.Driver.User!.Name : te.Driver.Name)}";
+        }
+
+        string masterAdminInfo = string.Join(" ; ", timeEntries.Select(x => $"[{GetInfo(x)}]"));
+        string masterAdminMsg = $"{verifier} {verb} time entries: {masterAdminInfo} (with comment: {comment})";
+        await NotificationService.NotifyMasterAdmin(masterAdminMsg);
+
+        foreach (var group in timeEntries.GroupBy(x => x.DriverId))
+        {
+            if (!group.First().Driver!.Known)
+            {
+                continue;
+            }
+
+            Guid userId = group.First().Driver!.UserId!.Value;
+            string userInfo = string.Join(" ; ", group.Select(x => $"[{GetInfo(x)}]"));
+            string userMsg = $"{verifier} {verb} time entries: {userInfo} (with comment: {comment})";
+            await NotificationService.Create(userId, userMsg);
+
+        }
+    }
 }

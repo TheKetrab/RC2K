@@ -17,356 +17,354 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 <style>
-  .mud-chip.mud-chip-size-xs {
-    border-radius: 12px;
-    font-size: 10px;
-    height: 16px;
-    padding: 0 8px;
-  }
+    .mud-chip.mud-chip-size-xs {
+        border-radius: 12px;
+        font-size: 10px;
+        height: 16px;
+        padding: 0 8px;
+    }
 </style>
 
 @{
-  if (!dataLoaded)
-  {
-    <div style="position: relative;">
-      <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
-      <MudOverlay Visible="overlayVisible" Absolute="true">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
-      </MudOverlay>
-    </div>
-  }
-  else
-  {
-    <MudDataGrid @ref="grid"
-                 MultiSelection="@(VerificationMode)"
-                 SortMode="SortMode.Single"
-                 T="TimeEntryListItem"
-                 Items="@_items"
-                 id="time-entry-list-table"
-                 ShowColumnOptions="false"
-                 RowsPerPage="20"
-                 QuickFilter="_quickFilter"
-                 RowStyleFunc="_rowStyleFunc">
-      <Columns>
-      
-        @if (VerificationMode)
-        {
-          <TemplateColumn Title="Stage">
-            <CellTemplate>
-              <MudLink Href="@context.Item.StageLink">
-                @context.Item.StageName
-              </MudLink>
-            </CellTemplate>
-          </TemplateColumn>
-        }
-        @if (VerificationMode == false)
-        {
-        <TemplateColumn Title="#">
-          <CellTemplate>
-            @{
-              if (this.filterCarCheckBox && this.filterCar != null)
-              {
-                <span>@context.Item.PlaceByCar</span>
-              }
-              else
-              {
-                <span>@context.Item.Place</span>
-              }
-            }
-          </CellTemplate>
-        </TemplateColumn>
-        }
-        <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
-        @if (!VerificationMode) {
-          <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
-        }
-        <TemplateColumn Title="Driver">
+    if (!dataLoaded)
+    {
+        <div style="position: relative;">
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
+            <MudOverlay Visible="overlayVisible" Absolute="true">
+                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+            </MudOverlay>
+        </div>
+    }
+    else
+    {
+        <MudDataGrid @ref="grid"
+                     MultiSelection="@(VerificationMode)"
+                     SortMode="SortMode.Single"
+                     T="TimeEntryListItem"
+                     Items="@_items"
+                     id="time-entry-list-table"
+                     ShowColumnOptions="false"
+                     RowsPerPage="20"
+                     QuickFilter="_quickFilter"
+                     RowStyleFunc="_rowStyleFunc">
+            <Columns>
 
-          <CellTemplate>
-            <MudStack Row>
-              <span class="fi @($"fi-{@context.Item.Data.Driver.Nationality}")"></span>
-              <span>@context.Item.DisplayName</span>
-            </MudStack>
-          </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn Title="Car">
-          <CellTemplate>
-            <div class="car" data-car-id="@(context.Item.Data.Car.Id-1)"></div>
-          </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
-        <TemplateColumn Title="Proofs">
-          <CellTemplate>
-            <p style="display: flex;">
-              @{
-                foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
+                @if (VerificationMode)
                 {
-                  <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                    <TemplateColumn Title="Stage">
+                        <CellTemplate>
+                            <MudLink Href="@context.Item.StageLink">
+                                @context.Item.StageName
+                            </MudLink>
+                        </CellTemplate>
+                    </TemplateColumn>
                 }
-              }
-            </p>
-          </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn Title="Labels">
-          <CellTemplate>
-            <p>
-              @{
-                foreach (var label in context.Item.Labels)
+                @if (VerificationMode == false)
                 {
-                  string color = label switch
-                  {
-                    "BRC20" => "#e0c444ff",
-                    "MFMI18" => "#c71a99ff",
-                    "MFMI19" => "#d18fd9",
-                    "MFMI20" => "#83ba73ff",
-                    "MFMI21" => "#bfb84eff",
-                    "MFMI22" => "#99e63cff",
-                    "MFMI23" => "#4d69f7ff",
-                    "MFMI24" => "#6eb3db",
-                    "MFMI25" => "#f25a46ff",
-                    _ => "#1c7848ff"
-                  };
-                  <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
+                    <TemplateColumn Title="#">
+                        <CellTemplate>
+                            @{
+                                if (this.filterCarCheckBox && this.filterCar != null)
+                                {
+                                    <span>@context.Item.PlaceByCar</span>
+                                }
+                                else
+                                {
+                                    <span>@context.Item.Place</span>
+                                }
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
                 }
-              }
-            </p>
-          </CellTemplate>
-        </TemplateColumn>
-        @if (!VerificationMode) {
-          <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
-        }
-        @if (VerificationMode)
-        {
-          <SelectColumn T="TimeEntryListItem" />
-        }
-        
-      </Columns>
-      <PagerContent>
+                <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
+                @if (!VerificationMode)
+                {
+                    <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+                }
+                <TemplateColumn Title="Driver">
+
+                    <CellTemplate>
+                        <MudStack Row>
+                            <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
+                            <span>@context.Item.DisplayName</span>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Car">
+                    <CellTemplate>
+                        <div class="car" data-car-id="@(context.Item.Data.Car!.Id - 1)"></div>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
+                <TemplateColumn Title="Proofs">
+                    <CellTemplate>
+                        <p style="display: flex;">
+                            @{
+                                foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
+                                {
+                                    <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                                }
+                            }
+                        </p>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Labels">
+                    <CellTemplate>
+                        <p>
+                            @{
+                                foreach (var label in context.Item.Labels)
+                                {
+                                    string color = label switch
+                                    {
+                                        "BRC20" => "#e0c444ff",
+                                        "MFMI18" => "#c71a99ff",
+                                        "MFMI19" => "#d18fd9",
+                                        "MFMI20" => "#83ba73ff",
+                                        "MFMI21" => "#bfb84eff",
+                                        "MFMI22" => "#99e63cff",
+                                        "MFMI23" => "#4d69f7ff",
+                                        "MFMI24" => "#6eb3db",
+                                        "MFMI25" => "#f25a46ff",
+                                        _ => "#1c7848ff"
+                                    };
+                                    <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
+                                }
+                            }
+                        </p>
+                    </CellTemplate>
+                </TemplateColumn>
+                @if (!VerificationMode)
+                {
+                    <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+                }
+                @if (VerificationMode)
+                {
+                    <SelectColumn T="TimeEntryListItem" />
+                }
+
+            </Columns>
+            <PagerContent>
+                <AuthorizeView>
+                    <Authorized>
+                        <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10, 20, 50]" />
+                    </Authorized>
+                </AuthorizeView>
+            </PagerContent>
+        </MudDataGrid>
+
         <AuthorizeView>
-          <Authorized>
-            <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10, 20, 50]" />
-          </Authorized>
+            <Authorized>
+                <MudPaper>
+                    <MudStack Row Style="align-items: center;">
+                        <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
+                        <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
+                    </MudStack>
+                    <MudStack Row Style="align-items: center;">
+                        <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
+                        <CarSelector @bind-SelectedCar="filterCar" />
+                    </MudStack>
+                    <MudStack Row Style="align-items: center;">
+                        <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
+                        <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
+                    </MudStack>
+                    <MudStack Row Style="align-items: center;">
+                        <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
+                    </MudStack>
+                </MudPaper>
+            </Authorized>
         </AuthorizeView>
-      </PagerContent>
-    </MudDataGrid>
-
-        <AuthorizeView>
-          <Authorized>
-            <MudPaper>
-              <MudStack Row Style="align-items: center;">
-                <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
-                <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
-              </MudStack>
-              <MudStack Row Style="align-items: center;">
-                <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
-                <CarSelector @bind-SelectedCar="filterCar" />
-              </MudStack>
-              <MudStack Row Style="align-items: center;">
-                <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
-                <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
-              </MudStack>
-              <MudStack Row Style="align-items: center;">
-                <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
-              </MudStack>
-            </MudPaper>
-        </Authorized>
-       </AuthorizeView>
-  }
+    }
 
 }
 
 @code {
 
-  MudDataGrid<TimeEntryListItem> grid;
-  private List<TimeEntryListItem> _items = [];
-  public TimeEntry best;
-  public Dictionary<Guid, int> generalPoints = [];
-  public Dictionary<Guid, int> carPoints = [];
+    MudDataGrid<TimeEntryListItem> grid;
+    private List<TimeEntryListItem> _items = [];
+    public TimeEntry best;
+    public Dictionary<Guid, int> generalPoints = [];
+    public Dictionary<Guid, int> carPoints = [];
 
-  [SupplyParameterFromQuery] public int Page { get; set; }
-  [Parameter] public int PerPage { get; set; }
-  [Parameter] public int StageId { get; set; }
-  [Parameter] public Func<Task>? OnLoaded { get; set; }
-  [Parameter] public bool VerificationMode { get; set; }
+    [SupplyParameterFromQuery] public int Page { get; set; }
+    [Parameter] public int PerPage { get; set; }
+    [Parameter] public int StageId { get; set; }
+    [Parameter] public Func<Task>? OnLoaded { get; set; }
+    [Parameter] public bool VerificationMode { get; set; }
 
-  // async loading
-  private bool overlayVisible;
-  private bool dataLoaded;
+    // async loading
+    private bool overlayVisible;
+    private bool dataLoaded;
 
 
-  // filters
-  public bool filterDriverCheckBox;
-  public string? filterDriverText;
-  public bool filterCarCheckBox;
-  public Car? filterCar;
-  public bool filterLabelsCheckBox;
-  public string? filterLabelsText;
-  public bool filterMfmiCheckBox;
+    // filters
+    public bool filterDriverCheckBox;
+    public string? filterDriverText;
+    public bool filterCarCheckBox;
+    public Car? filterCar;
+    public bool filterLabelsCheckBox;
+    public string? filterLabelsText;
+    public bool filterMfmiCheckBox;
 
-  public List<TimeEntry> GetSelectedTimeEntries()
-  {
-    var selectedTimeEntries = 
-        grid.SelectedItems.Select(x => x.Data).ToList();
-
-    return selectedTimeEntries;
-  }
-
-  protected override void OnInitialized()
-  {
-    OpenLoadingOverlay();
-    base.OnInitialized();
-  }
-
-  private void OpenLoadingOverlay()
-  {
-    overlayVisible = true;
-    dataLoaded = false;
-  }
-  private void CloseLoadingOverlay()
-  {
-    overlayVisible = false;
-    dataLoaded = true;
-  }
-
-  public async Task ReloadTimeEntries()
-  {
-    OpenLoadingOverlay();
-
-    var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
-
-    best = info.Best;
-    generalPoints = info.GeneralPoints;
-    carPoints = info.CarPoints;
-
-    var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
-    foreach (var itm in items)
+    public List<TimeEntry> GetSelectedTimeEntries()
     {
-      itm.Place = info.Places[itm.Data.Id];
-      itm.PlaceByCar = info.PlacesByCar[itm.Data.Id];
+        var selectedTimeEntries =
+            grid.SelectedItems.Select(x => x.Data).ToList();
+
+        return selectedTimeEntries;
     }
 
-    _items = items.OrderBy(x => x.Place).ToList();
-
-    CloseLoadingOverlay();
-    StateHasChanged();
-    OnLoaded?.Invoke();
-  }
-
-  public async Task ReloadTimeEntriesForVerification()
-  {
-    OpenLoadingOverlay();
-
-    var notVerified = await TimeEntryService.GetAllNotVerified();
-    var items = notVerified.Select(x => new TimeEntryListItem(this, x)).ToList();
-
-    _items = items;
-
-    CloseLoadingOverlay();
-    StateHasChanged();
-    OnLoaded?.Invoke();
-  }
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (!firstRender)
+    protected override void OnInitialized()
     {
-      return;
+        OpenLoadingOverlay();
+        base.OnInitialized();
     }
 
-    if (VerificationMode)
+    private void OpenLoadingOverlay()
     {
-        await ReloadTimeEntriesForVerification();
+        overlayVisible = true;
+        dataLoaded = false;
     }
-    else
+    private void CloseLoadingOverlay()
     {
-      await ReloadTimeEntries();
+        overlayVisible = false;
+        dataLoaded = true;
     }
-  }
 
-  private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>
-  {
-    return $"color: {(item.Verified ? "green" : "red")}";
-  };
-
-  void GoToPage(int p)
-  {
-    var newLocation = NavigationManager.GetUriWithQueryParameter("Page", p);
-    NavigationManager.NavigateTo(newLocation);
-  }
-
-
-  private Func<TimeEntryListItem, bool> _quickFilter => x =>
-   {
-     return
-    IsOkForDriverFilter(x) &&
-    IsOkForCarFilter(x) &&
-    IsOkForLabelsFilter(x) &&
-    IsOkForMfmiFilter(x);
-
-   };
-
-  private bool IsOkForDriverFilter(TimeEntryListItem item)
-  {
-    if (!filterDriverCheckBox) return true;
-    if (string.IsNullOrEmpty(filterDriverText)) return true;
-
-    return item.DisplayName.StartsWith(filterDriverText, StringComparison.InvariantCultureIgnoreCase);
-
-  }
-  private bool IsOkForCarFilter(TimeEntryListItem item)
-  {
-    if (!filterCarCheckBox) return true;
-    if (filterCar == null) return true;
-
-    return item.Data.CarId == filterCar.Id;
-
-  }
-
-  private bool IsOkForLabelsFilter(TimeEntryListItem item)
-  {
-    if (!filterLabelsCheckBox) return true;
-    if (string.IsNullOrEmpty(filterLabelsText)) return true;
-
-    var split = filterLabelsText.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    foreach (var s in split)
+    public async Task ReloadTimeEntries()
     {
-      if (item.Labels.Any(l => string.Equals(l, s, StringComparison.InvariantCultureIgnoreCase)))
-        return true;
+        OpenLoadingOverlay();
+
+        var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
+
+        best = info.Best;
+        generalPoints = info.GeneralPoints;
+        carPoints = info.CarPoints;
+
+        var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
+        foreach (var itm in items)
+        {
+            itm.Place = info.Places[itm.Data.Id];
+            itm.PlaceByCar = info.PlacesByCar[itm.Data.Id];
+        }
+
+        _items = items.OrderBy(x => x.Place).ToList();
+
+        CloseLoadingOverlay();
+        StateHasChanged();
+        OnLoaded?.Invoke();
     }
-    return false;
-  }
 
-  private bool IsOkForMfmiFilter(TimeEntryListItem item)
-  {
-    if (!filterMfmiCheckBox) return true;
-
-    if (item.Labels.Any(x => x.StartsWith("MFMI")))
+    public async Task ReloadTimeEntriesForVerification()
     {
-      return true;
+        OpenLoadingOverlay();
+
+        var notVerified = await TimeEntryService.GetAllNotVerified();
+        var items = notVerified.Select(x => new TimeEntryListItem(this, x)).ToList();
+
+        _items = items;
+
+        CloseLoadingOverlay();
+        StateHasChanged();
+        OnLoaded?.Invoke();
     }
-    return false;
-  }
 
-  private Func<TimeEntryListItem, object> _sortByPoints => x =>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      return (object)x.Points;
+        if (!firstRender)
+        {
+            return;
+        }
+
+        if (VerificationMode)
+        {
+            await ReloadTimeEntriesForVerification();
+        }
+        else
+        {
+            await ReloadTimeEntries();
+        }
+    }
+
+    private Func<TimeEntryListItem, string> _timeCellStyleFunc => item =>
+    {
+        return $"color: {(item.Verified ? "green" : "red")}";
     };
 
-  private string _rowStyleFunc(TimeEntryListItem item, int index)
-  {
-    string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-    if (name is not null)
+    void GoToPage(int p)
     {
-      if (item.DisplayName == name)
-      {
-        return $"background-color: {Rc2kColorPallete.complementary200};";
-      }
+        var newLocation = NavigationManager.GetUriWithQueryParameter("Page", p);
+        NavigationManager.NavigateTo(newLocation);
     }
 
-    if (index % 2 != 0)
+    private Func<TimeEntryListItem, bool> _quickFilter => x =>
     {
-      return $"background-color: {Rc2kColorPallete.primary50};";
+        return IsOkForDriverFilter(x) &&
+               IsOkForCarFilter(x) &&
+               IsOkForLabelsFilter(x) &&
+               IsOkForMfmiFilter(x);
+    };
+
+    private bool IsOkForDriverFilter(TimeEntryListItem item)
+    {
+        if (!filterDriverCheckBox) return true;
+        if (string.IsNullOrEmpty(filterDriverText)) return true;
+
+        return item.DisplayName.StartsWith(filterDriverText, StringComparison.InvariantCultureIgnoreCase);
     }
-    return string.Empty;
-  }
+
+    private bool IsOkForCarFilter(TimeEntryListItem item)
+    {
+        if (!filterCarCheckBox) return true;
+        if (filterCar == null) return true;
+
+        return item.Data.CarId == filterCar.Id;
+    }
+
+    private bool IsOkForLabelsFilter(TimeEntryListItem item)
+    {
+        if (!filterLabelsCheckBox) return true;
+        if (string.IsNullOrEmpty(filterLabelsText)) return true;
+
+        var split = filterLabelsText.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var s in split)
+        {
+            if (item.Labels.Any(l => string.Equals(l, s, StringComparison.InvariantCultureIgnoreCase)))
+                return true;
+        }
+        return false;
+    }
+
+    private bool IsOkForMfmiFilter(TimeEntryListItem item)
+    {
+        if (!filterMfmiCheckBox) return true;
+
+        if (item.Labels.Any(x => x.StartsWith("MFMI")))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private Func<TimeEntryListItem, object> _sortByPoints => x =>
+    {
+        return (object)x.Points;
+    };
+
+    private string _rowStyleFunc(TimeEntryListItem item, int index)
+    {
+        string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+        if (name is not null)
+        {
+            if (item.DisplayName == name)
+            {
+                return $"background-color: {Rc2kColorPallete.complementary200};";
+            }
+        }
+
+        if (index % 2 != 0)
+        {
+            return $"background-color: {Rc2kColorPallete.primary50};";
+        }
+        return string.Empty;
+    }
 }

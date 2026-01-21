@@ -11,7 +11,8 @@
 @code {
 
     private int _state = 0;
-    private void Click() {
+    private void Click()
+    {
 
         _state = (_state + 1) % 3;
         StateHasChanged();
@@ -21,17 +22,16 @@
     {
         0 => IconMapper.Thin(Icon.ModeLight),
         1 => IconMapper.Thin(Icon.ModeAuto),
-        2 => IconMapper.Thin(Icon.ModeDark)
+        2 => IconMapper.Thin(Icon.ModeDark),
+        _ => throw new ArgumentException(nameof(_state))
     };
 
     public string className => _state switch
     {
         0 => "",
         1 => "mid",
-        2 => "full"
+        2 => "full",
+        _ => throw new ArgumentException(nameof(_state))
     };
-
-
-
 
 }

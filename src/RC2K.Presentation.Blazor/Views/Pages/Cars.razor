@@ -19,7 +19,7 @@
     {
         <li>
             <div style="display: flex;">
-                <div class="car-big" data-car-id="@(car.Id-1)"></div>
+                <div class="car-big" data-car-id="@(car.Id - 1)"></div>
                 <p>@car.Name</p>
             </div>
         </li>
@@ -43,7 +43,7 @@
         _ => $"Cars from A{Class.Value} class"
     };
 
-    protected override async Task OnInitializedAsync() 
+    protected override async Task OnInitializedAsync()
     {
         _isBonus = NavManager.Uri.EndsWith("/cars/bonus");
 

@@ -8,103 +8,103 @@
 @inject IStageService StageService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
-  <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name ?? "All"))</MudText>
+    <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name ?? "All"))</MudText>
 
-  <MudTable Items="@_stages"
-            T="Stage"
-            Hover="true"
-            Breakpoint="Breakpoint.Sm"
-            Elevation="4"
-            Dense="true"
-            GroupBy="@_groupDefinition">
-    <HeaderContent>
-      <MudTh>Name</MudTh>
-      <MudTh>Length (km)</MudTh>
-      <MudTh>Asphalt (%)</MudTh>
-      <MudTh>Dirt (%)</MudTh>
-      <MudTh>Gravel (%)</MudTh>
-      <MudTh>Snow (%)</MudTh>
-      <MudTh>Temp (&deg;C)</MudTh>
-      <MudTh>Wind (km/h)</MudTh>
-      <MudTh>Moods</MudTh>
-    </HeaderContent>
+    <MudTable Items="@_stages"
+              T="Stage"
+              Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              Elevation="4"
+              Dense="true"
+              GroupBy="@_groupDefinition">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Length (km)</MudTh>
+            <MudTh>Asphalt (%)</MudTh>
+            <MudTh>Dirt (%)</MudTh>
+            <MudTh>Gravel (%)</MudTh>
+            <MudTh>Snow (%)</MudTh>
+            <MudTh>Temp (&deg;C)</MudTh>
+            <MudTh>Wind (km/h)</MudTh>
+            <MudTh>Moods</MudTh>
+        </HeaderContent>
 
-    <GroupHeaderTemplate>
-      <MudTh Class="mud-theme-primary-light" colspan="9">
-        <MudText Typo="Typo.subtitle1"><b>@context.Key</b></MudText>
-      </MudTh>
-    </GroupHeaderTemplate>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-theme-primary-light" colspan="9">
+                <MudText Typo="Typo.subtitle1"><b>@context.Key</b></MudText>
+            </MudTh>
+        </GroupHeaderTemplate>
 
-    <RowTemplate>
-      <MudTd DataLabel="Name">
-        @{
-          string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
-        }
-        <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
-          <b>@context.StageData.Name</b> @(context.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")
-        </MudLink>
-      </MudTd>
-      <MudTd DataLabel="Length">@context.StageData.StageDetails?.Length</MudTd>
-      <MudTd DataLabel="Asphalt">@context.StageData.StageDetails?.Asphalt</MudTd>
-      <MudTd DataLabel="Dirt">@context.StageData.StageDetails?.Dirt</MudTd>
-      <MudTd DataLabel="Gravel">@context.StageData.StageDetails?.Gravel</MudTd>
-      <MudTd DataLabel="Snow">@context.StageData.StageDetails?.Snow</MudTd>
-      <MudTd DataLabel="Temp">@context.StageData.StageDetails?.Temp</MudTd>
-      <MudTd DataLabel="Wind">@context.StageData.StageDetails?.Wind</MudTd>
-      <MudTd DataLabel="Moods">
-        <div class="d-flex flex-wrap gap-1">
-          @foreach (var mood in GetMoods(context.StageData.StageDetails?.Mood))
-          {
-            <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
-          }
-        </div>
-      </MudTd>
-    </RowTemplate>
-  </MudTable>
+        <RowTemplate>
+            <MudTd DataLabel="Name">
+                @{
+                    string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
+                }
+                <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
+                    <b>@context.StageData.Name</b> @(context.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")
+                </MudLink>
+            </MudTd>
+            <MudTd DataLabel="Length">@context.StageData.StageDetails?.Length</MudTd>
+            <MudTd DataLabel="Asphalt">@context.StageData.StageDetails?.Asphalt</MudTd>
+            <MudTd DataLabel="Dirt">@context.StageData.StageDetails?.Dirt</MudTd>
+            <MudTd DataLabel="Gravel">@context.StageData.StageDetails?.Gravel</MudTd>
+            <MudTd DataLabel="Snow">@context.StageData.StageDetails?.Snow</MudTd>
+            <MudTd DataLabel="Temp">@context.StageData.StageDetails?.Temp</MudTd>
+            <MudTd DataLabel="Wind">@context.StageData.StageDetails?.Wind</MudTd>
+            <MudTd DataLabel="Moods">
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach (var mood in GetMoods(context.StageData.StageDetails?.Mood))
+                    {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
+                    }
+                </div>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
 </MudContainer>
 
 @code {
-  [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Name { get; set; }
 
-  private List<Stage> _stages = new();
-  private RallyCode? _rallyCode;
+    private List<Stage> _stages = new();
+    private RallyCode? _rallyCode;
 
-  // The fix is here: Cast the result to (object)
-  private TableGroupDefinition<Stage> _groupDefinition = new()
-  {
-    Selector = (x) => (object)$"{LevelHelper.StageCodeToRallyName(x.Code)} ({x.Direction})",
-    IsInitiallyExpanded = true
-  };
-
-  protected override async Task OnInitializedAsync()
-  {
-    if (!string.IsNullOrEmpty(Name) && Enum.TryParse<RallyCode>(Name, true, out var code))
+    // The fix is here: Cast the result to (object)
+    private TableGroupDefinition<Stage> _groupDefinition = new()
     {
-      _rallyCode = code;
+        Selector = (x) => (object)$"{LevelHelper.StageCodeToRallyName(x.Code)} ({x.Direction})",
+        IsInitiallyExpanded = true
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Name) && Enum.TryParse<RallyCode>(Name, true, out var code))
+        {
+            _rallyCode = code;
+        }
+
+        var stages = (Name is null)
+            ? await StageService.GetAll()
+            : await StageService.GetAllByRallyCode(_rallyCode!.Value);
+
+        _stages = stages.ToList();
     }
 
-    var stages = (Name is null)
-        ? await StageService.GetAll()
-        : await StageService.GetAllByRallyCode(_rallyCode!.Value);
+    private IEnumerable<string> GetMoods(Mood? moodFlags)
+    {
+        if (moodFlags == null) yield break;
+        if (moodFlags.Value.HasFlag(Mood.Sunrise)) yield return "Sunrise";
+        if (moodFlags.Value.HasFlag(Mood.Day)) yield return "Day";
+        if (moodFlags.Value.HasFlag(Mood.Sunset)) yield return "Sunset";
+        if (moodFlags.Value.HasFlag(Mood.Night)) yield return "Night";
+    }
 
-    _stages = stages.ToList();
-  }
-
-  private IEnumerable<string> GetMoods(Mood? moodFlags)
-  {
-    if (moodFlags == null) yield break;
-    if (moodFlags.Value.HasFlag(Mood.Sunrise)) yield return "Sunrise";
-    if (moodFlags.Value.HasFlag(Mood.Day)) yield return "Day";
-    if (moodFlags.Value.HasFlag(Mood.Sunset)) yield return "Sunset";
-    if (moodFlags.Value.HasFlag(Mood.Night)) yield return "Night";
-  }
-
-  private Color GetMoodColor(string mood) => mood switch
-  {
-    "Sunrise" => Color.Warning,
-    "Day" => Color.Info,
-    "Sunset" => Color.Secondary,
-    "Night" => Color.Dark,
-    _ => Color.Default
-  };
+    private Color GetMoodColor(string mood) => mood switch
+    {
+        "Sunrise" => Color.Warning,
+        "Day" => Color.Info,
+        "Sunset" => Color.Secondary,
+        "Night" => Color.Dark,
+        _ => Color.Default
+    };
 }

@@ -11,7 +11,7 @@
         <img src="_content/RC2K.Presentation.Shared/img/layout/Logo2.png" />
         <div class="header-nav-menu">
             <div class="header-nav-fake-gradient" />
-      <DynamicComponent Type="typeof(TNavMenu)" Parameters="_navMenuParams" />
+            <DynamicComponent Type="typeof(TNavMenu)" Parameters="_navMenuParams" />
         </div>
     </div>
     <div class="header-post-box"></div>
@@ -46,7 +46,7 @@
         return Task.CompletedTask;
     }
 
-  private Dictionary<string, object> _navMenuParams;
+    private Dictionary<string, object> _navMenuParams;
 
     protected override void OnInitialized()
     {
@@ -55,8 +55,8 @@
             InvokeAsync(() => StateHasChanged());
         };
 
-    _navMenuParams = new() {
-      { "MenuItems", viewModel.MenuItems }
+        _navMenuParams = new() {
+            { "MenuItems", viewModel.MenuItems }
         };
     }
 

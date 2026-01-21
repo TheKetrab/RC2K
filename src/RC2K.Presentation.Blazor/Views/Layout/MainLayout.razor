@@ -9,30 +9,31 @@
 <MudSnackbarProvider @rendermode="InteractiveServer" />
 
 
-    <div class="page">
-        <Header TNavMenu="AppNavMenu" @rendermode="InteractiveServer" />
-        <main>
-            <BreadcrumbsNavigation />
-            <MyErrorBoundary @ref="_errorBoundary">
-              <ChildContent >
+<div class="page">
+    <Header TNavMenu="AppNavMenu" @rendermode="InteractiveServer" />
+    <main>
+        <BreadcrumbsNavigation />
+        <MyErrorBoundary @ref="_errorBoundary">
+            <ChildContent>
                 <article class="content">@Body</article>
-              </ChildContent>
-              <ErrorContent>
+            </ChildContent>
+            <ErrorContent>
                 <div background="red">ERROR</div>
-              </ErrorContent>
-            </MyErrorBoundary>
-        </main>
+            </ErrorContent>
+        </MyErrorBoundary>
+    </main>
 
-        <Footer />
-    </div>
- 
-  
- 
+    <Footer />
+</div>
+
+
+
 @code {
-  ErrorBoundary _errorBoundary;
 
-  protected override void OnParametersSet()
-  {
-    _errorBoundary?.Recover();
-  }
+    ErrorBoundary? _errorBoundary;
+
+    protected override void OnParametersSet()
+    {
+        _errorBoundary?.Recover();
+    }
 }

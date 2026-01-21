@@ -1,20 +1,19 @@
-﻿
-@using Microsoft.AspNetCore.Authentication
+﻿@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 
 @page "/logout"
 
 @code {
 
-  [CascadingParameter]
-  private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
 
-  protected override async Task OnInitializedAsync()
-  {
-    if (HttpMethods.IsGet(HttpContext.Request.Method))
+    protected override async Task OnInitializedAsync()
     {
-      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-      HttpContext.Response.Redirect("/");
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Response.Redirect("/");
+        }
     }
-  }
 }

@@ -5,10 +5,10 @@
 @using BreadcrumbLink = RC2K.Presentation.Shared.ViewModels.BreadcrumbLink;
 <Breadcrumbs Links="@breadcrumbLinks" />
 
-@code{
+@code {
     private List<BreadcrumbLink> breadcrumbLinks = [];
 
-    protected override void OnParametersSet() 
+    protected override void OnParametersSet()
     {
         breadcrumbLinks.Add(new BreadcrumbLink
         {
@@ -19,19 +19,19 @@
         });
 
         string[] path = new Uri(Navigation.Uri).LocalPath
-            .Split('/',StringSplitOptions.RemoveEmptyEntries);
+            .Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-        for (int i=0; i<path.Length; i++)
+        for (int i = 0; i < path.Length; i++)
         {
             string link = path[i];
             BreadcrumbLink lastLink = breadcrumbLinks.Last();
             breadcrumbLinks.Add(new BreadcrumbLink
-                {
-                    Address = Path.Combine(lastLink.Address,link),
-                    IsActive = link == path.Last(),
-                    OrderIndex = i + 1,
-                    Title = link
-                });
+            {
+                Address = Path.Combine(lastLink.Address, link),
+                IsActive = link == path.Last(),
+                OrderIndex = i + 1,
+                Title = link
+            });
         }
         base.OnParametersSet();
     }

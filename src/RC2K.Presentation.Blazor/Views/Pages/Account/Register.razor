@@ -27,252 +27,252 @@
 <h1>Login to see more stats!</h1>
 
 <div style="width: 100%;">
-  <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
-    <MudForm Class="gap-5" @ref="formRegister" @bind-IsValid="@registerSuccess" @bind-Errors="@errors">
-      <div style="display: flex; gap: 1em;">
-        <MudTextField T="string"
-                      Label="Username"
-                      @bind-Value="Model.Username"
-                      Required="true"
-                      RequiredError="User name is required!" />
-        <MudSelect T="CodeName?"
-                   @bind-Value="Model.Nationality"
-                   Label="Country"
-                   Variant="Variant.Outlined"
-                   Dense="true">
-          <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
-          @foreach (var country in allCountries)
-          {
-            <MudSelectItem T="CodeName?" Value="@country">
-              <span class="fi @($"fi-{country.code}")"></span>
-              <span>@country.name</span>
-            </MudSelectItem>
-          }
-        </MudSelect>
-      </div>
-      <MudTextField T="string"
-                    Label="Email"
-                    Required="true"
-                    RequiredError="Email is required!"
-                    @bind-Value="Model.Email"
-                    Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
-      <MudTextField T="string"
-                    Label="Password"
-                    HelperText="Choose a strong password"
-                    @ref="formRegisterPassword"
-                    @bind-Value="Model.Password"
-                    InputType="InputType.Password"
-                    Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
-                    Required="true"
-                    RequiredError="Password is required!" />
-      <MudTextField T="string"
-                    Label="Password"
-                    @ref="formRegisterRepeatPassword"
-                    @bind-Value="Model.Password2"
-                    HelperText="Repeat the password"
-                    InputType="InputType.Password"
-                    Validation="@(new Func<string, string?>(PasswordMatch))" />
-      <div class="d-flex align-center justify-space-between">
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Disabled="@(!registerSuccess || _isProcessing)"
-                   Class="ml-auto"
-                   OnClick="RegisterClick">
+    <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
+        <MudForm Class="gap-5" @ref="formRegister" @bind-IsValid="@registerSuccess" @bind-Errors="@errors">
+            <div style="display: flex; gap: 1em;">
+                <MudTextField T="string"
+                              Label="Username"
+                              @bind-Value="Model.Username"
+                              Required="true"
+                              RequiredError="User name is required!" />
+                <MudSelect T="CodeName?"
+                           @bind-Value="Model.Nationality"
+                           Label="Country"
+                           Variant="Variant.Outlined"
+                           Dense="true">
+                    <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
+                    @foreach (var country in allCountries)
+                    {
+                        <MudSelectItem T="CodeName?" Value="@country">
+                            <span class="fi @($"fi-{country.code}")"></span>
+                            <span>@country.name</span>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <MudTextField T="string"
+                          Label="Email"
+                          Required="true"
+                          RequiredError="Email is required!"
+                          @bind-Value="Model.Email"
+                          Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+            <MudTextField T="string"
+                          Label="Password"
+                          HelperText="Choose a strong password"
+                          @ref="formRegisterPassword"
+                          @bind-Value="Model.Password"
+                          InputType="InputType.Password"
+                          Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                          Required="true"
+                          RequiredError="Password is required!" />
+            <MudTextField T="string"
+                          Label="Password"
+                          @ref="formRegisterRepeatPassword"
+                          @bind-Value="Model.Password2"
+                          HelperText="Repeat the password"
+                          InputType="InputType.Password"
+                          Validation="@(new Func<string, string?>(PasswordMatch))" />
+            <div class="d-flex align-center justify-space-between">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(!registerSuccess || _isProcessing)"
+                           Class="ml-auto"
+                           OnClick="RegisterClick">
 
-          @if (_isProcessing)
-          {
-            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-            <MudText Class="ms-2">Processing...</MudText>
-          }
-          else
-          {
-            <MudText>Register</MudText>
-          }
-                 </MudButton>
-      </div>
-      <div>
-        <p class="d-flex" style="justify-self: center;">
-          <MudText Class="mr-1">Already have account?</MudText>
-          <MudLink Href="/login">Go to login page</MudLink>
-        </p>
-      </div>
-      @if (errors.Length > 0)
-      {
-        @foreach (var error in errors)
-        {
-          <MudText Color="@Color.Error">@error</MudText>
-        }
-      }
-    </MudForm>
-    <MudPopover Open="@registerSuccessOpen"
-                Fixed="true"
-                Class="px-4 pt-4"
-                AnchorOrigin="Origin.CenterCenter"
-                TransformOrigin="Origin.CenterCenter">
-      <div class="d-flex flex-column">
-        <MudText>Your account is created. Please go to login page and login.</MudText>
-        <MudButton OnClick="@ClosePopup"
-                   Class="ml-auto mr-n3 mb-1"
-                   Color="Color.Error">Close</MudButton>
-      </div>
-    </MudPopover>
+                    @if (_isProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Processing...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Register</MudText>
+                    }
+                </MudButton>
+            </div>
+            <div>
+                <p class="d-flex" style="justify-self: center;">
+                    <MudText Class="mr-1">Already have account?</MudText>
+                    <MudLink Href="/login">Go to login page</MudLink>
+                </p>
+            </div>
+            @if (errors.Length > 0)
+            {
+                @foreach (var error in errors)
+                {
+                    <MudText Color="@Color.Error">@error</MudText>
+                }
+            }
+        </MudForm>
+        <MudPopover Open="@registerSuccessOpen"
+                    Fixed="true"
+                    Class="px-4 pt-4"
+                    AnchorOrigin="Origin.CenterCenter"
+                    TransformOrigin="Origin.CenterCenter">
+            <div class="d-flex flex-column">
+                <MudText>Your account is created. Please go to login page and login.</MudText>
+                <MudButton OnClick="@ClosePopup"
+                           Class="ml-auto mr-n3 mb-1"
+                           Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
 
-  </MudPaper>
+    </MudPaper>
 </div>
 
 @code {
 
-  bool _isProcessing;
-  RegisterAccountDto Model { get; set; } = new();
-  IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
-  bool registerSuccessOpen;
-  bool registerSuccess;
-  string[] errors = { };
+    bool _isProcessing;
+    RegisterAccountDto Model { get; set; } = new();
+    IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
+    bool registerSuccessOpen;
+    bool registerSuccess;
+    string[] errors = { };
 
-  MudTextField<string>? formRegisterPassword;
-  MudTextField<string>? formRegisterRepeatPassword;
-  MudForm? formRegister;
-
-
-  protected override void OnInitialized()
-  {
-    Model.Nationality = allCountries.FirstOrDefault(x => x.code == "pl");
-  }
-
-  private void OpenPopup() => registerSuccessOpen = true;
-  private void ClosePopup() => registerSuccessOpen = false;
-  private void ToLoginView() => NavigationManager.NavigateTo("/login");
+    MudTextField<string>? formRegisterPassword;
+    MudTextField<string>? formRegisterRepeatPassword;
+    MudForm? formRegister;
 
 
-  private IEnumerable<string> PasswordStrength(string pw)
-  {
-    if (string.IsNullOrWhiteSpace(pw))
+    protected override void OnInitialized()
     {
-      yield return "Password is required!";
-      yield break;
-    }
-    if (pw.Length < 8)
-      yield return "Password must be at least of length 8";
-    if (!Regex.IsMatch(pw, @"[A-Z]"))
-      yield return "Password must contain at least one capital letter";
-    if (!Regex.IsMatch(pw, @"[a-z]"))
-      yield return "Password must contain at least one lowercase letter";
-    if (!Regex.IsMatch(pw, @"[0-9]"))
-      yield return "Password must contain at least one digit";
-  }
-
-  private string? PasswordMatch(string arg)
-  {
-    if (formRegisterPassword!.Value != arg)
-      return "Passwords don't match";
-    return null;
-  }
-
-  private async Task RegisterClick()
-  {
-    _isProcessing = true;
-    await DoRegisterAction();
-    _isProcessing = false;
-
-  }
-
-  private async Task DoRegisterAction()
-  {
-    if (await IsRobot())
-    {
-      return;
+        Model.Nationality = allCountries.FirstOrDefault(x => x.code == "pl");
     }
 
-    var driver = await DriverService.GetByName(Model.Username);
+    private void OpenPopup() => registerSuccessOpen = true;
+    private void ClosePopup() => registerSuccessOpen = false;
+    private void ToLoginView() => NavigationManager.NavigateTo("/login");
 
-    string? driverCode = null;
-    if (driver is not null && !driver.Known)
+
+    private IEnumerable<string> PasswordStrength(string pw)
     {
-      var driverCodeFromUser = await GetDriverCodeFromUser();
-      if (driverCodeFromUser.Item1 == false)
-      {
-        return;
-      }
-      driverCode = driverCodeFromUser.Item2;
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Password is required!";
+            yield break;
+        }
+        if (pw.Length < 8)
+            yield return "Password must be at least of length 8";
+        if (!Regex.IsMatch(pw, @"[A-Z]"))
+            yield return "Password must contain at least one capital letter";
+        if (!Regex.IsMatch(pw, @"[a-z]"))
+            yield return "Password must contain at least one lowercase letter";
+        if (!Regex.IsMatch(pw, @"[0-9]"))
+            yield return "Password must contain at least one digit";
     }
 
-    if (!(await EmailVerificationSucceed()))
+    private string? PasswordMatch(string arg)
     {
-      return;
+        if (formRegisterPassword!.Value != arg)
+            return "Passwords don't match";
+        return null;
     }
 
-    string? country = Model.Nationality.HasValue
-      ? Model.Nationality.Value.Item1 : null;
-
-    Result result;
-    if (driverCode is null)
+    private async Task RegisterClick()
     {
-      result = await UserService.CreateUserWithPassword(
-        Model.Username!, Model.Password!, country, Model.Email!);
+        _isProcessing = true;
+        await DoRegisterAction();
+        _isProcessing = false;
 
     }
-    else
+
+    private async Task DoRegisterAction()
     {
-      result = await UserService.UpgradeDriverToUser(Model.Username, driverCode, Model.Password, Model.Email);
+        if (await IsRobot())
+        {
+            return;
+        }
+
+        var driver = await DriverService.GetByName(Model.Username);
+
+        string? driverCode = null;
+        if (driver is not null && !driver.Known)
+        {
+            var driverCodeFromUser = await GetDriverCodeFromUser();
+            if (driverCodeFromUser.Item1 == false)
+            {
+                return;
+            }
+            driverCode = driverCodeFromUser.Item2;
+        }
+
+        if (!(await EmailVerificationSucceed()))
+        {
+            return;
+        }
+
+        string? country = Model.Nationality.HasValue
+          ? Model.Nationality.Value.Item1 : null;
+
+        Result result;
+        if (driverCode is null)
+        {
+            result = await UserService.CreateUserWithPassword(
+              Model.Username!, Model.Password!, country, Model.Email!);
+
+        }
+        else
+        {
+            result = await UserService.UpgradeDriverToUser(Model.Username, driverCode, Model.Password, Model.Email);
+        }
+
+
+        if (result.Success)
+        {
+            OpenPopup();
+        }
+        else
+        {
+            errors = [result?.Message ?? "Unknown error"];
+        }
     }
 
-
-    if (result.Success)
+    private async Task<bool> IsRobot()
     {
-      OpenPopup();
-    }
-    else
-    {
-      errors = [result?.Message ?? "Unknown error"];
-    }
-  }
-
-  private async Task<bool> IsRobot()
-  {
-      return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => errors = [msg]);
-  }
-
-  private async Task<bool> EmailVerificationSucceed()
-  {
-    string emailCode = PasswordProvider.GenerateTemporaryPassword();
-    MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
-    UserService.SetEmailConfirmationCode(Model.Email, emailCode);
-
-    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-    var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
-    var dialogResult = await dialog.Result;
-
-    if (dialogResult.Canceled)
-    {
-      errors = ["You cancelled email verification."];
-      return false;
+        return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => errors = [msg]);
     }
 
-    string userEnteredCode = dialogResult.Data.ToString();
-
-    if (userEnteredCode != emailCode)
+    private async Task<bool> EmailVerificationSucceed()
     {
-      errors = ["Email code is wrong."];
-      return false;
+        string emailCode = PasswordProvider.GenerateTemporaryPassword();
+        MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
+        UserService.SetEmailConfirmationCode(Model.Email, emailCode);
+
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled)
+        {
+            errors = ["You cancelled email verification."];
+            return false;
+        }
+
+        string userEnteredCode = dialogResult.Data.ToString();
+
+        if (userEnteredCode != emailCode)
+        {
+            errors = ["Email code is wrong."];
+            return false;
+        }
+
+        return true;
     }
 
-    return true;
-  }
-
-  private async Task<(bool,string)> GetDriverCodeFromUser()
-  {
-    DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-    var dialog = await Dialog.ShowAsync<UpgradeDriverToUserDialog>("Upgrade driver to user", options);
-    var dialogResult = await dialog.Result;
-
-    if (dialogResult.Canceled)
+    private async Task<(bool, string)> GetDriverCodeFromUser()
     {
-      errors = ["You cancelled upgrading driver to user."];
-      return (false, "");
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        var dialog = await Dialog.ShowAsync<UpgradeDriverToUserDialog>("Upgrade driver to user", options);
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled)
+        {
+            errors = ["You cancelled upgrading driver to user."];
+            return (false, "");
+        }
+
+        string driverCode = dialogResult.Data.ToString();
+
+        return (true, driverCode);
     }
-
-    string driverCode = dialogResult.Data.ToString();
-
-    return (true, driverCode);
-  }
 }

@@ -15,68 +15,65 @@
 @inject IUserService UserService
 @using CodeName = (string code, string name);
 
-
-
 <MudDialog>
-  <TitleContent>
-    <MudText Typo="Typo.h6">
-      @_title
-    </MudText>
-  </TitleContent>
-  <DialogContent>
-    <MudText>@_msg</MudText>
-    <MudSelect T="CodeName?"
-               Style="z-index: 500"
-               @bind-Value="SelectedNationality"
-               Label="Country"
-               Variant="Variant.Outlined"
-               Dense="true">
-      <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
-      @foreach (var country in allCountries)
-      {
-        <MudSelectItem T="CodeName?" Value="@country">
-          <span class="fi @($"fi-{country.code}")"></span>
-          <span>@country.name</span>
-        </MudSelectItem>
-      }
-    </MudSelect>
-  </DialogContent>
-  <DialogActions>
-    <MudButton OnClick="Cancel">@_cancel</MudButton>
-    <MudButton Color="Color.Primary" OnClick="Ok">@_yes</MudButton>
-  </DialogActions>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @_title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@_msg</MudText>
+        <MudSelect T="CodeName?"
+                   Style="z-index: 500"
+                   @bind-Value="SelectedNationality"
+                   Label="Country"
+                   Variant="Variant.Outlined"
+                   Dense="true">
+            <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
+            @foreach (var country in allCountries)
+            {
+                <MudSelectItem T="CodeName?" Value="@country">
+                    <span class="fi @($"fi-{country.code}")"></span>
+                    <span>@country.name</span>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@_cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok">@_yes</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
 
-  IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
-  private MudSelect<CodeName> select;
+    IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
+    private MudSelect<CodeName> select;
 
-  private string _title;
-  private string _msg;
-  private string _textBoxLabel;
-  private string _yes;
-  private string _cancel;
-  public NationalitySelectorDialog()
-  {
-    _title = "Nationality selector";
-    _msg = "Where are you from?";
-    _yes = "Select";
-    _cancel = "Don't share nationality";
-  }
+    private string _title;
+    private string _msg;
+    private string _yes;
+    private string _cancel;
 
+    public NationalitySelectorDialog()
+    {
+        _title = "Nationality selector";
+        _msg = "Where are you from?";
+        _yes = "Select";
+        _cancel = "Don't share nationality";
+    }
 
-  [CascadingParameter]
-  private IMudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
 
-  private void Cancel() => MudDialog.Cancel();
+    private void Cancel() => MudDialog.Cancel();
 
-  private void Ok()
-  {
-    string? value = SelectedNationality.HasValue ? SelectedNationality.Value.code : null;
-    MudDialog.Close(DialogResult.Ok(value));
-  }
+    private void Ok()
+    {
+        string? value = SelectedNationality.HasValue ? SelectedNationality.Value.code : null;
+        MudDialog.Close(DialogResult.Ok(value));
+    }
 
-  public CodeName? SelectedNationality { get; set; }
+    public CodeName? SelectedNationality { get; set; }
 
 }

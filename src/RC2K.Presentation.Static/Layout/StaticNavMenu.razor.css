@@ -12,8 +12,6 @@ nav {
     transition: background-color .2s ease;
 }
 
-
-
 .menu-item:hover {
     /*background-color: lightblue;*/
 }
@@ -53,12 +51,12 @@ a {
                 0px 2px 3px rgb(0 0 0 / 30%);
 }
 
-    .menu-item > ul > li {
-        /*border: solid 1px black;*/
-        text-align: center;
-        white-space: nowrap;
-        background-color: transparent;
-    }
+.menu-item > ul > li {
+    /*border: solid 1px black;*/
+    text-align: center;
+    white-space: nowrap;
+    background-color: transparent;
+}
 
 .menu-item:hover > ul {
     visibility: visible;

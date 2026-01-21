@@ -5,28 +5,28 @@
 
 @if (CurrentException is null)
 {
-  @ChildContent
+    @ChildContent
 }
 else if (ErrorContent is not null)
 {
-  @ErrorContent(CurrentException)
+    @ErrorContent(CurrentException)
 }
 
 @code {
 
-  protected override Task OnErrorAsync(Exception exception)
-  {
-    HandleException(exception);
-    return Task.CompletedTask;
-  }
-  public void HandleException(Exception ex)
-  {
-      Logger.LogError(ex, $"Handled exception: {ex.Message}");
-
-    Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error, config =>
+    protected override Task OnErrorAsync(Exception exception)
     {
-      config.ShowCloseIcon = true;
-      config.VisibleStateDuration = 10000;
-    });
-  }
+        HandleException(exception);
+        return Task.CompletedTask;
+    }
+    public void HandleException(Exception ex)
+    {
+        Logger.LogError(ex, $"Handled exception: {ex.Message}");
+
+        Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error, config =>
+        {
+            config.ShowCloseIcon = true;
+            config.VisibleStateDuration = 10000;
+        });
+    }
 }

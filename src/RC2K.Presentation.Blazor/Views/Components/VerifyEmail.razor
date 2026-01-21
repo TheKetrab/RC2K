@@ -16,35 +16,34 @@
 
 
 <MudDialog>
-  <TitleContent>
-    <MudText Typo="Typo.h6">
-      Put verification code
-    </MudText>
-  </TitleContent>
-  <DialogContent>
-    <MudText>To avoid many fake accounts being created, we need to verify email. Message with verification code has been sent to your email. In case you didn't get an email, check spam box or contact TheKetrab via discord.</MudText>
-    <MudTextField T="string"
-                  Label="Verification code"
-                  @bind-Value="VerificationCode" />
-  </DialogContent>
-  <DialogActions>
-    <MudButton OnClick="Cancel">Cancel</MudButton>
-    <MudButton Color="Color.Error" OnClick="Ok">Create account</MudButton>
-  </DialogActions>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Put verification code
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>To avoid many fake accounts being created, we need to verify email. Message with verification code has been sent to your email. In case you didn't get an email, check spam box or contact TheKetrab via discord.</MudText>
+        <MudTextField T="string"
+                      Label="Verification code"
+                      @bind-Value="VerificationCode" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="Ok">Create account</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
 
-  [CascadingParameter]
-  private IMudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
 
-  private void Cancel() => MudDialog.Cancel();
+    public string VerificationCode { get; set; } = string.Empty;
 
-  private void Ok()
-  {
-    MudDialog.Close(DialogResult.Ok(VerificationCode));
-  }
+    private void Cancel() => MudDialog.Cancel();
 
-  public string VerificationCode { get; set; }
-
+    private void Ok()
+    {
+        MudDialog.Close(DialogResult.Ok(VerificationCode));
+    }
 }

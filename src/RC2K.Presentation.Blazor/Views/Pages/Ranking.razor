@@ -17,17 +17,17 @@
 
 @code
 {
-  [Parameter]
-  public string? Action { get; set; }
+    [Parameter]
+    public string? Action { get; set; }
 
-  protected override async Task OnInitializedAsync()
-  {
-    if (Action == "snapshot")
+    protected override async Task OnInitializedAsync()
     {
-      await RankingService.DoRankingSnapshot();
-      return;
-    }
+        if (Action == "snapshot")
+        {
+            await RankingService.DoRankingSnapshot();
+            return;
+        }
 
-    return;
-  }
+        return;
+    }
 }

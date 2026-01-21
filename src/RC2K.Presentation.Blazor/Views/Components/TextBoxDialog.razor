@@ -16,50 +16,49 @@
 
 
 <MudDialog>
-  <TitleContent>
-    <MudText Typo="Typo.h6">
-      @_title
-    </MudText>
-  </TitleContent>
-  <DialogContent>
-    <MudText>@_msg</MudText>
-    <MudTextField T="string"
-                  Label="@_textBoxLabel"
-                  @bind-Value="TextBoxValue" />
-  </DialogContent>
-  <DialogActions>
-    <MudButton OnClick="Cancel">@_cancel</MudButton>
-    <MudButton Color="Color.Primary" OnClick="Ok">@_yes</MudButton>
-  </DialogActions>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @_title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@_msg</MudText>
+        <MudTextField T="string"
+                      Label="@_textBoxLabel"
+                      @bind-Value="TextBoxValue" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@_cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok">@_yes</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
 
-  private string _title;
-  private string _msg;
-  private string _textBoxLabel;
-  private string _yes;
-  private string _cancel;
-  public TextBoxDialog(string title, string msg, string textBoxLabel, string yes = "Yes", string cancel = "Cancel")
-  {
-    _title = title;
-    _msg = msg;
-    _textBoxLabel = textBoxLabel;
-    _yes = yes;
-    _cancel = cancel;
-  }
+    private string _title;
+    private string _msg;
+    private string _textBoxLabel;
+    private string _yes;
+    private string _cancel;
+    public TextBoxDialog(string title, string msg, string textBoxLabel, string yes = "Yes", string cancel = "Cancel")
+    {
+        _title = title;
+        _msg = msg;
+        _textBoxLabel = textBoxLabel;
+        _yes = yes;
+        _cancel = cancel;
+    }
 
 
-  [CascadingParameter]
-  private IMudDialogInstance MudDialog { get; set; }
+    [CascadingParameter]
+    public required IMudDialogInstance MudDialog { get; set; }
 
-  private void Cancel() => MudDialog.Cancel();
+    public string TextBoxValue { get; set; }
 
-  private void Ok()
-  {
-    MudDialog.Close(DialogResult.Ok(TextBoxValue));
-  }
+    private void Cancel() => MudDialog.Cancel();
 
-  public string TextBoxValue { get; set; }
-
+    private void Ok()
+    {
+        MudDialog.Close(DialogResult.Ok(TextBoxValue));
+    }
 }

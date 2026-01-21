@@ -6,27 +6,22 @@
 @inherits BaseNavMenu
 
 <nav>
-  @foreach (var menuItem in MenuItems)
-  {
-    if (menuItem.Item == "Admin")
+    @foreach (var menuItem in MenuItems)
     {
-      <AuthorizeView Roles="admin">
-        <Authorized>
-          @RenderMenuItem(menuItem)
-        </Authorized>
-      </AuthorizeView>
+        if (menuItem.Item == "Admin")
+        {
+            <AuthorizeView Roles="admin">
+                <Authorized>
+                    @RenderMenuItem(menuItem)
+                </Authorized>
+            </AuthorizeView>
+        }
+        else
+        {
+            @RenderMenuItem(menuItem)
+        }
     }
-    else
-    {
-      @RenderMenuItem(menuItem)
-      ;
-    }
-  }
 
-  <Profile />
+    <Profile />
 
 </nav>
-
-@code {
-
-}

@@ -14,52 +14,52 @@
 @using System.Collections.Generic
 
 <MudTable Items="@_notifications" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
-  <ToolBarContent>
-    <MudText Typo="Typo.h6">Notifications</MudText>
-    <MudSpacer />
-    @if (_selectedItems.Count > 0)
-    {
-      <MudButton Variant="Variant.Filled"
-                 Color="Color.Error"
-                 StartIcon="@Icons.Material.Filled.Delete"
-                 OnClick="DeleteSelected">
-        Delete (@_selectedItems.Count)
-      </MudButton>
-    }
-  </ToolBarContent>
-  <HeaderContent>
-    <MudTh>Date</MudTh>
-    <MudTh>Message</MudTh>
-  </HeaderContent>
-  <RowTemplate>
-    <MudTd DataLabel="Date">@context.Created.ToShortDateString()</MudTd>
-    <MudTd DataLabel="Message">@context.Message</MudTd>
-  </RowTemplate>
-  <PagerContent>
-    <MudTablePager />
-  </PagerContent>
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Notifications</MudText>
+        <MudSpacer />
+        @if (_selectedItems.Count > 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick="DeleteSelected">
+                Delete (@_selectedItems.Count)
+            </MudButton>
+        }
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Date</MudTh>
+        <MudTh>Message</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Date">@context.Created.ToShortDateString()</MudTd>
+        <MudTd DataLabel="Message">@context.Message</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
 </MudTable>
 
 @code {
-  private HashSet<Notification> _selectedItems = new();
+    private HashSet<Notification> _selectedItems = new();
 
-  private List<Notification> _notifications = [];
+    private List<Notification> _notifications = [];
 
-  protected override async Task OnInitializedAsync()
-  {
-    string me = await UserService.GetCurrentUserName();
-    _notifications = await NotificationService.GetUserNotifications(me);
-  }
-
-  private async Task DeleteSelected()
-  {
-    foreach (var item in _selectedItems)
+    protected override async Task OnInitializedAsync()
     {
-      _notifications.Remove(item);
-      await NotificationService.Delete(item.Id);
+        string me = await UserService.GetCurrentUserName();
+        _notifications = await NotificationService.GetUserNotifications(me);
     }
 
-    _selectedItems.Clear();
-  }
+    private async Task DeleteSelected()
+    {
+        foreach (var item in _selectedItems)
+        {
+            _notifications.Remove(item);
+            await NotificationService.Delete(item.Id);
+        }
+
+        _selectedItems.Clear();
+    }
 
 }

@@ -12,120 +12,120 @@
 
 
 @{
-  if (!dataLoaded)
-  {
-    <div style="position: relative;">
-      <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100vh" />
-      <MudOverlay Visible="overlayVisible" Absolute="true">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
-      </MudOverlay>
-    </div>
-  }
-  else
-  {
-    <MudDataGrid SortMode="SortMode.Single"
-    T="RankingListItem"
-                 Items="@_items"
-                 id="ranking-entry-list-table"
-                 ShowColumnOptions="false"
-                 RowsPerPage="100"
-                 RowStyleFunc="_rowStyleFunc">
-      <Columns>
-          <PropertyColumn Property="x => x.Data.Place" Title="#" Sortable="false" />
-        <TemplateColumn Title="Driver">
-          <CellTemplate>
-            <MudStack Row>
-              <span class="fi @($"fi-{@context.Item.Data.Driver.Nationality}")"></span>
-              <span>@context.Item.DisplayName</span>
-            </MudStack>
-          </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.TotalPoints" Title="Points" />
-        <PropertyColumn Property="x => x.Data.GeneralPoints" Title="GP" />
-        <PropertyColumn Property="x => x.CarPoints" Title="CP" />
-        <PropertyColumn Property="x => x.Data.BonusPoints" Title="BP" />
-        <AuthorizeView>
-          <Authorized>
-            <PropertyColumn Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
-            <PropertyColumn Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
-          </Authorized>
-        </AuthorizeView>
-      </Columns>
-      
-    </MudDataGrid>
+    if (!dataLoaded)
+    {
+        <div style="position: relative;">
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100vh" />
+            <MudOverlay Visible="overlayVisible" Absolute="true">
+                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+            </MudOverlay>
+        </div>
+    }
+    else
+    {
+        <MudDataGrid SortMode="SortMode.Single"
+                     T="RankingListItem"
+                     Items="@_items"
+                     id="ranking-entry-list-table"
+                     ShowColumnOptions="false"
+                     RowsPerPage="100"
+                     RowStyleFunc="_rowStyleFunc">
+            <Columns>
+                <PropertyColumn Property="x => x.Data.Place" Title="#" Sortable="false" />
+                <TemplateColumn Title="Driver">
+                    <CellTemplate>
+                        <MudStack Row>
+                            <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
+                            <span>@context.Item.DisplayName</span>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.TotalPoints" Title="Points" />
+                <PropertyColumn Property="x => x.Data.GeneralPoints" Title="GP" />
+                <PropertyColumn Property="x => x.CarPoints" Title="CP" />
+                <PropertyColumn Property="x => x.Data.BonusPoints" Title="BP" />
+                <AuthorizeView>
+                    <Authorized>
+                        <PropertyColumn Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
+                        <PropertyColumn Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
+                    </Authorized>
+                </AuthorizeView>
+            </Columns>
+
+        </MudDataGrid>
     }
 }
 
 @code {
 
-  private List<RankingListItem> _items = [];
+    private List<RankingListItem> _items = [];
 
-  // async loading
-  private bool overlayVisible;
-  private bool dataLoaded;
+    // async loading
+    private bool overlayVisible;
+    private bool dataLoaded;
 
-  protected async override Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (!firstRender)
+    protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-      return;
+        if (!firstRender)
+        {
+            return;
+        }
+
+        OpenLoadingOverlay();
+
+        var snapshot = await RankingService.GetLatest();
+        foreach (var entry in snapshot.Entries.OrderBy(x => x.Place))
+        {
+            _items.Add(new RankingListItem(this, entry));
+        }
+
+        CloseLoadingOverlay();
+        StateHasChanged();
     }
 
-    OpenLoadingOverlay();
-
-    var snapshot = await RankingService.GetLatest();
-    foreach (var entry in snapshot.Entries.OrderBy(x => x.Place))
+    private void OpenLoadingOverlay()
     {
-      _items.Add(new RankingListItem(this, entry));
+        overlayVisible = true;
+        dataLoaded = false;
+    }
+    private void CloseLoadingOverlay()
+    {
+        overlayVisible = false;
+        dataLoaded = true;
     }
 
-    CloseLoadingOverlay();
-    StateHasChanged();
-  }
-
-  private void OpenLoadingOverlay()
-  {
-    overlayVisible = true;
-    dataLoaded = false;
-  }
-  private void CloseLoadingOverlay()
-  {
-    overlayVisible = false;
-    dataLoaded = true;
-  }
-
-  private string _rowStyleFunc(RankingListItem item, int index)
-  {
-    string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-    if (name is not null)
+    private string _rowStyleFunc(RankingListItem item, int index)
     {
-      if (item.DisplayName == name)
-      {
-        return $"background-color: {Rc2kColorPallete.complementary200};";
-      }
-    }
+        string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+        if (name is not null)
+        {
+            if (item.DisplayName == name)
+            {
+                return $"background-color: {Rc2kColorPallete.complementary200};";
+            }
+        }
 
-    if (index % 2 != 0)
-    {
-      return $"background-color: {Rc2kColorPallete.primary50};";
+        if (index % 2 != 0)
+        {
+            return $"background-color: {Rc2kColorPallete.primary50};";
+        }
+        return string.Empty;
     }
-    return string.Empty;
-  }
 }
