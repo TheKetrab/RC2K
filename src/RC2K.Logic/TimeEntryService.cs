@@ -141,22 +141,29 @@ public class TimeEntryService : ITimeEntryService
         return new Result() { Success = true };
     }
 
-    public async Task Upload(TimeEntry timeEntry)
+    public async Task<Result> Upload(TimeEntry timeEntry)
     {
         var identicEntries = await _timeEntryRepository.GetByStageIdAndCarIdAndDriverIdAndTime(
             timeEntry.StageId, timeEntry.CarId, timeEntry.DriverId, timeEntry.Time);
 
+        // user can put identical times ONLY if it has different label (but is not automatic = no HST)
         if (identicEntries.Any())
         {
-            // user can put identical times ONLY if it has different label
-            if (string.IsNullOrEmpty(timeEntry.Labels) ||
-                identicEntries.Any(x => x.Labels == timeEntry.Labels))
+            if (string.IsNullOrWhiteSpace(timeEntry.Labels) || // has no labels
+                identicEntries.Any(x => x.Labels == timeEntry.Labels) || // has the same labels
+                timeEntry.Labels.Contains("HST")) // is automatic
             {
-                throw new Exception($"There already exists TimeEntry for: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={timeEntry.Time}");
+                var best = identicEntries.OrderBy(x => x.Time).First();
+                return new Result()
+                {
+                    Success = false,
+                    Message = $"There already exists better or the same TimeEntry: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={best.Time.ToString("m:ss.ff")}"
+                };
             }
         }
 
         await _timeEntryRepository.Create(timeEntry);
+        return new Result() { Success = true };
     }
 
 

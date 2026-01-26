@@ -57,7 +57,7 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
               WHERE c.stageId = @stageId
                 AND c.carId = @carId
                 AND c.driverId = @driverId
-                AND c.time = @centiseconds")
+                AND c.time <= @centiseconds")
             .WithParameter("@stageId", stageId)
             .WithParameter("@carId", carId)
             .WithParameter("@driverId", driverId)

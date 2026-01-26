@@ -110,10 +110,10 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             return new Result() { Success = true };
         }
 
-        public async Task Upload(TimeEntry timeEntry)
+        public async Task<Result> Upload(TimeEntry timeEntry)
         {
             await AuthorizeSelf(timeEntry.Driver!);
-            await _service.Upload(timeEntry);
+            return await _service.Upload(timeEntry);
         }
 
         public async Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment)
