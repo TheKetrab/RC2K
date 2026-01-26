@@ -19,6 +19,7 @@ using RC2K.Logic;
 using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
+using RC2K.Parser;
 using RC2K.Presentation.Blazor.AuthProxy;
 using RC2K.Presentation.Blazor.ViewModels;
 using Serilog;
@@ -135,7 +136,8 @@ public static class BuilderConfiguration
         builder.Services.AddScoped<IUserFiller, UserFiller>();
         builder.Services.AddScoped<IVerifyInfoFiller, VerifyInfoFiller>();
         builder.Services.AddScoped<IRankingFiller, RankingFiller>();
-
+        builder.Services.AddScoped<IHstReader, HstReader>();
+        builder.Services.AddScoped<IHstUploadManager, HstUploadManager>();
         builder.Services.AddScoped<IFillersBag, FillersBag>();
         builder.Services.AddScoped<IBonusPointsService, BonusPointsService>();
         builder.Services.AddScoped<IStageService, StageService>();

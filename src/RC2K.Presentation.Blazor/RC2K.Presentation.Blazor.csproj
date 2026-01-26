@@ -55,6 +55,7 @@
     <ProjectReference Include="..\RC2K.Extensions\RC2K.Utils.csproj" />
     <ProjectReference Include="..\RC2K.Logic.Interfaces\RC2K.Logic.Interfaces.csproj" />
     <ProjectReference Include="..\RC2K.Logic\RC2K.Logic.csproj" />
+    <ProjectReference Include="..\RC2K.Parser\RC2K.Parser.csproj" />
     <ProjectReference Include="..\RC2K.Presentation.Shared\RC2K.Presentation.Shared.csproj" />
     <ProjectReference Include="..\RC2K.Resources\RC2K.Resources.csproj" />
   </ItemGroup>
