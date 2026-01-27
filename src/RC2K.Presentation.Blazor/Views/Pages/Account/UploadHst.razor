@@ -18,23 +18,39 @@
 @inject IHstReader HstReader
 
 <MudPaper Class="pa-8 ma-4" Elevation="3">
-    <MudText Typo="Typo.h5" GutterBottom="true">Upload Document</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudText Typo="Typo.h4">How does it work?</MudText>
+            <MudText Typo="Typo.h6" Color="Color.Primary">You can easily import all your time entries into RC2K hub!</MudText>
+            <MudText>Simply upload <span style="color: var(--secondary);">[Game directory]\var\hst.dat</span> file and filter by driver name.</MudText>
+            <MudText>On the example presented here, when you filter by "ketrab" those two time entries will be uploaded, "helloworld" will be not, and of course default computer-generated time entries will be not either.</MudText>
+            <MudDivider Class="ma-2"/>
+            <MudText>If any errors will appear (for example you already uploaded time manually and in our database exists this time entry) you will be notified about it here in the output table. Please review those items and in case any problems contact TheKetrab via Discord.</MudText>
+            <MudText style="color: var(--secondary);">Note: Only your top 10 records are taken into account, because only them are stored in hst file! If your time is not in top 10, you need to clear your hst or upload your worse times manually.</MudText>
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <img src="img/hst-import.jpg" />
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+<MudPaper Class="pa-8 ma-4" Elevation="3">
+    <MudText Typo="Typo.h5" GutterBottom="true">Upload HST file</MudText>
 
     <MudForm @ref="form" @bind-IsValid="@success">
         <MudProgressLinear Color="Color.Primary" Value="@_progress" Class="my-7" />
-        <MudTextField T="string" Label="Name" Required="true" @bind-Value="uploadModel.Name" />
+        <MudTextField T="string" Label="Name to filter HST" Required="true" @bind-Value="uploadModel.Name" />
 
         <MudFileUpload T="IBrowserFile" FilesChanged="UploadFile" Required="true" Class="mt-4">
             <ActivatorContent>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" Disabled="@_isUploading">
-                    @(_file == null ? "Select File" : _file.Name)
+                    @(_file == null ? "Select HST File" : _file.Name)
                 </MudButton>
             </ActivatorContent>
         </MudFileUpload>
 
         <div class="d-flex align-center justify-space-between mt-6">
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@(!success || _file == null)" OnClick="Submit">Submit to /upload</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Reset" Class="ml-2">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@(!success || _file == null)" OnClick="Submit">Submit</MudButton>
         </div>
     </MudForm>
 </MudPaper>
@@ -86,6 +102,10 @@
         {
             await SubmitImpl();
         }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Upload Failed.", Severity.Error);
+        }
         finally
         {
             _isUploading = false;
@@ -126,10 +146,4 @@
         }
     }
 
-    private void Reset()
-    {
-        uploadModel = new();
-        _file = null;
-        form.ResetAsync();
-    }
 }
