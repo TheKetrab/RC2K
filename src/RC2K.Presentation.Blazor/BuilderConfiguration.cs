@@ -75,7 +75,7 @@ public static class BuilderConfiguration
             {
                 options.Cookie.Name = "auth_token";
                 options.LoginPath = "/login";
-                options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
+                options.Cookie.MaxAge = TimeSpan.FromDays(30);
                 options.AccessDeniedPath = "/access-denied";
             });
 
