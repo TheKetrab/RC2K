@@ -26,7 +26,8 @@ public enum Icon
     Image,
     Unknown,
     Ranking,
-    Mail
+    Mail,
+    Upload
 }
 
 public static class IconMapper
@@ -108,6 +109,7 @@ public static class IconMapper
             { Icon.Unknown, (true, square_slim, square_fill) },
             { Icon.Ranking, (true, MudBlazor.Icons.Material.Outlined.Leaderboard, MudBlazor.Icons.Material.Filled.Leaderboard) },
             { Icon.Mail, (true, MudBlazor.Icons.Material.Outlined.Mail, MudBlazor.Icons.Material.Filled.Mail) },
+            { Icon.Upload, (true, MudBlazor.Icons.Material.Outlined.UploadFile, MudBlazor.Icons.Material.Filled.UploadFile) },
         };
     }
 

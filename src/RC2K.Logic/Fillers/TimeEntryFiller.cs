@@ -25,6 +25,10 @@ public class TimeEntryFiller(ICarRepository carRepository,
 
             timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
             timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
+            if (timeEntry.Car is null)
+            {
+                timeEntry.Car = new Car() { Class = 9, Id = timeEntry.CarId, Name = "BONUS" }; // TODO remove when bonus cars implemented
+            }
 
             await FillDriver(timeEntry, context, fillers);
             await FillVerifyInfo(timeEntry, context, fillers);
