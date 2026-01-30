@@ -29,7 +29,8 @@ public class TimeEntryListItem
         : TimeSpan.Zero;
     public string GapDisplay => Gap == TimeSpan.Zero ? "" : "-" + Gap.ToString("m\\:ss\\.ff");
     public string UploadTimeDisplay => this.Data.UploadTime == new DateTime(1,1,1) ? "" : this.Data.UploadTime.ToString("yyyy/MM/dd");
-    public IEnumerable<string> Labels => (this.Data.Labels ?? "").Split(",").Where(x => !string.IsNullOrEmpty(x));
+    public IEnumerable<string> Labels => (this.Data.Labels ?? "").Split(",").Where(x => !string.IsNullOrEmpty(x) && x != "HST");
+    public bool IsHST => (this.Data.Labels ?? "").Split(",").Any(x => x == "HST");
 
     public string DisplayName => Data.Driver.Known ? Data.Driver.User!.Name : Data.Driver.Name;
 
