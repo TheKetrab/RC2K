@@ -33,16 +33,17 @@
                     <h3>Stage details</h3>
                 </div>
                 <div class="card-body">
-                    <div style="position: absolute; top: 0; right: 0;">
+                    <div style="position: absolute; top: 0; right: 0; padding: 4px;">
+                        <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id%10==1)" OnClick="GoToPrevious">&lt;</MudButton>
                         @if (IsArcade)
                         {
-                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">Simulation version</MudButton>
-
+                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">To simulation</MudButton>
                         }
                         else
                         {
-                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">Arcade version</MudButton>
+                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">To arcade</MudButton>
                         }
+                        <MudButton class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id % 10 == 6)" OnClick="GoToNext">&gt;</MudButton>
                     </div>
                     <h1 Style=@($"color: {@Rc2kColorPallete.primary700}")>
                         @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
@@ -104,6 +105,24 @@
 
 @code {
 
+    private void GoToPrevious()
+    {
+        if (Id % 10 == 1) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
+    }
+    private void GoToNext()
+    {
+        if (Id % 10 == 6) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
+    }
     private void GoToArcadeVersion()
     {
         string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
