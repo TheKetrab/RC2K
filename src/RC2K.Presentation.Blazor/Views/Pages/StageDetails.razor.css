@@ -1,4 +1,13 @@
-﻿
+﻿::deep .button-xs {
+    padding: 2px 2px !important;
+    font-size: .65rem !important;
+    min-width: 12px !important;
+}
+
+::deep .button-xs > .mud-button-label {
+    min-width: 12px !important;
+}
+
 
 .card {
     margin: auto auto;

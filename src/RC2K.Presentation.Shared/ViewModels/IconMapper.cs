@@ -27,12 +27,24 @@ public enum Icon
     Unknown,
     Ranking,
     Mail,
-    Upload
+    Upload,
+    Hst
 }
 
 public static class IconMapper
 {
     private static readonly Dictionary<Icon, (bool, string, string)> _icon2classMap;
+
+    private const string hst = @"
+<svg width=""24px"" height=""24px"" viewBox=""-6.4 -6.4 76.80 76.80"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" aria-hidden=""true"" role=""img"" class=""iconify iconify--emojione"" preserveAspectRatio=""xMidYMid meet"" fill=""#000000"" stroke=""#000000"" stroke-width=""0.00064"" transform=""matrix(1, 0, 0, 1, 0, 0)rotate(0)"">
+<g id=""SVGRepo_bgCarrier"" stroke-width=""0""/>
+<g id=""SVGRepo_tracerCarrier"" stroke-linecap=""round"" stroke-linejoin=""round"" stroke=""#CCCCCC"" stroke-width=""0.64""/>
+<g id=""SVGRepo_iconCarrier"">
+<circle cx=""32"" cy=""32"" r=""30"" fill=""#7d7d7d""/>
+<path d=""M20.3 46.5v-29h6v11.1h11.3V17.5h6v29h-6v-13H26.4v13h-6.1z"" fill=""#ffffff""/>
+</g>
+</svg>
+    ";
 
     private const string twitch = @"
     <svg style=""width:16px;height:16px"" viewBox=""0 0 16 16"">""
@@ -110,6 +122,7 @@ public static class IconMapper
             { Icon.Ranking, (true, MudBlazor.Icons.Material.Outlined.Leaderboard, MudBlazor.Icons.Material.Filled.Leaderboard) },
             { Icon.Mail, (true, MudBlazor.Icons.Material.Outlined.Mail, MudBlazor.Icons.Material.Filled.Mail) },
             { Icon.Upload, (true, MudBlazor.Icons.Material.Outlined.UploadFile, MudBlazor.Icons.Material.Filled.UploadFile) },
+            { Icon.Hst, (true, hst, hst) },
         };
     }
 
@@ -124,5 +137,6 @@ public static class IconMapper
         ProofType.Replay => Thin(Icon.Replay),
         ProofType.Image => Thin(Icon.Image),
         ProofType.Unknown => Thin(Icon.Unknown),
+        ProofType.Hst => Thin(Icon.Hst)
     };
 }

@@ -104,6 +104,10 @@
                                 {
                                     <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
                                 }
+                                if (context.Item.IsHST)
+                                {
+                                    <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(ProofType.Hst)" Size="Size.Small" />
+                                }
                             }
                         </p>
                     </CellTemplate>
@@ -116,6 +120,10 @@
                                 {
                                     string color = label switch
                                     {
+                                        "TA" => "#8df5fc",
+                                        "A8" => "#f0baff",
+                                        "Arcade" => "#ff809b",
+                                        "BRC" => "#f1ffb0",
                                         "BRC20" => "#e0c444ff",
                                         "MFMI18" => "#c71a99ff",
                                         "MFMI19" => "#d18fd9",
@@ -125,8 +133,9 @@
                                         "MFMI23" => "#4d69f7ff",
                                         "MFMI24" => "#6eb3db",
                                         "MFMI25" => "#f25a46ff",
-                                        _ => "#1c7848ff"
+                                        _ => "#cbf092ff"
                                     };
+
                                     <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
                                 }
                             }
@@ -135,7 +144,20 @@
                 </TemplateColumn>
                 @if (!VerificationMode)
                 {
-                    <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+                    <TemplateColumn Title="Points">
+                        <CellTemplate>
+                            <p style="display: flex;">
+                                @if (context.Item.GeneralPoints > 0)
+                                {
+                                    <span style="color: var(--primary);">+@context.Item.GeneralPoints</span>
+                                }
+                                @if (context.Item.CarPoints > 0)
+                                {
+                                    <span style="color: var(--secondary);">+@context.Item.CarPoints</span>
+                                }
+                            </p>
+                        </CellTemplate>
+                    </TemplateColumn>
                 }
                 @if (VerificationMode)
                 {

@@ -35,5 +35,6 @@ public enum ProofType
     Image = 'i',
     Twitch = 't',
     Youtube = 'y',
-    Replay = 'r'
+    Replay = 'r',
+    Hst = 'h'
 }
