@@ -34,12 +34,6 @@ public class TimeEntryListItem
 
     public string DisplayName => Data.Driver.Known ? Data.Driver.User!.Name : Data.Driver.Name;
 
-    public string PointsDisplay => string.Concat(
-        (new int[] { GeneralPoints, CarPoints })
-            .Where(x => x > 0)
-            .Select(x => $"+{x}")
-    );
-
     public int Points => GeneralPoints + CarPoints;
 
     private int _gp = -1;

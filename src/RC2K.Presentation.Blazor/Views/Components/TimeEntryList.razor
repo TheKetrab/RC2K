@@ -139,7 +139,20 @@
                 </TemplateColumn>
                 @if (!VerificationMode)
                 {
-                    <PropertyColumn Property="x => x.PointsDisplay" Title="Points" SortBy="_sortByPoints" />
+                    <TemplateColumn Title="Points">
+                        <CellTemplate>
+                            <p style="display: flex;">
+                                @if (context.Item.GeneralPoints > 0)
+                                {
+                                    <span style="color: var(--primary);">+@context.Item.GeneralPoints</span>
+                                }
+                                @if (context.Item.CarPoints > 0)
+                                {
+                                    <span style="color: var(--secondary);">+@context.Item.CarPoints</span>
+                                }
+                            </p>
+                        </CellTemplate>
+                    </TemplateColumn>
                 }
                 @if (VerificationMode)
                 {
