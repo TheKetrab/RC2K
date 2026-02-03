@@ -30,17 +30,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic", "RC2K.Logic\RC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.Interfaces", "RC2K.Logic.Interfaces\RC2K.Logic.Interfaces.csproj", "{FE01917E-18A3-4FB9-B0AB-6FC93D296BE4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.UnitTests", "..\test\RC2K.Logic.UnitTests\RC2K.Logic.UnitTests.csproj", "{A2761582-ED03-4D58-973B-290C58FB5457}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Logic.UnitTests", "..\tests\RC2K.Logic.UnitTests\RC2K.Logic.UnitTests.csproj", "{A2761582-ED03-4D58-973B-290C58FB5457}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Resources.UnitTests", "..\test\RC2K.Resources.UnitTests\RC2K.Resources.UnitTests.csproj", "{78AF4B80-8E86-4934-88C4-996687C692DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Resources.UnitTests", "..\tests\RC2K.Resources.UnitTests\RC2K.Resources.UnitTests.csproj", "{78AF4B80-8E86-4934-88C4-996687C692DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.DataAccess.Dynamic", "RC2K.DataAccess.Dynamic\RC2K.DataAccess.Dynamic.csproj", "{BD342FA4-D85F-47C3-A902-FEE8E56E62FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.DataAccess.Dynamic.UnitTests", "..\test\RC2K.DataAccess.Dynamic.UnitTests\RC2K.DataAccess.Dynamic.UnitTests.csproj", "{C55D8D43-08FB-43DF-A4A7-B99CBB83B7C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.DataAccess.Dynamic.UnitTests", "..\tests\RC2K.DataAccess.Dynamic.UnitTests\RC2K.DataAccess.Dynamic.UnitTests.csproj", "{C55D8D43-08FB-43DF-A4A7-B99CBB83B7C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.DataAccess.Database.UnitTests", "..\test\RC2K.DataAccess.Database.UnitTests\RC2K.DataAccess.Database.UnitTests.csproj", "{6050BD84-82B6-4729-8AA8-C8B71FD1EF65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.DataAccess.Database.UnitTests", "..\tests\RC2K.DataAccess.Database.UnitTests\RC2K.DataAccess.Database.UnitTests.csproj", "{6050BD84-82B6-4729-8AA8-C8B71FD1EF65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.WebApi", "RC2K.WebApi\RC2K.WebApi.csproj", "{DD87B29F-6F3A-4EC5-A1F0-BD4BB0867959}"
 EndProject
