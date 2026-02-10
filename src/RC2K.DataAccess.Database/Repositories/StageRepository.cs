@@ -13,11 +13,11 @@ public class StageRepository(RallyDbContext dbContext, IStageCache cache)
     private const string AllStagesByMinMaxKey = "AllStagesByMinMaxKey";
     private const string StageByCodeAndDirection = "StageByCodeAndDirectionKey";
 
-    public async Task<string> GetWaypointsByStageCode(int stageCode) =>
-        (await this.GetByCode(stageCode, Direction.Simulation)).StageWaypoints!.Waypoints;
+    public async Task<string?> GetWaypointsByStageCode(int stageCode) =>
+        (await this.GetByCode(stageCode, Direction.Simulation))?.StageWaypoints?.Waypoints;
 
     public async Task<string?> GetPathByStageCode(int stageCode) =>
-        (await this.GetByCode(stageCode, Direction.Simulation)).StageWaypoints!.Path;
+        (await this.GetByCode(stageCode, Direction.Simulation))?.StageWaypoints?.Path;
 
     public async Task UpdatePath(int stageCode, string path)
     {
@@ -31,7 +31,7 @@ public class StageRepository(RallyDbContext dbContext, IStageCache cache)
         return (await this.Get(x => x.Id == id, full: true)).FirstOrDefault();
     }
 
-    public async Task<Stage> GetByCode(int stageCode, Direction direction)
+    public async Task<Stage?> GetByCode(int stageCode, Direction direction)
     {
         string cacheKey = $"{StageByCodeAndDirection}_{stageCode}_{direction}";
 

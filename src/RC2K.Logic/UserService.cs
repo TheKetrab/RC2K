@@ -134,7 +134,7 @@ public class UserService : IUserService
         {
             DriverId = driver.Id,
             Id = userId,
-            Name = driver.Name,
+            Name = driver.Name!,
             PasswordHash = passwordHash,
             Roles = ["user"],
             Email = email,

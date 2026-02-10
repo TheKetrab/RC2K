@@ -6,7 +6,7 @@ public class Repl
     int F2 { get; set; }
     int F3 { get; set; } // 00 04 05 00
     int F4 { get; set; } // hash
-    string F5 { get; set; } // filename, 32 bytes
+    string F5 { get; set; } = ""; // filename, 32 bytes
     int F6 { get; set; } // stage code
     int F7 { get; set; }
     int F8 { get; set; }

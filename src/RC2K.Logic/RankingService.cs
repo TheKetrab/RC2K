@@ -15,13 +15,15 @@ public class RankingService : IRankingService
     private readonly IPointsProvider _pointsProvider;
     private readonly IBonusPointsService _bonusPointsService;
     private readonly IFillersBag _fillers;
+    private readonly ILogger<RankingService> _logger;
 
     public RankingService(IRankingsRepository rankingRepository,
         IStageService stageService,
         ITimeEntryService timeEntryService,
         IPointsProvider pointsProvider,
         IBonusPointsService bonusPointsService,
-                            IFillersBag fillers)
+        IFillersBag fillers,
+        ILogger<RankingService> logger)
     {
         _rankingRepository = rankingRepository;
         _stageService = stageService;
@@ -30,6 +32,7 @@ public class RankingService : IRankingService
         _bonusPointsService = bonusPointsService;
 
         _fillers = fillers;
+        _logger = logger;
     }
 
     public async Task<RankingSnapshot> GetLatest()
@@ -286,6 +289,7 @@ public class RankingService : IRankingService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error while calculating ranking snapshot");
             throw;
         }
     }
