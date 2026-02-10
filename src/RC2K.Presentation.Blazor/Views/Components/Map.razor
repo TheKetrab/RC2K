@@ -20,13 +20,13 @@
         }
 
         var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
-
+        
         string? res;
         try
         {
             res = await JSRuntime.InvokeAsync<string?>("mapInterop.initMap", mapElementId, waypoints, ShowWaypoints, Api, Path);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             res = null;
         }

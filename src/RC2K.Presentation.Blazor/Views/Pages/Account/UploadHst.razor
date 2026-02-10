@@ -37,7 +37,7 @@
 <MudPaper Class="pa-8 ma-4" Elevation="3">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload HST file</MudText>
 
-    <MudForm @ref="form" @bind-IsValid="@success">
+    <MudForm @ref="_formRef" @bind-IsValid="@success">
         <MudProgressLinear Color="Color.Primary" Value="@_progress" Class="my-7" />
         <MudTextField T="string" Label="Name to filter HST" Required="true" @bind-Value="uploadModel.Name" />
 
@@ -74,11 +74,11 @@
 
 
 @code {
-    private List<(int, string, string)> _errors;
+    private List<(int, string, string)> _errors = [];
 
 
-    bool success;
-    MudForm form;
+    private bool success;
+    private MudForm _formRef;
     private IBrowserFile _file;
     private UploadRequest uploadModel = new();
 

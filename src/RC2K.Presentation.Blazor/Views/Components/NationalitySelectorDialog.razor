@@ -30,7 +30,7 @@
                    Variant="Variant.Outlined"
                    Dense="true">
             <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
-            @foreach (var country in allCountries)
+            @foreach (var country in _allCountries)
             {
                 <MudSelectItem T="CodeName?" Value="@country">
                     <span class="fi @($"fi-{country.code}")"></span>
@@ -47,8 +47,7 @@
 
 @code {
 
-    IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
-    private MudSelect<CodeName> select;
+    IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
 
     private string _title;
     private string _msg;

@@ -242,7 +242,7 @@
         var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult.Canceled)
+        if (dialogResult is null || dialogResult.Canceled)
         {
             errors = ["You cancelled email verification."];
             return false;
@@ -265,7 +265,7 @@
         var dialog = await Dialog.ShowAsync<UpgradeDriverToUserDialog>("Upgrade driver to user", options);
         var dialogResult = await dialog.Result;
 
-        if (dialogResult.Canceled)
+        if (dialogResult is null || dialogResult.Canceled)
         {
             errors = ["You cancelled upgrading driver to user."];
             return (false, "");

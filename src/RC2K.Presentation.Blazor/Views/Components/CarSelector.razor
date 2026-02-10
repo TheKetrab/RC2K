@@ -25,11 +25,15 @@
 
 @code {
 
-    private List<Car> _cars = [];
+    [Parameter]
+    public Car? SelectedCar { get; set; }
+    
+    [Parameter]
+    public EventCallback<Car?> SelectedCarChanged { get; set; }
 
-    [Parameter] public Car? SelectedCar { get; set; }
+    private List<Car> _cars = [];
     public event EventHandler<Car?>? OnSelectedCarChanged;
-    [Parameter] public EventCallback<Car?> SelectedCarChanged { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         _cars = await CarService.GetAll();
