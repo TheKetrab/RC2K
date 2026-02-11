@@ -1,4 +1,4 @@
-﻿@using RC2K.DomainModel
+@using RC2K.DomainModel
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
@@ -63,7 +63,7 @@
     }
 
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     private void Cancel() => MudDialog.Cancel();
 

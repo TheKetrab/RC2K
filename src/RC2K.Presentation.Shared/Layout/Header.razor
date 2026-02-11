@@ -1,4 +1,4 @@
-﻿@using RC2K.Presentation.Shared.Layout
+@using RC2K.Presentation.Shared.Layout
 @using RC2K.Presentation.Shared.ViewModels
 @using Microsoft.JSInterop
 
@@ -46,7 +46,7 @@
         return Task.CompletedTask;
     }
 
-    private Dictionary<string, object> _navMenuParams;
+    private Dictionary<string, object> _navMenuParams = [];
 
     protected override void OnInitialized()
     {

@@ -135,7 +135,7 @@
     }
     private int stageId;
 
-    private string _api;
+    private string _api = string.Empty;
     private async Task HandleNewPathCachedEvent(string path)
     {
         var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
@@ -144,24 +144,23 @@
     }
 
     [Parameter]
-    public string RaceName { get; set; }
+    public required string RaceName { get; init; }
 
     [Parameter]
     public int Id { get; set; }
 
-    private IList<double[]> _waypoints;
+    private IList<double[]> _waypoints = [];
 
-    private string _name;
-    private string _raceName;
-    private string _description;
+    private string _name = string.Empty;
+    private string _raceName = string.Empty;
+    private string _description = string.Empty;
+    private string _imgName = string.Empty;
 
-    private string _imgName;
-
-    private DomainModel.StageDetails _stageDetails;
+    private DomainModel.StageDetails _stageDetails = new();
 
     private List<DomainModel.TimeEntry> _timeEntries = new();
 
-    private string _directionParameter;
+    private string _directionParameter = string.Empty;
     [SupplyParameterFromQuery(Name = "direction")]
     public string DirectionParameter
     {

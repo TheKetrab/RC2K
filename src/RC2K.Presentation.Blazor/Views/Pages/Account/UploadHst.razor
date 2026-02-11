@@ -1,4 +1,4 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 
 @page "/user/uploadHst"
 
@@ -78,15 +78,15 @@
 
 
     private bool success;
-    private MudForm _formRef;
-    private IBrowserFile _file;
+    private MudForm _formRef = default!;
+    private IBrowserFile _file = default!;
     private UploadRequest uploadModel = new();
 
     int _progress;
 
     public class UploadRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     private void UploadFile(IBrowserFile file)
