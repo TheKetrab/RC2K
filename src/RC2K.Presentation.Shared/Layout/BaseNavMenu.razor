@@ -10,7 +10,7 @@
     public RenderFragment RenderMenuItem(MenuItem menuItem) => __builder =>
     {
         <div class="menu-item">
-            <MudButton Link="@menuItem.ItemLink"
+            <MudButton
                        StartIcon="@(IconMapper.IsMudBlazor(menuItem.Icon) ? IconMapper.Thin(menuItem.Icon) : string.Empty)"
                        Href="@($"{Config["AppBaseUrl"]}/{menuItem.ItemLink}")">
                 @{

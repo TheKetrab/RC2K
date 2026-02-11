@@ -1,4 +1,4 @@
-﻿
+
 using RC2K.DomainModel;
 
 namespace RC2K.Presentation.Shared.ViewModels;
@@ -137,6 +137,7 @@ public static class IconMapper
         ProofType.Replay => Thin(Icon.Replay),
         ProofType.Image => Thin(Icon.Image),
         ProofType.Unknown => Thin(Icon.Unknown),
-        ProofType.Hst => Thin(Icon.Hst)
+        ProofType.Hst => Thin(Icon.Hst),
+        _ => Thin(Icon.Unknown)
     };
 }
