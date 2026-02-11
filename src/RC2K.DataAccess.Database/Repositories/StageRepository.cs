@@ -44,7 +44,13 @@ public class StageRepository(RallyDbContext dbContext, IStageCache cache)
         var dbValue = await _dbContext.Stages
             .Where(x => x.Code == stageCode && x.Direction == direction)
             .FillFullData()
-            .FirstAsync();
+            .FirstOrDefaultAsync();
+
+        if (dbValue == null)
+        {
+            return null;
+        }
+
         _cache.Set(cacheKey, dbValue);
         return dbValue;
     }

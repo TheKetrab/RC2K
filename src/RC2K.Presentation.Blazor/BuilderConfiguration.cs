@@ -87,9 +87,12 @@ public static class BuilderConfiguration
     {
         var cosmosSection = builder.Configuration.GetSection("Cosmos");
 
-        string endpoint = cosmosSection.GetValue<string>("Endpoint");
-        string database = cosmosSection.GetValue<string>("Database");
-        string primaryKey = cosmosSection.GetValue<string>("ApiKey");
+        string endpoint = cosmosSection.GetValue<string>("Endpoint")
+            ?? throw new InvalidOperationException("Cosmos:Endpoint is not configured.");
+        string database = cosmosSection.GetValue<string>("Database")
+            ?? throw new InvalidOperationException("Cosmos:Database is not configured.");
+        string primaryKey = cosmosSection.GetValue<string>("ApiKey")
+            ?? throw new InvalidOperationException("Cosmos:ApiKey is not configured.");
 
         CosmosClient client =
             new CosmosClientBuilder(endpoint, primaryKey)
@@ -147,22 +150,26 @@ public static class BuilderConfiguration
         {
             var securitySection = builder.Configuration.GetSection("Security");
             int iterations = securitySection.GetValue<int>("Iterations");
-            string salt = securitySection.GetValue<string>("Salt");
+            string salt = securitySection.GetValue<string>("Salt")
+                ?? throw new InvalidOperationException("Security:Salt is not configured.");
 
             return new PasswordProvider(iterations, salt);
         });
         builder.Services.AddScoped<IMailProvider, GmailProvider>(provider =>
         {
             var mailingSection = builder.Configuration.GetSection("Mailing");
-            string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword");
-            string senderEmail = mailingSection.GetValue<string>("SenderEmail");
+            string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword")
+                ?? throw new InvalidOperationException("Mailing:SftpAppPassword is not configured.");
+            string senderEmail = mailingSection.GetValue<string>("SenderEmail")
+                ?? throw new InvalidOperationException("Mailing:SenderEmail is not configured.");
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {
             var captchaSection = builder.Configuration.GetSection("Captcha");
-            string secretKey = captchaSection.GetValue<string>("SecretKey");
+            string secretKey = captchaSection.GetValue<string>("SecretKey")
+                ?? throw new InvalidOperationException("Captcha:SecretKey is not configured.");
             var logger = provider.GetRequiredService<ILogger<ReCaptchaV3Verifier>>();
 
             return new ReCaptchaV3Verifier(secretKey, logger);

@@ -65,15 +65,15 @@
 @code {
 
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    public required HttpContext HttpContext { get; set; }
 
     [SupplyParameterFromForm(FormName = "login")]
-    private LoginDto Model { get; set; } = new();
+    public required LoginDto Model { get; set; }
 
     string[] errors = { };
     EditForm formLogin = new();
 
-    private bool isLoading;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {

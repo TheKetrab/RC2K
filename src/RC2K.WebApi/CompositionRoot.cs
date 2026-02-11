@@ -23,9 +23,12 @@ public static class CompositionRoot
     {
         var cosmosSection = builder.Configuration.GetSection("Cosmos");
 
-        string endpoint = cosmosSection.GetValue<string>("Endpoint");
-        string database = cosmosSection.GetValue<string>("Database");
-        string primaryKey = cosmosSection.GetValue<string>("ApiKey");
+        string endpoint = cosmosSection.GetValue<string>("Endpoint")
+            ?? throw new InvalidOperationException("Cosmos:Endpoint is not configured.");
+        string database = cosmosSection.GetValue<string>("Database")
+            ?? throw new InvalidOperationException("Cosmos:Database is not configured.");
+        string primaryKey = cosmosSection.GetValue<string>("ApiKey")
+            ?? throw new InvalidOperationException("Cosmos:ApiKey is not configured.");
 
         CosmosClient client =
             new CosmosClientBuilder(endpoint, primaryKey)
@@ -65,7 +68,8 @@ public static class CompositionRoot
         {
             var securitySection = builder.Configuration.GetSection("Security");
             int iterations = securitySection.GetValue<int>("Iterations");
-            string salt = securitySection.GetValue<string>("Salt");
+            string salt = securitySection.GetValue<string>("Salt")
+                ?? throw new InvalidOperationException("Security:Salt is not configured.");
 
             return new PasswordProvider(iterations, salt);
         });

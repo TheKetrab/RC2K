@@ -28,7 +28,7 @@ app.UseHttpsRedirection();
 app.MapPost("/user/create", async (CreateUserDto dto) =>
 {
     var userService = app.Services.GetService<IUserService>()!;
-    await userService.CreateUserWithPassword(dto.Name, dto.Password, dto.Nationality, dto.Email);
+    await userService.CreateUserWithPassword(dto.Name, dto.Password!, dto.Nationality, dto.Email!);
 
 }).WithOpenApi();
 
