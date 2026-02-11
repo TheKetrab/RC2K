@@ -139,6 +139,7 @@
     private async Task HandleNewPathCachedEvent(string path)
     {
         var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
+        if (stage == null) return;
         int stageCode = stage.Code;
         await StageService.SetPath(stageCode, path);
     }
@@ -186,17 +187,23 @@
         //timeEntryListRef.ReloadTimeEntries();
 
         var stage = await StageService.GetByCode(Id, Direction);
+        if (stage == null)
+        {
+            NavigationManager.NavigateTo("/stages");
+            return;
+        }
+
         stageId = stage.Id;
-        _api = stage.StageWaypoints.ApiHint;
+        _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
         _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
         _path = await StageService.GetPath(Id);
 
         _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
-        _name = stage.StageData.Name;
-        _imgName = stage.StageData.ImgName;
-        _description = stage.StageData.Description;
-        _stageDetails = stage.StageData.StageDetails;
+        _name = stage.StageData?.Name ?? string.Empty;
+        _imgName = stage.StageData?.ImgName ?? string.Empty;
+        _description = stage.StageData?.Description ?? string.Empty;
+        _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
