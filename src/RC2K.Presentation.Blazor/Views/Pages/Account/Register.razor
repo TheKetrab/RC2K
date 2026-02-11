@@ -248,7 +248,7 @@
             return false;
         }
 
-        string userEnteredCode = dialogResult.Data.ToString();
+        string userEnteredCode = dialogResult.Data?.ToString() ?? string.Empty;
 
         if (userEnteredCode != emailCode)
         {
@@ -271,7 +271,7 @@
             return (false, "");
         }
 
-        string driverCode = dialogResult.Data.ToString();
+        string driverCode = dialogResult.Data?.ToString() ?? string.Empty;
 
         return (true, driverCode);
     }
