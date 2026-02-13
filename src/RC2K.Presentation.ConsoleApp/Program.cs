@@ -13,7 +13,6 @@ using System.Net.Http.Json;
 using RC2K.DomainModel;
 using System.IO;
 
-// Removed unused constants that were only used in commented-out code
 
 //var serviceProvider = new ServiceCollection()
 //    .AddSingleton<IDataContext, InMemoryDataAccess>(sp => new InMemoryDataAccess(CarsCount, DriversCount, StagesCount, TimeEntriesCount, UsersCount, 10, VerifyInfosCount))

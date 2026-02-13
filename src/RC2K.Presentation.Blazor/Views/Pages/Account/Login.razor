@@ -20,8 +20,8 @@
 
         <EditForm Model="@Model"
                   class="gap-5"
-                  @ref="formLogin"
-                  @bind-Errors="@errors"
+                  @ref="_formLoginRef"
+                  @bind-Errors="@_errors"
                   OnValidSubmit="HandleValidSubmit"
                   method="post"
                   FormName="login">
@@ -40,7 +40,7 @@
             <div class="d-flex align-center justify-space-between">
                 <MudStaticButton FormAction="FormAction.Submit"
                                  Variant="Variant.Filled"
-                                 Disabled="@isLoading"
+                                 Disabled="@_isLoading"
                                  Color="Color.Primary"
                                  Class="ml-auto">Login</MudStaticButton>
             </div>
@@ -50,9 +50,9 @@
                     <MudLink Href="/register">Sign up now</MudLink>
                 </p>
             </div>
-            @if (errors.Length > 0)
+            @if (_errors.Length > 0)
             {
-                @foreach (var error in errors)
+                @foreach (var error in _errors)
                 {
                     <MudText Color="@Color.Error">@error</MudText>
                 }
@@ -65,15 +65,14 @@
 @code {
 
     [CascadingParameter]
-    public required HttpContext HttpContext { get; set; }
+    public required HttpContext HttpContext { get; init; }
 
     [SupplyParameterFromForm(FormName = "login")]
-    public required LoginDto Model { get; set; }
+    public required LoginDto Model { get; init; }
 
-    string[] errors = { };
-    EditForm formLogin = new();
-
-    private bool isLoading = false;
+    private string[] _errors = { };
+    private EditForm _formLoginRef = new();
+    private bool _isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +92,7 @@
         }
         catch (Exception ex)
         {
-            errors = [ex.Message];
+            _errors = [ex.Message];
         }
 
     }

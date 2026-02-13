@@ -85,7 +85,7 @@
             <div class="card">
                 <div class="card-header"><h3>Records</h3></div>
                 <div class="card-body">
-                    <TimeEntryList PerPage="20" StageId="@stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
+                    <TimeEntryList PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
                 </div>
                 <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
@@ -105,61 +105,15 @@
 
 @code {
 
-    private void GoToPrevious()
-    {
-        if (Id % 10 == 1) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
-    }
-    private void GoToNext()
-    {
-        if (Id % 10 == 6) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
-    }
-    private void GoToArcadeVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-    private void GoToSimulationVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-    private int stageId;
-
-    private string _api = string.Empty;
-    private async Task HandleNewPathCachedEvent(string path)
-    {
-        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
-        if (stage == null) return;
-        int stageCode = stage.Code;
-        await StageService.SetPath(stageCode, path);
-    }
-
     [Parameter]
     public required string RaceName { get; init; }
 
     [Parameter]
-    public int Id { get; set; }
+    public required int Id { get; init; }
 
-    private IList<double[]> _waypoints = [];
-
-    private string _name = string.Empty;
-    private string _raceName = string.Empty;
-    private string _description = string.Empty;
-    private string _imgName = string.Empty;
-
-    private DomainModel.StageDetails _stageDetails = new();
-
-    private List<DomainModel.TimeEntry> _timeEntries = new();
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public bool ShowWaypoints { get; set; } = true;
 
     private string _directionParameter = string.Empty;
     [SupplyParameterFromQuery(Name = "direction")]
@@ -177,15 +131,19 @@
 
     public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
-    [SupplyParameterFromQuery]
-    [Parameter]
-    public bool ShowWaypoints { get; set; } = true;
-
+    private int _stageId;
+    private string _api = string.Empty;
+    private IList<double[]> _waypoints = [];
+    private string _name = string.Empty;
+    private string _raceName = string.Empty;
+    private string _description = string.Empty;
+    private string _imgName = string.Empty;
+    private DomainModel.StageDetails _stageDetails = new();
+    private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
+
     protected override async Task OnInitializedAsync()
     {
-        //timeEntryListRef.ReloadTimeEntries();
-
         var stage = await StageService.GetByCode(Id, Direction);
         if (stage == null)
         {
@@ -193,7 +151,7 @@
             return;
         }
 
-        stageId = stage.Id;
+        _stageId = stage.Id;
         _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
         _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
@@ -226,14 +184,50 @@
         return Task.CompletedTask;
     }
 
+    private async Task HandleNewPathCachedEvent(string path)
+    {
+        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
+        if (stage == null) return;
+        int stageCode = stage.Code;
+        await StageService.SetPath(stageCode, path);
+    }
+
     private void OpenUploadDialog()
     {
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         var parameters = new DialogParameters<UploadTime>
-    {
-        { x => x.StageId, this.stageId},
-    };
+        {
+            { x => x.StageId, this._stageId },
+        };
         Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
     }
 
+    private void GoToPrevious()
+    {
+        if (Id % 10 == 1) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
+    }
+    private void GoToNext()
+    {
+        if (Id % 10 == 6) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
+    }
+    private void GoToArcadeVersion()
+    {
+        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
+        NavigationManager.NavigateTo(uri, forceLoad: true);
+    }
+    private void GoToSimulationVersion()
+    {
+        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
+        NavigationManager.NavigateTo(uri, forceLoad: true);
+    }
 }

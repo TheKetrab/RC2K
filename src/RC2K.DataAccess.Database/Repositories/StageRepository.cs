@@ -96,6 +96,6 @@ public static class StageRepositoryExtensions
     public static IQueryable<Stage> FillFullData(this IQueryable<Stage> query) =>
         query
             .Include(x => x.StageData)
-                .ThenInclude(x => x.StageDetails)
+                .ThenInclude(x => x!.StageDetails)
             .Include(x => x.StageWaypoints);
 }

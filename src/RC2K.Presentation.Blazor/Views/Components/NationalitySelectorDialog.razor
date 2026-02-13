@@ -47,12 +47,16 @@
 
 @code {
 
-    IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
-
     private string _title;
     private string _msg;
     private string _yes;
     private string _cancel;
+    private IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
+
+    public CodeName? SelectedNationality { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     public NationalitySelectorDialog()
     {
@@ -62,9 +66,6 @@
         _cancel = "Don't share nationality";
     }
 
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
-
     private void Cancel() => MudDialog.Cancel();
 
     private void Ok()
@@ -72,7 +73,4 @@
         string? value = SelectedNationality.HasValue ? SelectedNationality.Value.code : null;
         MudDialog.Close(DialogResult.Ok(value));
     }
-
-    public CodeName? SelectedNationality { get; set; }
-
 }

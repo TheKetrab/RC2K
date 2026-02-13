@@ -273,7 +273,7 @@
     {
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
-        if (dialog == null)
+        if (dialog == null || dialog.Result == null)
         {
             return;
         }
@@ -286,17 +286,17 @@
         }
 
         string driverCode = dialogResult.Data.ToString()!;
-                var uploadResult = await TimeEntryService.Upload(
-                    StageId,
-                    UploadTimeModel.Car!.Id,
-                    driverId,
-                    UploadTimeModel.Min,
-                    UploadTimeModel.Sec,
-                    UploadTimeModel.Cc,
-                    Proofs,
-                    UploadTimeModel.Label,
-                    driverCode
-                    );
+        var uploadResult = await TimeEntryService.Upload(
+            StageId,
+            UploadTimeModel.Car!.Id,
+            driverId,
+            UploadTimeModel.Min,
+            UploadTimeModel.Sec,
+            UploadTimeModel.Cc,
+            Proofs,
+            UploadTimeModel.Label,
+            driverCode
+        );
 
         if (uploadResult.Success)
         {
@@ -310,16 +310,16 @@
     }
     private async Task HandleUserUploadTime(Guid driverId)
     {
-                var uploadResult = await TimeEntryService.Upload(
-                    StageId,
-                    UploadTimeModel.Car!.Id,
-                    driverId,
-                    UploadTimeModel.Min,
-                    UploadTimeModel.Sec,
-                    UploadTimeModel.Cc,
-                    Proofs,
-                    UploadTimeModel.Label
-                    );
+        var uploadResult = await TimeEntryService.Upload(
+            StageId,
+            UploadTimeModel.Car!.Id,
+            driverId,
+            UploadTimeModel.Min,
+            UploadTimeModel.Sec,
+            UploadTimeModel.Cc,
+            Proofs,
+            UploadTimeModel.Label
+        );
 
         if (uploadResult.Success)
         {
