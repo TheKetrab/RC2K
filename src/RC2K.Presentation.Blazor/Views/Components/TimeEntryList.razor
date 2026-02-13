@@ -76,7 +76,24 @@
                         </CellTemplate>
                     </TemplateColumn>
                 }
-                <PropertyColumn Property="x => x.TimeDisplay" Title="Time" CellStyleFunc="@_timeCellStyleFunc" Filterable="false" />
+                <TemplateColumn Title="Time">
+                    <CellTemplate>
+                        <AuthorizeView Roles="admin" Context="authState">
+                            <Authorized>
+                                <span style="@($"color: {(context.Item.Verified ? "green" : "red")}; cursor: pointer;")" 
+                                      @onclick="() => CopyIdToClipboard(context.Item.Data.Id)" 
+                                      title="Click to copy ID">
+                                    @context.Item.TimeDisplay
+                                </span>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span style="@($"color: {(context.Item.Verified ? "green" : "red")}")">
+                                    @context.Item.TimeDisplay
+                                </span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </CellTemplate>
+                </TemplateColumn>
                 @if (!VerificationMode)
                 {
                     <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
@@ -371,6 +388,18 @@
     {
         return (object)x.Points;
     };
+
+    private async Task CopyIdToClipboard(Guid id)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", id.ToString());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to copy to clipboard: {ex.Message}");
+        }
+    }
 
     private string _rowStyleFunc(TimeEntryListItem item, int index)
     {
