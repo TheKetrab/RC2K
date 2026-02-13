@@ -68,7 +68,7 @@
     public required HttpContext HttpContext { get; init; }
 
     [SupplyParameterFromForm(FormName = "login")]
-    public required LoginDto Model { get; init; }
+    public required LoginDto Model { get; set; } = new();
 
     private string[] _errors = { };
     private EditForm _formLoginRef = new();
