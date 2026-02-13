@@ -1,0 +1,8 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = false
+
+[*.cs]
+# CS8981: The type contains members that are not supported in language version X
+dotnet_diagnostic.CS8981.severity = none
