@@ -17,7 +17,7 @@
 
 @inject ICaptchaVerifier CaptchaVerifier
 
-<MyErrorBoundary @ref="_errorBoundary">
+<MyErrorBoundary @ref="_errorBoundaryRef">
     <ChildContent>
         <TrackCaptcha />
         <div class="d-flex flex-column">
@@ -38,7 +38,7 @@
                                   Label="Driver name"
                                   @bind-Value="UploadTimeModel.DriverName" />
 
-                    <CarSelector @ref="_carSelector" SelectedCar="@UploadTimeModel.Car" />
+                    <CarSelector @ref="_carSelectorRef" SelectedCar="@UploadTimeModel.Car" />
 
                     <MudRadioGroup @bind-Value="UploadTimeModel.Label">
                         <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
@@ -89,12 +89,12 @@
 </MyErrorBoundary>
 
 @code {
-    ErrorBoundary? _errorBoundary;
-    CarSelector? _carSelector;
+    private ErrorBoundary? _errorBoundaryRef;
+    private CarSelector _carSelectorRef = default!;
 
     protected override void OnParametersSet()
     {
-        _errorBoundary?.Recover();
+        _errorBoundaryRef?.Recover();
     }
 
     private List<Tuple<ProofType, string>> _proofItems = new() { Tuple.Create<ProofType, string>(ProofType.Unknown, "") };
@@ -130,7 +130,7 @@
         {
             return;
         }
-        _carSelector.OnSelectedCarChanged += (_, c) =>
+        _carSelectorRef.OnSelectedCarChanged += (_, c) =>
         {
             UploadTimeModel.Car = c;
         };
@@ -151,7 +151,7 @@
         public int Sec { get; set; }
         public int Cc { get; set; }
         private Car? _car;
-        public Car Car
+        public Car? Car
         {
             get => _car;
             set
@@ -230,7 +230,7 @@
         }
 
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options);
+        var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options)!;
         var dialogResult = await dialog.Result;
 
         string? nat = null;
@@ -248,17 +248,17 @@
         Driver newDriver = result.Payload!;
         await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
 
-        var uploadResult = await TimeEntryService.Upload(
-          StageId,
-          UploadTimeModel.Car.Id,
-          newDriver.Id,
-          UploadTimeModel.Min,
-          UploadTimeModel.Sec,
-          UploadTimeModel.Cc,
-          Proofs,
-          UploadTimeModel.Label,
-          newDriver.Key!
-          );
+                var uploadResult = await TimeEntryService.Upload(
+                    StageId,
+                    UploadTimeModel.Car!.Id,
+                    newDriver.Id,
+                    UploadTimeModel.Min,
+                    UploadTimeModel.Sec,
+                    UploadTimeModel.Cc,
+                    Proofs,
+                    UploadTimeModel.Label,
+                    newDriver.Key!
+                    );
 
         if (uploadResult.Success)
         {
@@ -273,25 +273,30 @@
     {
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
-        var dialogResult = await dialog.Result;
-
-        if (dialogResult.Canceled)
+        if (dialog == null || dialog.Result == null)
         {
             return;
         }
 
-        string driverCode = dialogResult.Data.ToString();
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled || dialogResult.Data == null)
+        {
+            return;
+        }
+
+        string driverCode = dialogResult.Data.ToString()!;
         var uploadResult = await TimeEntryService.Upload(
-          StageId,
-          UploadTimeModel.Car.Id,
-          driverId,
-          UploadTimeModel.Min,
-          UploadTimeModel.Sec,
-          UploadTimeModel.Cc,
-          Proofs,
-          UploadTimeModel.Label,
-          driverCode
-          );
+            StageId,
+            UploadTimeModel.Car!.Id,
+            driverId,
+            UploadTimeModel.Min,
+            UploadTimeModel.Sec,
+            UploadTimeModel.Cc,
+            Proofs,
+            UploadTimeModel.Label,
+            driverCode
+        );
 
         if (uploadResult.Success)
         {
@@ -306,15 +311,15 @@
     private async Task HandleUserUploadTime(Guid driverId)
     {
         var uploadResult = await TimeEntryService.Upload(
-          StageId,
-          UploadTimeModel.Car.Id,
-          driverId,
-          UploadTimeModel.Min,
-          UploadTimeModel.Sec,
-          UploadTimeModel.Cc,
-          Proofs,
-          UploadTimeModel.Label
-          );
+            StageId,
+            UploadTimeModel.Car!.Id,
+            driverId,
+            UploadTimeModel.Min,
+            UploadTimeModel.Sec,
+            UploadTimeModel.Cc,
+            Proofs,
+            UploadTimeModel.Label
+        );
 
         if (uploadResult.Success)
         {

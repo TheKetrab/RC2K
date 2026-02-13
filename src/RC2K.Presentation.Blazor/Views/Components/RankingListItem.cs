@@ -5,16 +5,16 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public class RankingListItem
 {
-    private RankingList list;
+    private readonly RankingList _list;
+    public RankingEntry Data { get; }
+
     public RankingListItem(RankingList list, RankingEntry data)
     {
+        _list = list;
         Data = data;
-        this.list = list;
     }
 
-    public RankingEntry Data { get; set; }
-
-    public string DisplayName => Data.Driver.Known ? Data.Driver.User!.Name : Data.Driver.Name;
+    public string DisplayName => Data.Driver!.Known ? Data.Driver.User!.Name! : Data.Driver.Name!;
 
     public int CarPoints =>
         Data.CarA8Points +

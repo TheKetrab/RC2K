@@ -40,20 +40,20 @@
                 @{
                     string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
                 }
-                <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
-                    <b>@context.StageData.Name</b> @(context.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")
+                    <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
+                    <b>@(context.StageData?.Name ?? "Unknown")</b> @(context.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")
                 </MudLink>
             </MudTd>
-            <MudTd DataLabel="Length">@context.StageData.StageDetails?.Length</MudTd>
-            <MudTd DataLabel="Asphalt">@context.StageData.StageDetails?.Asphalt</MudTd>
-            <MudTd DataLabel="Dirt">@context.StageData.StageDetails?.Dirt</MudTd>
-            <MudTd DataLabel="Gravel">@context.StageData.StageDetails?.Gravel</MudTd>
-            <MudTd DataLabel="Snow">@context.StageData.StageDetails?.Snow</MudTd>
-            <MudTd DataLabel="Temp">@context.StageData.StageDetails?.Temp</MudTd>
-            <MudTd DataLabel="Wind">@context.StageData.StageDetails?.Wind</MudTd>
+            <MudTd DataLabel="Length">@context.StageData?.StageDetails?.Length</MudTd>
+            <MudTd DataLabel="Asphalt">@context.StageData?.StageDetails?.Asphalt</MudTd>
+            <MudTd DataLabel="Dirt">@context.StageData?.StageDetails?.Dirt</MudTd>
+            <MudTd DataLabel="Gravel">@context.StageData?.StageDetails?.Gravel</MudTd>
+            <MudTd DataLabel="Snow">@context.StageData?.StageDetails?.Snow</MudTd>
+            <MudTd DataLabel="Temp">@context.StageData?.StageDetails?.Temp</MudTd>
+            <MudTd DataLabel="Wind">@context.StageData?.StageDetails?.Wind</MudTd>
             <MudTd DataLabel="Moods">
                 <div class="d-flex flex-wrap gap-1">
-                    @foreach (var mood in GetMoods(context.StageData.StageDetails?.Mood))
+                    @foreach (var mood in GetMoods(context.StageData?.StageDetails?.Mood))
                     {
                         <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
                     }

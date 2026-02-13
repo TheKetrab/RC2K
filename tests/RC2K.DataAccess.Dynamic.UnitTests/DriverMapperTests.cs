@@ -42,7 +42,7 @@ public class DriverMapperTests
     {
         //Arrange
         Driver driver = AnyDriver(known);
-        string expectedName = known ? driver.UserId.ToString() : driver.Name;
+        string expectedName = known ? driver.UserId!.ToString()! : driver.Name!;
 
         //Act
         var result = _driverMapper.ToCosmosModel(driver);

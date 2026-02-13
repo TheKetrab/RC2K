@@ -53,7 +53,7 @@
     [CascadingParameter]
     public required IMudDialogInstance MudDialog { get; set; }
 
-    public string TextBoxValue { get; set; }
+    public string? TextBoxValue { get; set; }
 
     private void Cancel() => MudDialog.Cancel();
 

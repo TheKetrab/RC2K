@@ -28,7 +28,7 @@ app.UseHttpsRedirection();
 app.MapPost("/user/create", async (CreateUserDto dto) =>
 {
     var userService = app.Services.GetService<IUserService>()!;
-    await userService.CreateUserWithPassword(dto.Name, dto.Password, dto.Nationality, dto.Email);
+    await userService.CreateUserWithPassword(dto.Name, dto.Password!, dto.Nationality, dto.Email!);
 
 }).WithOpenApi();
 
@@ -120,7 +120,7 @@ app.MapPost("/timeEntry/upload", async (UploadTimeEntryDto dto) =>
         var timeEntryService = app.Services.GetService<ITimeEntryService>()!;
         await timeEntryService.Upload(te);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
 
     }
@@ -142,7 +142,7 @@ app.MapPost("/bonusPoints/create", async (CreateBonusPointsDto dto) =>
         var bonusPointsService = app.Services.GetService<IBonusPointsService>()!;
         await bonusPointsService.Create(bonusPoints);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
 
     }

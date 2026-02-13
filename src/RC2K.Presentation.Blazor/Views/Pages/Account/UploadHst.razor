@@ -1,4 +1,4 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 
 @page "/user/uploadHst"
 
@@ -37,9 +37,9 @@
 <MudPaper Class="pa-8 ma-4" Elevation="3">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload HST file</MudText>
 
-    <MudForm @ref="form" @bind-IsValid="@success">
+    <MudForm @ref="_formRef" @bind-IsValid="@_success">
         <MudProgressLinear Color="Color.Primary" Value="@_progress" Class="my-7" />
-        <MudTextField T="string" Label="Name to filter HST" Required="true" @bind-Value="uploadModel.Name" />
+        <MudTextField T="string" Label="Name to filter HST" Required="true" @bind-Value="_uploadModel.Name" />
 
         <MudFileUpload T="IBrowserFile" FilesChanged="UploadFile" Required="true" Class="mt-4">
             <ActivatorContent>
@@ -50,7 +50,7 @@
         </MudFileUpload>
 
         <div class="d-flex align-center justify-space-between mt-6">
-            <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@(!success || _file == null)" OnClick="Submit">Submit</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@(!_success || _file == null)" OnClick="Submit">Submit</MudButton>
         </div>
     </MudForm>
 </MudPaper>
@@ -74,19 +74,17 @@
 
 
 @code {
-    private List<(int, string, string)> _errors;
-
-
-    bool success;
-    MudForm form;
-    private IBrowserFile _file;
-    private UploadRequest uploadModel = new();
+    private List<(int, string, string)> _errors = [];
+    private bool _success;
+    private MudForm _formRef = default!;
+    private IBrowserFile _file = default!;
+    private UploadRequest _uploadModel = new();
 
     int _progress;
 
     public class UploadRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     private void UploadFile(IBrowserFile file)
@@ -102,7 +100,7 @@
         {
             await SubmitImpl();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Upload Failed.", Severity.Error);
         }
@@ -123,7 +121,7 @@
         await stream.CopyToAsync(ms);
         ms.Position = 0;
 
-        string name = uploadModel.Name;
+        string name = _uploadModel.Name;
         var hstData = HstReader.GetEntries(ms, name);
         Progress<int> progress = new Progress<int>((percent) =>
         {

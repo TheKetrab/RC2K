@@ -174,7 +174,7 @@ public class TimeEntryService : ITimeEntryService
         using (Operation.Time("Fetch TimeEntryList | StageId = {stageId} | Maximum = {maximum}", stageId, maximum))
         {
             List<TimeEntry> timeEntries = await this.Get(stageId);
-            TimeEntry best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
+            TimeEntry? best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
 
             Dictionary<Guid, int> places = _pointsProvider.CalculatePlace(timeEntries);
             Dictionary<Guid, int> placesByCar = _pointsProvider.CalculatePlaceByCar(timeEntries);

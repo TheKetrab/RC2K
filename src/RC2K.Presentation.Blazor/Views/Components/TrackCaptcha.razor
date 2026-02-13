@@ -10,7 +10,8 @@
 
     public TrackCaptcha(IConfiguration configuration)
     {
-        _recaptchaSiteKey = configuration["Captcha:SiteKey"];
+        _recaptchaSiteKey = configuration["Captcha:SiteKey"] 
+            ?? throw new Exception("Captcha:SiteKey configuration is missing");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

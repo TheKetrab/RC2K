@@ -37,7 +37,7 @@
     }
     else
     {
-        <MudDataGrid @ref="grid"
+        <MudDataGrid @ref="_gridRef"
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
                      T="TimeEntryListItem"
@@ -201,11 +201,11 @@
 
 @code {
 
-    MudDataGrid<TimeEntryListItem> grid;
+    private MudDataGrid<TimeEntryListItem>? _gridRef;
     private List<TimeEntryListItem> _items = [];
-    public TimeEntry best;
-    public Dictionary<Guid, int> generalPoints = [];
-    public Dictionary<Guid, int> carPoints = [];
+    public TimeEntry? Best;
+    public Dictionary<Guid, int> GeneralPoints = [];
+    public Dictionary<Guid, int> CarPoints = [];
 
     [SupplyParameterFromQuery] public int Page { get; set; }
     [Parameter] public int PerPage { get; set; }
@@ -230,7 +230,7 @@
     public List<TimeEntry> GetSelectedTimeEntries()
     {
         var selectedTimeEntries =
-            grid.SelectedItems.Select(x => x.Data).ToList();
+            _gridRef?.SelectedItems.Select(x => x.Data).ToList() ?? [];
 
         return selectedTimeEntries;
     }
@@ -258,9 +258,9 @@
 
         var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
 
-        best = info.Best;
-        generalPoints = info.GeneralPoints;
-        carPoints = info.CarPoints;
+        Best = info.Best;
+        GeneralPoints = info.GeneralPoints;
+        CarPoints = info.CarPoints;
 
         var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
         foreach (var itm in items)
