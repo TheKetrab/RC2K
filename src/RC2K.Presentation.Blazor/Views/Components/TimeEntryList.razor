@@ -229,6 +229,7 @@
     [Parameter] public int StageId { get; set; }
     [Parameter] public Func<Task>? OnLoaded { get; set; }
     [Parameter] public bool VerificationMode { get; set; }
+    [Parameter] public int? FilterClass { get; set; }
 
     // async loading
     private bool overlayVisible;
@@ -340,7 +341,8 @@
         return IsOkForDriverFilter(x) &&
                IsOkForCarFilter(x) &&
                IsOkForLabelsFilter(x) &&
-               IsOkForMfmiFilter(x);
+               IsOkForMfmiFilter(x) &&
+               IsOkForClassFilter(x);
     };
 
     private bool IsOkForDriverFilter(TimeEntryListItem item)
@@ -382,6 +384,13 @@
             return true;
         }
         return false;
+    }
+
+    private bool IsOkForClassFilter(TimeEntryListItem item)
+    {
+        if (FilterClass == null) return true;
+
+        return item.Data.Car?.Class == FilterClass;
     }
 
     private Func<TimeEntryListItem, object> _sortByPoints => x =>
