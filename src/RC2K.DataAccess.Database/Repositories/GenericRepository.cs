@@ -28,7 +28,7 @@ public abstract class GenericRepository<TEntity, TCache> : IGenericRepository<TE
         string includeProperties = "",
         bool full = false)
     {
-        IQueryable<TEntity> query = _dbSet;
+        IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
         if (filter != null)
         {
@@ -74,7 +74,7 @@ public abstract class GenericRepository<TEntity, TCache> : IGenericRepository<TE
 
     public virtual async Task<TEntity?> DbGet(int id)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
     }
 
     public virtual async Task Insert(TEntity entity) => await _dbSet.AddAsync(entity);
