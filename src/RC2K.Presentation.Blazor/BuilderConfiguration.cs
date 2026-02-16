@@ -194,8 +194,6 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder RegisterPersistentDataAccess(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<RallyDbContext>();
-
         builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
         builder.Services.AddSingleton<ICarCache, CarCache>();
         builder.Services.AddSingleton<IStageCache, StageCache>();

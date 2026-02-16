@@ -83,9 +83,38 @@
         </div>
         <div class="item left stage-times">
             <div class="card">
-                <div class="card-header"><h3>Records</h3></div>
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Records</h3>
+                    <MudStack Row="true" Spacing="0">
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs" 
+                                   Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
+                                   Color="Color.Primary" 
+                                   OnClick="() => _selectedClass = null">All</MudButton>
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs" 
+                                   Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)" 
+                                   Color="Color.Primary" 
+                                   OnClick="() => _selectedClass = 8">A8</MudButton>
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs" 
+                                   Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
+                                   Color="Color.Primary" 
+                                   OnClick="() => _selectedClass = 7">A7</MudButton>
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs" 
+                                   Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
+                                   Color="Color.Primary" 
+                                   OnClick="() => _selectedClass = 6">A6</MudButton>
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs" 
+                                   Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
+                                   Color="Color.Primary" 
+                                   OnClick="() => _selectedClass = 5">A5</MudButton>
+                    </MudStack>
+                </div>
                 <div class="card-body">
-                    <TimeEntryList PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" />
+                    <TimeEntryList PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
                 </div>
                 <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
@@ -131,6 +160,7 @@
 
     public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
+    private int? _selectedClass;
     private int _stageId;
     private string _api = string.Empty;
     private IList<double[]> _waypoints = [];

@@ -166,9 +166,6 @@ public class TimeEntryService : ITimeEntryService
         return new Result() { Success = true };
     }
 
-
-
-
     public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1)
     {
         using (Operation.Time("Fetch TimeEntryList | StageId = {stageId} | Maximum = {maximum}", stageId, maximum))
@@ -178,6 +175,7 @@ public class TimeEntryService : ITimeEntryService
 
             Dictionary<Guid, int> places = _pointsProvider.CalculatePlace(timeEntries);
             Dictionary<Guid, int> placesByCar = _pointsProvider.CalculatePlaceByCar(timeEntries);
+            Dictionary<Guid, int> placesByClass = _pointsProvider.CalculatePlaceByClass(timeEntries);
 
             List<TimeEntry> orderedTimeEntries = timeEntries.OrderBy(x => x.Time).ToList();
             Dictionary<Guid, int> generalPoints = _pointsProvider.CalculateGeneralStagePoints(timeEntries);
@@ -192,6 +190,7 @@ public class TimeEntryService : ITimeEntryService
                 carPoints = carPoints.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
                 places = places.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
                 placesByCar = placesByCar.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
+                placesByClass = placesByClass.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
             }
 
             return new TimeEntriesCollectionInfo(
@@ -200,7 +199,8 @@ public class TimeEntryService : ITimeEntryService
                 generalPoints,
                 carPoints,
                 places,
-                placesByCar);
+                placesByCar,
+                placesByClass);
         }
     }
 
