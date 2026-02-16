@@ -143,12 +143,34 @@ public class PointsProvider : IPointsProvider
         foreach (var carGroup in timeEntries.GroupBy(x => x.CarId))
         {
             var timeEntriesPerCar = carGroup.ToList();
-            Car car = timeEntriesPerCar.First().Car!;
 
             var standings =
                 timeEntriesPerCar.OrderBy(x => x.Time)
                                  .GroupBy(x => x.Time)
                                  .ToList();
+
+            var ranked = CalculateRanked(standings);
+
+            foreach (var r in ranked)
+            {
+                res.Add(r.timeEntry.Id, r.rank + 1);
+            }
+        }
+
+        return res;
+    }
+
+    public Dictionary<Guid, int> CalculatePlaceByClass(List<TimeEntry> timeEntries)
+    {
+        Dictionary<Guid, int> res = [];
+        foreach (var classGroup in timeEntries.GroupBy(x => x.Car!.Class))
+        {
+            var timeEntriesPerClass = classGroup.ToList();
+
+            var standings =
+                timeEntriesPerClass.OrderBy(x => x.Time)
+                                   .GroupBy(x => x.Time)
+                                   .ToList();
 
             var ranked = CalculateRanked(standings);
 

@@ -68,6 +68,10 @@
                                 {
                                     <span>@context.Item.PlaceByCar</span>
                                 }
+                                else if (this.FilterClass != null)
+                                {
+                                    <span>@context.Item.PlaceByClass</span>
+                                }
                                 else
                                 {
                                     <span>@context.Item.Place</span>
@@ -285,6 +289,7 @@
         {
             itm.Place = info.Places[itm.Data.Id];
             itm.PlaceByCar = info.PlacesByCar[itm.Data.Id];
+            itm.PlaceByClass = info.PlacesByClass[itm.Data.Id];
         }
 
         _items = items.OrderBy(x => x.Place).ToList();

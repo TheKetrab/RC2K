@@ -8,5 +8,6 @@ public record TimeEntriesCollectionInfo(
     Dictionary<Guid, int> GeneralPoints,
     Dictionary<Guid, int> CarPoints,
     Dictionary<Guid, int> Places,
-    Dictionary<Guid, int> PlacesByCar
+    Dictionary<Guid, int> PlacesByCar,
+    Dictionary<Guid, int> PlacesByClass
 );

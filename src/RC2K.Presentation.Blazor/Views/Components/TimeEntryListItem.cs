@@ -19,6 +19,7 @@ public class TimeEntryListItem
     public string StageLink => $"stages/{LevelHelper.StageCodeToRallyShortName(Data.Stage.Code)}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
     public bool Checked { get; set; }
     public int PlaceByCar { get; set; }
+    public int PlaceByClass { get; set; }
     public int Place { get; set; }
     public TimeEntry Data { get; set; }
 
