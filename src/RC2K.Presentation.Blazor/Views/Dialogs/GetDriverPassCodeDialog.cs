@@ -1,15 +1,16 @@
 ﻿using RC2K.DomainModel;
+using RC2K.Presentation.Blazor.Views.Components;
 
-namespace RC2K.Presentation.Blazor.Views.Components;
+namespace RC2K.Presentation.Blazor.Views.Dialogs;
 
 
-public class UpgradeDriverToUserDialog : TextBoxDialog
+public class GetDriverPassCodeDialog : TextBoxDialog
 {
-    public UpgradeDriverToUserDialog() : base(
+    public GetDriverPassCodeDialog() : base(
         "Put driver pass code",
         "There is already existing driver (not a registered user) with this nick name. You own were given driver-pass-key when driver was created. Pass it here. In case of any problems contact TheKetrab via discord.",
         "Driver pass code",
-        yes: "Create account")
+        yes: "Ok")
     {
 
     }

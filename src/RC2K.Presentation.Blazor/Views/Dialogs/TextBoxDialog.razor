@@ -22,7 +22,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText>@_msg</MudText>
+        <MudText>@(string.IsNullOrEmpty(DynamicMsg) ? _msg : DynamicMsg)</MudText>
         <MudTextField T="string"
                       Label="@_textBoxLabel"
                       @bind-Value="TextBoxValue" />
@@ -40,6 +40,10 @@
     private string _textBoxLabel;
     private string _yes;
     private string _cancel;
+
+    [Parameter]
+    public string DynamicMsg { get; set; } = "";
+
     public TextBoxDialog(string title, string msg, string textBoxLabel, string yes = "Yes", string cancel = "Cancel")
     {
         _title = title;
