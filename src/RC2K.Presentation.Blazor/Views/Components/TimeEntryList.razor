@@ -3,6 +3,7 @@
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Shared
 @using RC2K.Presentation.Shared.ViewModels
 @using SerilogTimings;
@@ -15,6 +16,7 @@
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IDialogService DialogService
 
 <style>
     .mud-chip.mud-chip-size-xs {
@@ -37,37 +39,6 @@
     }
     else
     {
-        <!-- Delete Confirmation Dialog -->
-        <MudDialog @bind-IsVisible="_deleteDialogOpen" Options="new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Small }">
-            <TitleContent>
-                <MudText Typo="Typo.h6">
-                    <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" />
-                    Warning
-                </MudText>
-            </TitleContent>
-            <DialogContent>
-                <MudText>
-                    Are you sure you want to delete this time entry?
-                </MudText>
-                <MudText Style="margin-top: 16px; margin-bottom: 8px;">
-                    Please enter the time <strong>@_deleteConfirmationTimeDisplay</strong> to confirm:
-                </MudText>
-                <MudTextField @bind-Value="_deleteConfirmationInput"
-                              T="string"
-                              Placeholder="Enter time to confirm"
-                              Variant="Variant.Outlined"
-                              FullWidth="true" />
-            </DialogContent>
-            <DialogActions>
-                <MudButton OnClick="@(() => _deleteDialogOpen = false)">Cancel</MudButton>
-                <MudButton Color="Color.Error"
-                           Variant="Variant.Filled"
-                           OnClick="ConfirmDelete"
-                           Disabled="@(_deleteConfirmationInput != _deleteConfirmationTimeDisplay)">
-                    Delete
-                </MudButton>
-            </DialogActions>
-        </MudDialog>
         <MudDataGrid @ref="_gridRef"
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
@@ -121,7 +92,6 @@
                             </span>
                         </div>
                         
-                        <!-- Context Menu Popover -->
                         <MudPopover Open="@(_currentContextMenuItem == context.Item)" 
                                     AnchorOrigin="Origin.BottomCenter"
                                     TransformOrigin="Origin.TopCenter"
@@ -303,12 +273,7 @@
     public string? filterLabelsText;
     public bool filterMfmiCheckBox;
 
-    // Context menu and delete confirmation
     private TimeEntryListItem? _currentContextMenuItem;
-    private bool _deleteDialogOpen;
-    private TimeEntryListItem? _deleteConfirmationTimeEntry;
-    private string? _deleteConfirmationInput = "";
-    private string? _deleteConfirmationTimeDisplay = "";
 
     public List<TimeEntry> GetSelectedTimeEntries()
     {
@@ -484,7 +449,7 @@
         {
             return;
         }
-        
+
         _currentContextMenuItem = item;
     }
 
@@ -492,7 +457,7 @@
     {
         var userName = HttpContextAccessor.HttpContext?.User.Identity?.Name;
         var isAdmin = HttpContextAccessor.HttpContext?.User.IsInRole("admin") ?? false;
-        
+
         if (isAdmin)
         {
             return true;
@@ -512,28 +477,37 @@
         return CanShowContextMenu(item);
     }
 
-    private void OpenDeleteConfirmation(TimeEntryListItem item)
+    private async Task OpenDeleteConfirmation(TimeEntryListItem item)
     {
-        _deleteConfirmationTimeEntry = item;
-        _deleteConfirmationTimeDisplay = item.TimeDisplay;
-        _deleteConfirmationInput = "";
-        _deleteDialogOpen = true;
-        _currentContextMenuItem = null;
-    }
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        DialogParameters parameters = new();
+        parameters.Add("DynamicMsg", $"If you are sure you want to delete this time entry, type its time: {item.TimeDisplay}");
+        var dialog = await DialogService.ShowAsync<DeleteTimeEntryDialog>("Delete time entry", parameters, options)!;
+        var dialogResult = await dialog.Result;
 
-    private async Task ConfirmDelete()
-    {
-        if (_deleteConfirmationTimeEntry == null)
+        string? typedTime = null;
+        if (!dialogResult.Canceled)
+        {
+            typedTime = dialogResult.Data?.ToString();
+        }
+
+        if (typedTime != item.TimeDisplay)
         {
             return;
         }
+        else
+        {
+            await ConfirmDelete(item);
+        }
 
+        _currentContextMenuItem = null;
+    }
+
+    private async Task ConfirmDelete(TimeEntryListItem item)
+    {
         try
         {
-            await TimeEntryService.Delete(new List<TimeEntry> { _deleteConfirmationTimeEntry.Data });
-            _deleteDialogOpen = false;
-            _deleteConfirmationTimeEntry = null;
-            _deleteConfirmationInput = "";
+            await TimeEntryService.Delete(new List<TimeEntry> { item.Data });
             await ReloadTimeEntries();
         }
         catch (Exception ex)
