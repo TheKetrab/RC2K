@@ -149,11 +149,11 @@
                             @{
                                 foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
                                 {
-                                    <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                                    <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
                                 }
                                 if (context.Item.IsHST)
                                 {
-                                    <MudIconButton Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(ProofType.Hst)" Size="Size.Small" />
+                                    <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(ProofType.Hst)" Size="Size.Small" />
                                 }
                             }
                         </p>
