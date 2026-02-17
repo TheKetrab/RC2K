@@ -39,6 +39,7 @@
     }
     else
     {
+        <div @onclick="@(() => CloseContextMenu())" style="position: relative;">
         <MudDataGrid @ref="_gridRef"
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
@@ -92,7 +93,8 @@
                             </span>
                         </div>
                         
-                        <MudPopover Open="@(_currentContextMenuItem == context.Item)" 
+                        <MudPopover @onclick:stopPropagation="true"
+                                    Open="@(_currentContextMenuItem == context.Item)" 
                                     AnchorOrigin="Origin.BottomCenter"
                                     TransformOrigin="Origin.TopCenter"
                                     Style="z-index: 1000;">
@@ -240,6 +242,7 @@
                 </MudPaper>
             </Authorized>
         </AuthorizeView>
+        </div>
     }
 
 }
@@ -451,6 +454,11 @@
         }
 
         _currentContextMenuItem = item;
+    }
+
+    private void CloseContextMenu()
+    {
+        _currentContextMenuItem = null;
     }
 
     private bool CanShowContextMenu(TimeEntryListItem item)
