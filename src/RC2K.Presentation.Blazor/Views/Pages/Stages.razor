@@ -5,62 +5,74 @@
 @using RC2K.Extensions
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Components
 @inject IStageService StageService
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
     <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name ?? "All"))</MudText>
 
-    <MudTable Items="@_stages"
-              T="Stage"
-              Hover="true"
-              Breakpoint="Breakpoint.Sm"
-              Elevation="4"
-              Dense="true"
-              GroupBy="@_groupDefinition">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Length (km)</MudTh>
-            <MudTh>Asphalt (%)</MudTh>
-            <MudTh>Dirt (%)</MudTh>
-            <MudTh>Gravel (%)</MudTh>
-            <MudTh>Snow (%)</MudTh>
-            <MudTh>Temp (&deg;C)</MudTh>
-            <MudTh>Wind (km/h)</MudTh>
-            <MudTh>Moods</MudTh>
-        </HeaderContent>
+    <div style="display: flex; gap: 20px; height: calc(100vh - 200px);">
+        <!-- Left side: Table -->
+        <div style="flex: 1; overflow-y: auto; min-width: 0;">
+            <MudTable Items="@_stages"
+                      T="Stage"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      Elevation="4"
+                      Dense="true"
+                      GroupBy="@_groupDefinition">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Length (km)</MudTh>
+                    <MudTh>Asphalt/Dirt/Gravel/Snow (%)</MudTh>
+                    <MudTh>Temp (&deg;C)</MudTh>
+                    <MudTh>Wind (km/h)</MudTh>
+                    <MudTh>Moods</MudTh>
+                </HeaderContent>
 
-        <GroupHeaderTemplate>
-            <MudTh Class="mud-theme-primary-light" colspan="9">
-                <MudText Typo="Typo.subtitle1"><b>@context.Key</b></MudText>
-            </MudTh>
-        </GroupHeaderTemplate>
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-theme-primary-light" colspan="9">
+                        <MudText Typo="Typo.subtitle1"><b>@context.Key</b></MudText>
+                    </MudTh>
+                </GroupHeaderTemplate>
 
-        <RowTemplate>
-            <MudTd DataLabel="Name">
-                @{
-                    string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
-                }
-                    <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
-                    <b>@(context.StageData?.Name ?? "Unknown")</b> @(context.Direction == DomainModel.Direction.Arcade ? "(Arcade)" : "")
-                </MudLink>
-            </MudTd>
-            <MudTd DataLabel="Length">@context.StageData?.StageDetails?.Length</MudTd>
-            <MudTd DataLabel="Asphalt">@context.StageData?.StageDetails?.Asphalt</MudTd>
-            <MudTd DataLabel="Dirt">@context.StageData?.StageDetails?.Dirt</MudTd>
-            <MudTd DataLabel="Gravel">@context.StageData?.StageDetails?.Gravel</MudTd>
-            <MudTd DataLabel="Snow">@context.StageData?.StageDetails?.Snow</MudTd>
-            <MudTd DataLabel="Temp">@context.StageData?.StageDetails?.Temp</MudTd>
-            <MudTd DataLabel="Wind">@context.StageData?.StageDetails?.Wind</MudTd>
-            <MudTd DataLabel="Moods">
-                <div class="d-flex flex-wrap gap-1">
-                    @foreach (var mood in GetMoods(context.StageData?.StageDetails?.Mood))
-                    {
-                        <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
-                    }
-                </div>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">
+                        @{
+                            string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
+                        }
+                            <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
+                            <b>@(context.StageData?.Name ?? "Unknown")</b> @(context.Direction == DomainModel.Direction.Arcade ? "(A)" : "")
+                        </MudLink>
+                    </MudTd>
+                    <MudTd DataLabel="Length">@context.StageData?.StageDetails?.Length</MudTd>
+                    <MudTd DataLabel="Asphalt/Dirt/Gravel/Snow">@context.StageData?.StageDetails?.Asphalt / @context.StageData?.StageDetails?.Dirt / @context.StageData?.StageDetails?.Gravel / @context.StageData?.StageDetails?.Snow</MudTd>
+                    <MudTd DataLabel="Temp">@context.StageData?.StageDetails?.Temp</MudTd>
+                    <MudTd DataLabel="Wind">@context.StageData?.StageDetails?.Wind</MudTd>
+                    <MudTd DataLabel="Moods">
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach (var mood in GetMoods(context.StageData?.StageDetails?.Mood))
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
+                            }
+                        </div>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+
+        <!-- Right side: Map -->
+        <div style="flex: 1; overflow: hidden; border: 1px solid #ddd; border-radius: 4px;">
+            @if (_stages.Any())
+            {
+                <Map Waypoints="@_allWaypoints" ShowWaypoints="false" Path="@_combinedPaths" Api="@_api" />
+            }
+            else
+            {
+                <MudText Typo="Typo.body1" Class="pa-4">Loading map...</MudText>
+            }
+        </div>
+    </div>
 </MudContainer>
 
 @code {
@@ -68,6 +80,9 @@
 
     private List<Stage> _stages = new();
     private RallyCode? _rallyCode;
+    private IList<double[]> _allWaypoints = new List<double[]>();
+    private string? _combinedPaths;
+    private string _api = string.Empty;
 
     // The fix is here: Cast the result to (object)
     private TableGroupDefinition<Stage> _groupDefinition = new()
@@ -88,6 +103,104 @@
             : await StageService.GetAllByRallyCode(_rallyCode!.Value);
 
         _stages = stages.ToList();
+
+        // Load all waypoints and paths for the stages
+        await LoadMapData();
+    }
+
+    private async Task LoadMapData()
+    {
+        var allWaypointsList = new List<double[]>();
+        var allPaths = new List<string>();
+
+        foreach (var stage in _stages)
+        {
+            try
+            {
+                // Get waypoints for this stage
+                var waypoints = await StageService.GetWaypoints(stage.Code, stage.Direction == DomainModel.Direction.Arcade);
+                foreach (var waypoint in waypoints)
+                {
+                    allWaypointsList.Add(waypoint);
+                }
+
+                // Get path for this stage
+                var path = await StageService.GetPath(stage.Code);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    allPaths.Add(path);
+                }
+
+                // Set API hint from the first stage if available
+                if (string.IsNullOrEmpty(_api) && stage.StageWaypoints?.ApiHint != null)
+                {
+                    _api = stage.StageWaypoints.ApiHint;
+                }
+            }
+            catch
+            {
+                // Continue if loading data for a stage fails
+            }
+        }
+
+        _allWaypoints = allWaypointsList;
+
+        // Combine all paths - assuming they are GeoJSON format, merge them into a FeatureCollection
+        if (allPaths.Any())
+        {
+            _combinedPaths = CombineGeoJsonPaths(allPaths);
+        }
+    }
+
+    private string CombineGeoJsonPaths(List<string> paths)
+    {
+        var features = new List<object>();
+
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrEmpty(path)) continue;
+
+            try
+            {
+                // Try to parse each path as GeoJSON or a feature collection
+                // If it's a FeatureCollection, extract its features
+                // If it's a Feature, add it directly
+                if (path.Contains("\"features\""))
+                {
+                    // It's a FeatureCollection
+                    var featureCollection = System.Text.Json.JsonDocument.Parse(path);
+                    var featuresElement = featureCollection.RootElement.GetProperty("features");
+                    foreach (var feature in featuresElement.EnumerateArray())
+                    {
+                        features.Add(feature);
+                    }
+                }
+                else if (path.Contains("\"type\""))
+                {
+                    // It's likely a Feature or Geometry
+                    features.Add(System.Text.Json.JsonDocument.Parse(path).RootElement);
+                }
+            }
+            catch
+            {
+                // If parsing fails, add as raw string
+                // The JavaScript will handle it
+            }
+        }
+
+        // If we have features, wrap them in a FeatureCollection
+        if (features.Any())
+        {
+            var featureCollection = new
+            {
+                type = "FeatureCollection",
+                features = features
+            };
+            return System.Text.Json.JsonSerializer.Serialize(featureCollection);
+        }
+
+        // Fallback: concatenate all paths
+        return string.Join(",", paths.Where(p => !string.IsNullOrEmpty(p)));
     }
 
     private IEnumerable<string> GetMoods(Mood? moodFlags)
