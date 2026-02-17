@@ -3,6 +3,7 @@
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Shared
 @using RC2K.Presentation.Shared.ViewModels
 @using SerilogTimings;
@@ -15,6 +16,7 @@
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IDialogService DialogService
 
 <style>
     .mud-chip.mud-chip-size-xs {
@@ -37,6 +39,7 @@
     }
     else
     {
+        <div @onclick="@(() => CloseContextMenu())" style="position: relative;">
         <MudDataGrid @ref="_gridRef"
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
@@ -82,20 +85,43 @@
                 }
                 <TemplateColumn Title="Time">
                     <CellTemplate>
-                        <AuthorizeView Roles="admin" Context="authState">
-                            <Authorized>
-                                <span style="@($"color: {(context.Item.Verified ? "green" : "red")}; cursor: pointer;")" 
-                                      @onclick="() => CopyIdToClipboard(context.Item.Data.Id)" 
-                                      title="Click to copy ID">
-                                    @context.Item.TimeDisplay
-                                </span>
-                            </Authorized>
-                            <NotAuthorized>
-                                <span style="@($"color: {(context.Item.Verified ? "green" : "red")}")">
-                                    @context.Item.TimeDisplay
-                                </span>
-                            </NotAuthorized>
-                        </AuthorizeView>
+                        <div style="display: flex; align-items: center;">
+                            <span style="@($"color: {(context.Item.Verified ? "green" : "red")}; cursor: context-menu;")" 
+                                  @oncontextmenu="(e) => ShowContextMenu(e, context.Item)"
+                                  @oncontextmenu:preventDefault="true">
+                                @context.Item.TimeDisplay
+                            </span>
+                        </div>
+                        
+                        <MudPopover @onclick:stopPropagation="true"
+                                    Open="@(_currentContextMenuItem == context.Item)" 
+                                    AnchorOrigin="Origin.BottomCenter"
+                                    TransformOrigin="Origin.TopCenter"
+                                    Style="z-index: 1000;">
+                            <MudPaper Elevation="3" Style="padding: 4px;">
+                                <MudStack Spacing="0">
+                                    <MudButton Size="Size.Small" 
+                                               Color="Color.Default"
+                                               OnClick="@(() => CopyIdToClipboard(context.Item.Data.Id))"
+                                               FullWidth="true"
+                                               Style="justify-content: flex-start;">
+                                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" Style="margin-right: 8px;" />
+                                        Copy ID
+                                    </MudButton>
+                                    @if (CanDeleteTimeEntry(context.Item))
+                                    {
+                                        <MudButton Size="Size.Small" 
+                                                   Color="Color.Error"
+                                                   OnClick="@(() => OpenDeleteConfirmation(context.Item))"
+                                                   FullWidth="true"
+                                                   Style="justify-content: flex-start;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Style="margin-right: 8px;" />
+                                            Delete
+                                        </MudButton>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+                        </MudPopover>
                     </CellTemplate>
                 </TemplateColumn>
                 @if (!VerificationMode)
@@ -216,6 +242,7 @@
                 </MudPaper>
             </Authorized>
         </AuthorizeView>
+        </div>
     }
 
 }
@@ -248,6 +275,8 @@
     public bool filterLabelsCheckBox;
     public string? filterLabelsText;
     public bool filterMfmiCheckBox;
+
+    private TimeEntryListItem? _currentContextMenuItem;
 
     public List<TimeEntry> GetSelectedTimeEntries()
     {
@@ -408,10 +437,90 @@
         try
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", id.ToString());
+            _currentContextMenuItem = null;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to copy to clipboard: {ex.Message}");
+        }
+    }
+
+    private void ShowContextMenu(MouseEventArgs e, TimeEntryListItem item)
+    {
+        if (!CanShowContextMenu(item))
+        {
+            return;
+        }
+
+        _currentContextMenuItem = item;
+    }
+
+    private void CloseContextMenu()
+    {
+        _currentContextMenuItem = null;
+    }
+
+    private bool CanShowContextMenu(TimeEntryListItem item)
+    {
+        var userName = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+        var isAdmin = HttpContextAccessor.HttpContext?.User.IsInRole("admin") ?? false;
+
+        if (isAdmin)
+        {
+            return true;
+        }
+
+        // Check if user is the owner (driver)
+        if (item.Data.Driver?.Known == true && item.Data.Driver?.User?.Name == userName)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CanDeleteTimeEntry(TimeEntryListItem item)
+    {
+        return CanShowContextMenu(item);
+    }
+
+    private async Task OpenDeleteConfirmation(TimeEntryListItem item)
+    {
+        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
+        DialogParameters parameters = new();
+        parameters.Add("DynamicMsg", $"If you are sure you want to delete this time entry, type its time: {item.TimeDisplay}");
+        var dialog = await DialogService.ShowAsync<DeleteTimeEntryDialog>("Delete time entry", parameters, options)!;
+        var dialogResult = await dialog.Result;
+
+        string? typedTime = null;
+        if (!dialogResult.Canceled)
+        {
+            typedTime = dialogResult.Data?.ToString();
+        }
+
+        if (typedTime != item.TimeDisplay)
+        {
+            return;
+        }
+        else
+        {
+            await ConfirmDelete(item);
+        }
+
+        _currentContextMenuItem = null;
+    }
+
+    private async Task ConfirmDelete(TimeEntryListItem item)
+    {
+        try
+        {
+            await TimeEntryService.Delete(new List<TimeEntry> { item.Data });
+            await ReloadTimeEntries();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to delete time entry: {ex.Message}");
         }
     }
 

@@ -48,7 +48,15 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public async Task Delete(List<TimeEntry> timeEntries)
         {
             var auth = await _asp.GetAuthenticationStateAsync();
-            Auth.Authorize(auth, "admin");
+
+            if (timeEntries.Count == 1 && Auth.TryAuthorizeSelf(auth, timeEntries[0].Driver!.User?.Name ?? timeEntries[0].Driver!.Name!))
+            {
+                ; // OK
+            }
+            else
+            {
+                Auth.Authorize(auth, "admin");
+            }
 
             await _service.Delete(timeEntries);
         }

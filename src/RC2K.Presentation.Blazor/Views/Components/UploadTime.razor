@@ -2,6 +2,7 @@
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Blazor.Views.Layout
 @rendermode InteractiveServer
 @inject IStageService StageService
@@ -91,6 +92,9 @@
 @code {
     private ErrorBoundary? _errorBoundaryRef;
     private CarSelector _carSelectorRef = default!;
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -248,21 +252,22 @@
         Driver newDriver = result.Payload!;
         await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
 
-                var uploadResult = await TimeEntryService.Upload(
-                    StageId,
-                    UploadTimeModel.Car!.Id,
-                    newDriver.Id,
-                    UploadTimeModel.Min,
-                    UploadTimeModel.Sec,
-                    UploadTimeModel.Cc,
-                    Proofs,
-                    UploadTimeModel.Label,
-                    newDriver.Key!
-                    );
+        var uploadResult = await TimeEntryService.Upload(
+            StageId,
+            UploadTimeModel.Car!.Id,
+            newDriver.Id,
+            UploadTimeModel.Min,
+            UploadTimeModel.Sec,
+            UploadTimeModel.Cc,
+            Proofs,
+            UploadTimeModel.Label,
+            newDriver.Key!
+            );
 
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
+            MudDialog.Close(1); // refresh
         }
         else
         {
@@ -301,6 +306,7 @@
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
+            MudDialog.Close(1); // refresh
         }
         else
         {
@@ -324,6 +330,7 @@
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
+            MudDialog.Close(1); // refresh
         }
         else
         {
@@ -333,7 +340,7 @@
 
     private void ShowUploadedMessage()
     {
-        Snackbar.Add($"Uploaded. Refresh to see.", Severity.Success, config =>
+        Snackbar.Add($"Uploaded.", Severity.Success, config =>
         {
             config.ShowCloseIcon = true;
             config.VisibleStateDuration = 10000;

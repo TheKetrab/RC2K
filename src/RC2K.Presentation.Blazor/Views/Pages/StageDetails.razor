@@ -114,7 +114,7 @@
                     </MudStack>
                 </div>
                 <div class="card-body">
-                    <TimeEntryList PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
+                    <TimeEntryList @ref="_timeEntryListRef" PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
                 </div>
                 <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
@@ -171,6 +171,7 @@
     private DomainModel.StageDetails _stageDetails = new();
     private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
+    private TimeEntryList _timeEntryListRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -222,14 +223,19 @@
         await StageService.SetPath(stageCode, path);
     }
 
-    private void OpenUploadDialog()
+    private async Task OpenUploadDialog()
     {
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         var parameters = new DialogParameters<UploadTime>
         {
             { x => x.StageId, this._stageId },
         };
-        Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
+        var dialog = await Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
+        var dialogResult = await dialog.Result;
+        if ((dialogResult?.Data == null ? 0 : (int)dialogResult.Data)   == 1)
+        {
+            await this._timeEntryListRef.ReloadTimeEntries();
+        }
     }
 
     private void GoToPrevious()
