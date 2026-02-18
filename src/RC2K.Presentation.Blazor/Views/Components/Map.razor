@@ -7,6 +7,10 @@
     [Parameter] public string? Path { get; set; }
     [Parameter] public string? Api { get; set; } // bike/car
 
+    [Parameter] public double[][][]? StartsEnds { get; set; }
+    [Parameter] public bool IsMultiMap { get; set; } = false;
+    [Parameter] public string[]? MultiMapPaths { get; set; }
+
     private const string mapElementId = "map";
 
     [Parameter]
@@ -19,8 +23,19 @@
             return;
         }
 
+        if (IsMultiMap)
+        {
+            await DrawMultiMap();
+        }
+        else
+        {
+            await DrawSingleMap();
+        }
+    }
+
+    private async Task DrawSingleMap()
+    {
         var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
-        
         string? res;
         try
         {
@@ -38,7 +53,24 @@
         {
             await NewPathCached.InvokeAsync(res);
         }
-
     }
+
+    private async Task DrawMultiMap()
+    {
+        var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
+        try
+        {
+            if (MultiMapPaths is null)
+            {
+                throw new Exception();
+            }
+            await JSRuntime.InvokeVoidAsync("mapInterop.initMultiMap", mapElementId, waypoints, StartsEnds, MultiMapPaths);
+        }
+        catch (Exception)
+        {
+            
+        }
+    }
+
 }
 <div id="@mapElementId" style="width: 100%; height: 500px;"></div>

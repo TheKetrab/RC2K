@@ -9,6 +9,19 @@
 @using RC2K.Presentation.Blazor.Views.Components
 @inject IStageService StageService
 
+
+<style>
+    .stage-table .mud-table-cell {
+        padding: 2px 8px 2px 8px !important;
+        font-size: .75rem;
+    }
+
+    .stage-table .mud-table-cell a.mud-typography-body1 {
+        font-size: inherit !important;
+    }
+
+
+</style>
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
     <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name ?? "All"))</MudText>
 
@@ -19,13 +32,14 @@
                       T="Stage"
                       Hover="true"
                       Breakpoint="Breakpoint.Sm"
+                      Class="stage-table"
                       Elevation="4"
                       Dense="true"
                       GroupBy="@_groupDefinition">
                 <HeaderContent>
                     <MudTh>Name</MudTh>
                     <MudTh>Length (km)</MudTh>
-                    <MudTh>Asphalt/Dirt/Gravel/Snow (%)</MudTh>
+                    <MudTh>Terrain (%)</MudTh>
                     <MudTh>Temp (&deg;C)</MudTh>
                     <MudTh>Wind (km/h)</MudTh>
                     <MudTh>Moods</MudTh>
@@ -47,7 +61,7 @@
                         </MudLink>
                     </MudTd>
                     <MudTd DataLabel="Length">@context.StageData?.StageDetails?.Length</MudTd>
-                    <MudTd DataLabel="Asphalt/Dirt/Gravel/Snow">@context.StageData?.StageDetails?.Asphalt / @context.StageData?.StageDetails?.Dirt / @context.StageData?.StageDetails?.Gravel / @context.StageData?.StageDetails?.Snow</MudTd>
+                    <MudTd DataLabel="Terrain">@context.StageData?.StageDetails?.Asphalt / @context.StageData?.StageDetails?.Dirt / @context.StageData?.StageDetails?.Gravel / @context.StageData?.StageDetails?.Snow</MudTd>
                     <MudTd DataLabel="Temp">@context.StageData?.StageDetails?.Temp</MudTd>
                     <MudTd DataLabel="Wind">@context.StageData?.StageDetails?.Wind</MudTd>
                     <MudTd DataLabel="Moods">
@@ -66,7 +80,7 @@
         <div style="flex: 1; overflow: hidden; border: 1px solid #ddd; border-radius: 4px;">
             @if (_stages.Any())
             {
-                <Map Waypoints="@_allWaypoints" ShowWaypoints="false" Path="@_combinedPaths" Api="@_api" />
+                <Map Waypoints="@_allWaypoints" IsMultiMap="true" MultiMapPaths="@_combinedPaths" StartsEnds="@_startsEnds" />
             }
             else
             {
@@ -82,7 +96,8 @@
     private List<Stage> _stages = new();
     private RallyCode? _rallyCode;
     private IList<double[]> _allWaypoints = new List<double[]>();
-    private string? _combinedPaths;
+    private double[][][] _startsEnds;
+    private string[]? _combinedPaths;
     private string _api = string.Empty;
 
     // The fix is here: Cast the result to (object)
@@ -114,34 +129,28 @@
         var allWaypointsList = new List<double[]>();
         var allPaths = new List<string>();
 
-        foreach (var stage in _stages)
+        int cnt = Name is null ? 36 : 6;
+        _startsEnds = new double[cnt][][];
+
+        int i = 0;
+        foreach (var stage in _stages.DistinctBy(x => x.Code))
         {
-            try
-            {
-                // Get waypoints for this stage
-                var waypoints = await StageService.GetWaypoints(stage.Code, stage.Direction == DomainModel.Direction.Arcade);
-                foreach (var waypoint in waypoints)
-                {
-                    allWaypointsList.Add(waypoint);
-                }
+            _startsEnds[i] = new double[2][];
 
-                // Get path for this stage
-                var path = await StageService.GetPath(stage.Code);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    allPaths.Add(path);
-                }
-
-                // Set API hint from the first stage if available
-                if (string.IsNullOrEmpty(_api) && stage.StageWaypoints?.ApiHint != null)
-                {
-                    _api = stage.StageWaypoints.ApiHint;
-                }
-            }
-            catch
+            var waypoints = await StageService.GetWaypoints(stage.Code, stage.Direction == DomainModel.Direction.Arcade);
+            _startsEnds[i][0] = waypoints[0];
+            _startsEnds[i++][1] = waypoints[^1];
+            foreach (var waypoint in waypoints)
             {
-                // Continue if loading data for a stage fails
+                allWaypointsList.Add(waypoint);
             }
+
+            var path = await StageService.GetPath(stage.Code);
+            if (!string.IsNullOrEmpty(path))
+            {
+                allPaths.Add(path);
+            }
+
         }
 
         _allWaypoints = allWaypointsList;
@@ -149,59 +158,8 @@
         // Combine all paths - assuming they are GeoJSON format, merge them into a FeatureCollection
         if (allPaths.Any())
         {
-            _combinedPaths = CombineGeoJsonPaths(allPaths);
+            _combinedPaths = allPaths.ToArray();
         }
-    }
-
-    private string CombineGeoJsonPaths(List<string> paths)
-    {
-        var features = new List<object>();
-
-        foreach (var path in paths)
-        {
-            if (string.IsNullOrEmpty(path)) continue;
-
-            try
-            {
-                // Try to parse each path as GeoJSON or a feature collection
-                // If it's a FeatureCollection, extract its features
-                // If it's a Feature, add it directly
-                if (path.Contains("\"features\""))
-                {
-                    // It's a FeatureCollection
-                    var featureCollection = System.Text.Json.JsonDocument.Parse(path);
-                    var featuresElement = featureCollection.RootElement.GetProperty("features");
-                    foreach (var feature in featuresElement.EnumerateArray())
-                    {
-                        features.Add(feature);
-                    }
-                }
-                else if (path.Contains("\"type\""))
-                {
-                    // It's likely a Feature or Geometry
-                    features.Add(System.Text.Json.JsonDocument.Parse(path).RootElement);
-                }
-            }
-            catch
-            {
-                // If parsing fails, add as raw string
-                // The JavaScript will handle it
-            }
-        }
-
-        // If we have features, wrap them in a FeatureCollection
-        if (features.Any())
-        {
-            var featureCollection = new
-            {
-                type = "FeatureCollection",
-                features = features
-            };
-            return System.Text.Json.JsonSerializer.Serialize(featureCollection);
-        }
-
-        // Fallback: concatenate all paths
-        return string.Join(",", paths.Where(p => !string.IsNullOrEmpty(p)));
     }
 
     private IEnumerable<string> GetMoods(Mood? moodFlags)
