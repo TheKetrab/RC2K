@@ -316,7 +316,7 @@
         var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
         foreach (var itm in items)
         {
-            itm.Place = info.Places[itm.Data.Id];
+            itm.Place = info.Places.TryGetValue(itm.Data.Id, out int place) ? place : 0;
             itm.PlaceByCar = info.PlacesByCar[itm.Data.Id];
             itm.PlaceByClass = info.PlacesByClass[itm.Data.Id];
         }
@@ -422,7 +422,11 @@
 
     private bool IsOkForClassFilter(TimeEntryListItem item)
     {
-        if (FilterClass == null) return true;
+        if (FilterClass == null)
+        {
+            // 'ALL' filter means not bonus
+            return item.Data.Car?.Class != Car.BonusClass;
+        }
 
         return item.Data.Car?.Class == FilterClass;
     }

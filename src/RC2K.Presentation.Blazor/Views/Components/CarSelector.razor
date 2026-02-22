@@ -12,7 +12,7 @@
            Label="Car"
            Variant="Variant.Outlined"
            Dense="true">
-    @foreach (var car in _cars.OrderByDescending(x => x.Class).ThenBy(x => x.Name))
+    @foreach (var car in _cars.OrderByDescending(x => x.Class == Car.BonusClass ? 0 : x.Class).ThenBy(x => x.Id))
     {
         <MudSelectItem T="Car" Value="@car">
             <div style="display: flex;">
