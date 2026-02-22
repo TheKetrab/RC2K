@@ -176,7 +176,7 @@ public class RankingService : IRankingService
                     }
                 }
                 // Bonus cars
-                if (carClass == 4) // TODO bonu car
+                if (carClass == Car.BonusClass)
                 {
                     _driver2bonusCarPoints.Inc(driverId, p);
                     int place = _pointsProvider.GetPlaceFromBonusCarPoints(p);

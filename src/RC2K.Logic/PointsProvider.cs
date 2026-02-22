@@ -93,7 +93,8 @@ public class PointsProvider : IPointsProvider
                 7 => i => _a7carPoints[i], 
                 6 => i => _a6carPoints[i], 
                 5 => i => _a5carPoints[i],
-                _ => i => 0 // TODO handle bonus cars
+                Car.BonusClass => i => _bonusCarPoints[i],
+                _ => throw new Exception("Unknown class")
             };
 
             for (int i=0; i<5 && i< ranked.Count; i++)
@@ -108,7 +109,8 @@ public class PointsProvider : IPointsProvider
     public Dictionary<Guid, int> CalculateGeneralStagePoints(List<TimeEntry> timeEntries)
     {
         var bestOfDriverByTime =
-            timeEntries.GroupBy(x => x.DriverId)
+            timeEntries.Where(x => x.Car?.Class != Car.BonusClass) // bonus cars ignored
+                       .GroupBy(x => x.DriverId)
                        .Select(g => g.MinBy(x => x.Time)!) // only best time
                        .OrderBy(x => x.Time)
                        .GroupBy(x => x.Time)
@@ -127,8 +129,10 @@ public class PointsProvider : IPointsProvider
 
     public Dictionary<Guid, int> CalculatePlace(List<TimeEntry> timeEntries)
     {
+        // bonus cars entries are ignored in general classification
         var standings =
-            timeEntries.OrderBy(x => x.Time)
+            timeEntries.Where(x => x.Car?.Class != Car.BonusClass)
+                       .OrderBy(x => x.Time)
                        .GroupBy(x => x.Time)
                        .ToList();
 
