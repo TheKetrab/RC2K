@@ -10,7 +10,6 @@ public class CarRepository(RallyDbContext dbContext, ICarCache cache)
 {
     private const string AllCarsKey = "AllCarsKey";
     private const string AllCarsByClassKey = "AllCarsByClassKey";
-    private const int BonusClass = 'B' - '0';
 
     public async Task<List<Car>> GetAll()
     {
@@ -25,7 +24,7 @@ public class CarRepository(RallyDbContext dbContext, ICarCache cache)
         return dbValue;
     }
 
-    public Task<List<Car>> GetBonusCars() => GetAllByClass(BonusClass);
+    public Task<List<Car>> GetBonusCars() => GetAllByClass(Car.BonusClass);
 
     public async Task<List<Car>> GetAllByClass(int @class)
     {

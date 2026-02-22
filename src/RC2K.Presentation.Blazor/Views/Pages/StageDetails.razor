@@ -111,6 +111,11 @@
                                    Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
                                    Color="Color.Primary" 
                                    OnClick="() => _selectedClass = 5">A5</MudButton>
+                        <MudButton Size="Size.Small"
+                                   Class="button-xs"
+                                   Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                                   Color="Color.Primary"
+                                   OnClick="() => _selectedClass = Car.BonusClass">B</MudButton>
                     </MudStack>
                 </div>
                 <div class="card-body">
