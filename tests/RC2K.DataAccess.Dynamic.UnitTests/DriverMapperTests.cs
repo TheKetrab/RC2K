@@ -60,7 +60,7 @@ public class DriverMapperTests
 
     }
 
-    private DriverModel AnyDriverModel() => new DriverModel()
+    private static DriverModel AnyDriverModel() => new DriverModel()
     {
         Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
         Key = "asd",
@@ -70,7 +70,7 @@ public class DriverMapperTests
         UserId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3")
     };
 
-    private Driver AnyDriver(bool known) => new Driver()
+    private static Driver AnyDriver(bool known) => new Driver()
     {
         Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
         Key = "asd",

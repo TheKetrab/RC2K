@@ -96,9 +96,8 @@
     private List<Stage> _stages = new();
     private RallyCode? _rallyCode;
     private IList<double[]> _allWaypoints = new List<double[]>();
-    private double[][][] _startsEnds;
+    private double[][][]? _startsEnds;
     private string[]? _combinedPaths;
-    private string _api = string.Empty;
 
     // The fix is here: Cast the result to (object)
     private TableGroupDefinition<Stage> _groupDefinition = new()

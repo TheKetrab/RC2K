@@ -84,7 +84,7 @@ public class UserFillerTests
             _sut.FillRecursive(user, context, _fillersBagMock.Object));
     }
 
-    private User AnyUser(Guid? driverId = null) => new User()
+    private static User AnyUser(Guid? driverId = null) => new User()
     {
         Id = Guid.NewGuid(),
         DriverId = driverId.HasValue ? driverId.Value : Guid.NewGuid(),
@@ -94,7 +94,7 @@ public class UserFillerTests
         Email = ""
     };
 
-    private Driver AnyDriver() => new Driver()
+    private static Driver AnyDriver() => new Driver()
     {
         Id = Guid.NewGuid(),
         Known = false,

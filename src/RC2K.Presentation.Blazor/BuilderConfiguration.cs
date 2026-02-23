@@ -15,6 +15,7 @@ using RC2K.DataAccess.Dynamic.Repositories;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Cache;
 using RC2K.DataAccess.Interfaces.Repositories;
+using RC2K.DomainModel.Exceptions;
 using RC2K.Logic;
 using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces;
@@ -88,12 +89,11 @@ public static class BuilderConfiguration
         var cosmosSection = builder.Configuration.GetSection("Cosmos");
 
         string endpoint = cosmosSection.GetValue<string>("Endpoint")
-            ?? throw new InvalidOperationException("Cosmos:Endpoint is not configured.");
+            ?? throw new MissingConfigurationKeyException("Cosmos:Endpoint");
         string database = cosmosSection.GetValue<string>("Database")
-            ?? throw new InvalidOperationException("Cosmos:Database is not configured.");
+            ?? throw new MissingConfigurationKeyException("Cosmos:Database");
         string primaryKey = cosmosSection.GetValue<string>("ApiKey")
-            ?? throw new InvalidOperationException("Cosmos:ApiKey is not configured.");
-
+            ?? throw new MissingConfigurationKeyException("Cosmos:ApiKey");
         CosmosClient client =
             new CosmosClientBuilder(endpoint, primaryKey)
                 .WithSystemTextJsonSerializerOptions(new System.Text.Json.JsonSerializerOptions())
@@ -151,7 +151,7 @@ public static class BuilderConfiguration
             var securitySection = builder.Configuration.GetSection("Security");
             int iterations = securitySection.GetValue<int>("Iterations");
             string salt = securitySection.GetValue<string>("Salt")
-                ?? throw new InvalidOperationException("Security:Salt is not configured.");
+                ?? throw new MissingConfigurationKeyException("Security:Salt");
 
             return new PasswordProvider(iterations, salt);
         });
@@ -159,9 +159,9 @@ public static class BuilderConfiguration
         {
             var mailingSection = builder.Configuration.GetSection("Mailing");
             string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword")
-                ?? throw new InvalidOperationException("Mailing:SftpAppPassword is not configured.");
+                ?? throw new MissingConfigurationKeyException("Mailing:SftpAppPassword");
             string senderEmail = mailingSection.GetValue<string>("SenderEmail")
-                ?? throw new InvalidOperationException("Mailing:SenderEmail is not configured.");
+                ?? throw new MissingConfigurationKeyException("Mailing:SenderEmail");
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });

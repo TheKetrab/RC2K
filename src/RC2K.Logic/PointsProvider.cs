@@ -1,8 +1,6 @@
 ﻿using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 
 [assembly: InternalsVisibleTo("RC2K.Logic.UnitTests")]
 
@@ -94,7 +92,7 @@ public class PointsProvider : IPointsProvider
                 6 => i => _a6carPoints[i], 
                 5 => i => _a5carPoints[i],
                 Car.BonusClass => i => _bonusCarPoints[i],
-                _ => throw new Exception("Unknown class")
+                _ => throw new ArgumentException("Unknown class")
             };
 
             for (int i=0; i<5 && i< ranked.Count; i++)

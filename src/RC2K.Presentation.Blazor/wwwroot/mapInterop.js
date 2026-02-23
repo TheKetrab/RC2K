@@ -47,14 +47,14 @@
                         result += ";" + parts[i];
                     }
                 }
-                routeCoordinates = result.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+                routeCoordinates = result.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             }
             else {
                 routeCoordinates = await this.getRoute(coordinates, api);
                 result = routeCoordinates.map(x => x.join(',')).join(';');
             }
         } else {
-            routeCoordinates = path.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+            routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             result = null;
         }
 
@@ -99,8 +99,8 @@
 
         // Path
         const polylines = [];
-        for (var path of paths) {
-            routeCoordinates = path.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+        for (const path of paths) {
+            routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             const latLngs = routeCoordinates.map(coord => L.latLng(coord[1], coord[0]));
             const polyline = L.polyline(latLngs, { color: 'blue', weight: 5 });
             polyline.addTo(map);

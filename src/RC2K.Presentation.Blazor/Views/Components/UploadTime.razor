@@ -94,7 +94,7 @@
     private CarSelector _carSelectorRef = default!;
 
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
+    public required IMudDialogInstance MudDialog { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -154,15 +154,7 @@
         public int Min { get; set; }
         public int Sec { get; set; }
         public int Cc { get; set; }
-        private Car? _car;
-        public Car? Car
-        {
-            get => _car;
-            set
-            {
-                _car = value;
-            }
-        }
+        public Car? Car { get; set; }
 
         public string DriverName { get; set; } = string.Empty;
         public string Label { get; set; } = "TA";
@@ -236,6 +228,10 @@
         DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options)!;
         var dialogResult = await dialog.Result;
+        if (dialogResult is null)
+        {
+            return;
+        }
 
         string? nat = null;
         if (!dialogResult.Canceled)

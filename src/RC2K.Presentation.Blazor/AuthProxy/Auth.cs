@@ -12,23 +12,12 @@ public static class Auth
         }
     }
 
-    public static bool TryAuthorize(AuthenticationState state)
-    {
-        return state.User.Identity?.IsAuthenticated ?? false;
-    }
-
-
     public static void Authorize(AuthenticationState state, string role)
     {
         if (!TryAuthorize(state, role))
         {
             throw new NotAuthorizedException($"Required role: {role}");
         }
-    }
-
-    public static bool TryAuthorize(AuthenticationState state, string role)
-    {
-        return state.User.IsInRole(role);
     }
 
     public static void AuthorizeSelf(AuthenticationState state, string username)
@@ -39,9 +28,18 @@ public static class Auth
         }
     }
 
+    public static bool TryAuthorize(AuthenticationState state)
+    {
+        return state.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    public static bool TryAuthorize(AuthenticationState state, string role)
+    {
+        return state.User.IsInRole(role);
+    }
+
     public static bool TryAuthorizeSelf(AuthenticationState state, string username)
     {
         return state.User.Identity?.Name == username;
     }
-
 }

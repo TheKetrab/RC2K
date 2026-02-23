@@ -93,7 +93,7 @@
         var snapshot = await RankingService.GetLatest();
         foreach (var entry in snapshot.Entries.OrderBy(x => x.Place))
         {
-            _items.Add(new RankingListItem(this, entry));
+            _items.Add(new RankingListItem(entry));
         }
 
         CloseLoadingOverlay();

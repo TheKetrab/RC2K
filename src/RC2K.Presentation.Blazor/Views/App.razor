@@ -1,3 +1,4 @@
+@using RC2K.DomainModel.Exceptions
 @using RC2K.Presentation.Shared
 <!DOCTYPE html>
 <html lang="en">
@@ -83,10 +84,10 @@
 
 @code
 {
-  private readonly string _recaptchaSiteKey;
+    private readonly string _recaptchaSiteKey;
 
-  public App(IConfiguration configuration)
-  {
-    _recaptchaSiteKey = configuration["Captcha:SiteKey"] ?? throw new Exception("Captcha:SiteKey configuration is missing");
-  }
+    public App(IConfiguration configuration)
+    {
+        _recaptchaSiteKey = configuration["Captcha:SiteKey"] ?? throw new MissingConfigurationKeyException("Captcha:SiteKey");
+    }
 }

@@ -51,7 +51,7 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
             if (timeEntries.Count == 1 && Auth.TryAuthorizeSelf(auth, timeEntries[0].Driver!.User?.Name ?? timeEntries[0].Driver!.Name!))
             {
-                ; // OK
+                // OK
             }
             else
             {

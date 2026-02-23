@@ -78,7 +78,7 @@
     private bool _success;
     private MudForm _formRef = default!;
     private IBrowserFile _file = default!;
-    private UploadRequest _uploadModel = new();
+    private readonly UploadRequest _uploadModel = new();
 
     int _progress;
 

@@ -290,7 +290,6 @@ public class RankingService : IRankingService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while calculating ranking snapshot");
-            throw;
         }
     }
 }

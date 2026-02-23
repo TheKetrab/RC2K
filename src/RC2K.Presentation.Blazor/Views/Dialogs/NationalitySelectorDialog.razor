@@ -47,11 +47,11 @@
 
 @code {
 
-    private string _title;
-    private string _msg;
-    private string _yes;
-    private string _cancel;
-    private IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
+    private readonly string _title;
+    private readonly string _msg;
+    private readonly string _yes;
+    private readonly string _cancel;
+    private readonly IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
 
     public CodeName? SelectedNationality { get; set; }
 

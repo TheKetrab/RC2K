@@ -5,12 +5,10 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public class RankingListItem
 {
-    private readonly RankingList _list;
     public RankingEntry Data { get; }
 
-    public RankingListItem(RankingList list, RankingEntry data)
+    public RankingListItem(RankingEntry data)
     {
-        _list = list;
         Data = data;
     }
 

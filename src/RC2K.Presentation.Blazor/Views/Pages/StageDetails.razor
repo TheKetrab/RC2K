@@ -176,7 +176,7 @@
     private DomainModel.StageDetails _stageDetails = new();
     private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
-    private TimeEntryList _timeEntryListRef;
+    private TimeEntryList _timeEntryListRef = default!;
 
     protected override async Task OnInitializedAsync()
     {

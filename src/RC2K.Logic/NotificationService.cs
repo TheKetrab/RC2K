@@ -37,7 +37,7 @@ public class NotificationService : INotificationService
         var theKetrab = await _userRepository.GetByName("TheKetrab");
         if (theKetrab is null)
         {
-            _logger.LogError($"Master admin user 'TheKetrab' not found. Cannot send notification. {message}");
+            _logger.LogError("Master admin user 'TheKetrab' not found. Cannot send notification. {Message}", message);
             return;
         }
         await Create(theKetrab.Id, message);
