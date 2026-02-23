@@ -15,6 +15,7 @@ using RC2K.DataAccess.Dynamic.Repositories;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Cache;
 using RC2K.DataAccess.Interfaces.Repositories;
+using RC2K.DomainModel.Exceptions;
 using RC2K.Logic;
 using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces;
@@ -87,10 +88,12 @@ public static class BuilderConfiguration
     {
         var cosmosSection = builder.Configuration.GetSection("Cosmos");
 
-        string endpoint = cosmosSection.GetValue<string>("Endpoint");
-        string database = cosmosSection.GetValue<string>("Database");
-        string primaryKey = cosmosSection.GetValue<string>("ApiKey");
-
+        string endpoint = cosmosSection.GetValue<string>("Endpoint")
+            ?? throw new MissingConfigurationKeyException("Cosmos:Endpoint");
+        string database = cosmosSection.GetValue<string>("Database")
+            ?? throw new MissingConfigurationKeyException("Cosmos:Database");
+        string primaryKey = cosmosSection.GetValue<string>("ApiKey")
+            ?? throw new MissingConfigurationKeyException("Cosmos:ApiKey");
         CosmosClient client =
             new CosmosClientBuilder(endpoint, primaryKey)
                 .WithSystemTextJsonSerializerOptions(new System.Text.Json.JsonSerializerOptions())
@@ -147,22 +150,26 @@ public static class BuilderConfiguration
         {
             var securitySection = builder.Configuration.GetSection("Security");
             int iterations = securitySection.GetValue<int>("Iterations");
-            string salt = securitySection.GetValue<string>("Salt");
+            string salt = securitySection.GetValue<string>("Salt")
+                ?? throw new MissingConfigurationKeyException("Security:Salt");
 
             return new PasswordProvider(iterations, salt);
         });
         builder.Services.AddScoped<IMailProvider, GmailProvider>(provider =>
         {
             var mailingSection = builder.Configuration.GetSection("Mailing");
-            string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword");
-            string senderEmail = mailingSection.GetValue<string>("SenderEmail");
+            string sftpAppPassword = mailingSection.GetValue<string>("SftpAppPassword")
+                ?? throw new MissingConfigurationKeyException("Mailing:SftpAppPassword");
+            string senderEmail = mailingSection.GetValue<string>("SenderEmail")
+                ?? throw new MissingConfigurationKeyException("Mailing:SenderEmail");
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {
             var captchaSection = builder.Configuration.GetSection("Captcha");
-            string secretKey = captchaSection.GetValue<string>("SecretKey");
+            string secretKey = captchaSection.GetValue<string>("SecretKey")
+                ?? throw new InvalidOperationException("Captcha:SecretKey is not configured.");
             var logger = provider.GetRequiredService<ILogger<ReCaptchaV3Verifier>>();
 
             return new ReCaptchaV3Verifier(secretKey, logger);
@@ -187,8 +194,6 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder RegisterPersistentDataAccess(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<RallyDbContext>();
-
         builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
         builder.Services.AddSingleton<ICarCache, CarCache>();
         builder.Services.AddSingleton<IStageCache, StageCache>();

@@ -20,8 +20,7 @@
 
         <EditForm Model="@Model"
                   class="gap-5"
-                  @ref="formLogin"
-                  @bind-Errors="@errors"
+                  @bind-Errors="@_errors"
                   OnValidSubmit="HandleValidSubmit"
                   method="post"
                   FormName="login">
@@ -40,7 +39,7 @@
             <div class="d-flex align-center justify-space-between">
                 <MudStaticButton FormAction="FormAction.Submit"
                                  Variant="Variant.Filled"
-                                 Disabled="@isLoading"
+                                 Disabled="@_isLoading"
                                  Color="Color.Primary"
                                  Class="ml-auto">Login</MudStaticButton>
             </div>
@@ -50,9 +49,9 @@
                     <MudLink Href="/register">Sign up now</MudLink>
                 </p>
             </div>
-            @if (errors.Length > 0)
+            @if (_errors.Length > 0)
             {
-                @foreach (var error in errors)
+                @foreach (var error in _errors)
                 {
                     <MudText Color="@Color.Error">@error</MudText>
                 }
@@ -65,15 +64,13 @@
 @code {
 
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    public required HttpContext HttpContext { get; init; }
 
     [SupplyParameterFromForm(FormName = "login")]
-    private LoginDto Model { get; set; } = new();
+    public required LoginDto Model { get; set; } = new();
 
-    string[] errors = { };
-    EditForm formLogin = new();
-
-    private bool isLoading;
+    private string[] _errors = { };
+    private bool _isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,13 +84,18 @@
     {
         try
         {
+            _isLoading = true;
             var principal = await AuthService.Login(Model.UserName!, Model.Password!);
             await HttpContext.SignInAsync(principal);
             HttpContext.Response.Redirect("/");
         }
         catch (Exception ex)
         {
-            errors = [ex.Message];
+            _errors = [ex.Message];
+        }
+        finally
+        {
+            _isLoading = false;
         }
 
     }

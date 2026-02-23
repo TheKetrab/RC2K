@@ -1,4 +1,5 @@
-﻿using RC2K.DataAccess.Interfaces.Repositories;
+﻿using Microsoft.Extensions.Logging;
+using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 
@@ -8,11 +9,16 @@ public class NotificationService : INotificationService
 {
     private readonly INotificationRepository _notificationRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<NotificationService> _logger;
 
-    public NotificationService(INotificationRepository notificationRepository, IUserRepository userRepository)
+    public NotificationService(
+        INotificationRepository notificationRepository, 
+        IUserRepository userRepository, 
+        ILogger<NotificationService> logger)
     {
         _notificationRepository = notificationRepository;
         _userRepository = userRepository;
+        _logger = logger;
     }
 
     public async Task<List<Notification>> GetUserNotifications(string userName)
@@ -29,6 +35,11 @@ public class NotificationService : INotificationService
     public async Task NotifyMasterAdmin(string message)
     {
         var theKetrab = await _userRepository.GetByName("TheKetrab");
+        if (theKetrab is null)
+        {
+            _logger.LogError("Master admin user 'TheKetrab' not found. Cannot send notification. {Message}", message);
+            return;
+        }
         await Create(theKetrab.Id, message);
     }
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RC2K.DataAccess.Database;
 
@@ -10,9 +11,11 @@ using RC2K.DataAccess.Database;
 namespace RC2K.DataAccess.Database.Migrations
 {
     [DbContext(typeof(RallyDbContext))]
-    partial class RallyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219202052_bonus cars")]
+    partial class bonuscars
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -1671,7 +1674,7 @@ namespace RC2K.DataAccess.Database.Migrations
                         {
                             StageCode = 71,
                             ApiHint = "car",
-                            Waypoints = "55.86020390016135,-2.404705916624326;55.86052336001392,-2.41880253919625;55.86602723773092,-2.426904690554126;55.87192908057129,-2.4371389870061795;55.878946320901825,-2.4348646989057228;55.885324529839565,-2.4232089723908845;55.89132824170699,-2.4148295104601187;55.8964838738952,-2.4023139504679416;55.903576359936224,-2.392221797022166"
+                            Waypoints = "55.86020390016135,-2.404705916624326;55.86052336001392,-2.41880253919625;55.86602723773092,-2.426904690554126;55.87192908057129,-2.4371389870061795;55.878946320901825,-2.4348646989057228;55.885324529839565,-2.4232089723908845;55.89106402187944,-2.4168125371083504;55.8964838738952,-2.4023139504679416;55.903576359936224,-2.392221797022166"
                         },
                         new
                         {

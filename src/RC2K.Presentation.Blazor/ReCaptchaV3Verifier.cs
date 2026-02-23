@@ -1,4 +1,4 @@
-﻿using RC2K.Logic.Interfaces;
+using RC2K.Logic.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -78,12 +78,12 @@ public class ReCaptchaV3Verifier : ICaptchaVerifier
         public double Score { get; set; }
 
         [JsonPropertyName("action")]
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
         [JsonPropertyName("challenge_ts")]
         public DateTime ChallengeTs { get; set; }
 
         [JsonPropertyName("hostname")]
-        public string Hostname { get; set; }
+        public string? Hostname { get; set; }
     }
 }

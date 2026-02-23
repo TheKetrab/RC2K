@@ -22,7 +22,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText>@_msg</MudText>
+        <MudText>@(string.IsNullOrEmpty(DynamicMsg) ? _msg : DynamicMsg)</MudText>
         <MudTextField T="string"
                       Label="@_textBoxLabel"
                       @bind-Value="TextBoxValue" />
@@ -35,11 +35,15 @@
 
 @code {
 
-    private string _title;
-    private string _msg;
-    private string _textBoxLabel;
-    private string _yes;
-    private string _cancel;
+    private readonly string _title;
+    private readonly string _msg;
+    private readonly string _textBoxLabel;
+    private readonly string _yes;
+    private readonly string _cancel;
+
+    [Parameter]
+    public string DynamicMsg { get; set; } = "";
+
     public TextBoxDialog(string title, string msg, string textBoxLabel, string yes = "Yes", string cancel = "Cancel")
     {
         _title = title;
@@ -53,7 +57,7 @@
     [CascadingParameter]
     public required IMudDialogInstance MudDialog { get; set; }
 
-    public string TextBoxValue { get; set; }
+    public string? TextBoxValue { get; set; }
 
     private void Cancel() => MudDialog.Cancel();
 

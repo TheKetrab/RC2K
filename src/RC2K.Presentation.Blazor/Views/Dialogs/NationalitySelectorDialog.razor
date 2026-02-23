@@ -1,4 +1,4 @@
-﻿@using RC2K.DomainModel
+@using RC2K.DomainModel
 @using RC2K.Logic
 @using RC2K.Logic.Interfaces
 @using RC2K.Presentation.Blazor.ViewModels
@@ -30,7 +30,7 @@
                    Variant="Variant.Outlined"
                    Dense="true">
             <MudSelectItem T="CodeName?" Value="null">Unknown</MudSelectItem>
-            @foreach (var country in allCountries)
+            @foreach (var country in _allCountries)
             {
                 <MudSelectItem T="CodeName?" Value="@country">
                     <span class="fi @($"fi-{country.code}")"></span>
@@ -47,13 +47,16 @@
 
 @code {
 
-    IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
-    private MudSelect<CodeName> select;
+    private readonly string _title;
+    private readonly string _msg;
+    private readonly string _yes;
+    private readonly string _cancel;
+    private readonly IEnumerable<CodeName> _allCountries = Resources.Countries.GetCountries();
 
-    private string _title;
-    private string _msg;
-    private string _yes;
-    private string _cancel;
+    public CodeName? SelectedNationality { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     public NationalitySelectorDialog()
     {
@@ -63,9 +66,6 @@
         _cancel = "Don't share nationality";
     }
 
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-
     private void Cancel() => MudDialog.Cancel();
 
     private void Ok()
@@ -73,7 +73,4 @@
         string? value = SelectedNationality.HasValue ? SelectedNationality.Value.code : null;
         MudDialog.Close(DialogResult.Ok(value));
     }
-
-    public CodeName? SelectedNationality { get; set; }
-
 }

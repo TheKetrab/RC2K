@@ -2,6 +2,7 @@
 
 public class Car
 {
+    public const int BonusClass = 'B' - '0';
     public required int Id { get; init; }
     public required string Name { get; init; }
     public required int Class { get; init; }

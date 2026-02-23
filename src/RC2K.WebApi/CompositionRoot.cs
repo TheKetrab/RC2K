@@ -13,6 +13,7 @@ using RC2K.DataAccess.Dynamic.Repositories;
 using RC2K.DataAccess.Database;
 using RC2K.DataAccess.Database.Cache;
 using RC2K.DataAccess.Database.Repositories;
+using RC2K.DomainModel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace RC2K.WebApi;
@@ -23,10 +24,12 @@ public static class CompositionRoot
     {
         var cosmosSection = builder.Configuration.GetSection("Cosmos");
 
-        string endpoint = cosmosSection.GetValue<string>("Endpoint");
-        string database = cosmosSection.GetValue<string>("Database");
-        string primaryKey = cosmosSection.GetValue<string>("ApiKey");
-
+        string endpoint = cosmosSection.GetValue<string>("Endpoint")
+            ?? throw new MissingConfigurationKeyException("Cosmos:Endpoint");
+        string database = cosmosSection.GetValue<string>("Database")
+            ?? throw new MissingConfigurationKeyException("Cosmos:Database");
+        string primaryKey = cosmosSection.GetValue<string>("ApiKey")
+            ?? throw new MissingConfigurationKeyException("Cosmos:ApiKey");
         CosmosClient client =
             new CosmosClientBuilder(endpoint, primaryKey)
                 .WithSystemTextJsonSerializerOptions(new System.Text.Json.JsonSerializerOptions())
@@ -65,7 +68,8 @@ public static class CompositionRoot
         {
             var securitySection = builder.Configuration.GetSection("Security");
             int iterations = securitySection.GetValue<int>("Iterations");
-            string salt = securitySection.GetValue<string>("Salt");
+            string salt = securitySection.GetValue<string>("Salt")
+                ?? throw new MissingConfigurationKeyException("Security:Salt");
 
             return new PasswordProvider(iterations, salt);
         });

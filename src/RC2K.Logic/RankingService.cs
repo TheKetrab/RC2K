@@ -15,13 +15,15 @@ public class RankingService : IRankingService
     private readonly IPointsProvider _pointsProvider;
     private readonly IBonusPointsService _bonusPointsService;
     private readonly IFillersBag _fillers;
+    private readonly ILogger<RankingService> _logger;
 
     public RankingService(IRankingsRepository rankingRepository,
         IStageService stageService,
         ITimeEntryService timeEntryService,
         IPointsProvider pointsProvider,
         IBonusPointsService bonusPointsService,
-                            IFillersBag fillers)
+        IFillersBag fillers,
+        ILogger<RankingService> logger)
     {
         _rankingRepository = rankingRepository;
         _stageService = stageService;
@@ -30,6 +32,7 @@ public class RankingService : IRankingService
         _bonusPointsService = bonusPointsService;
 
         _fillers = fillers;
+        _logger = logger;
     }
 
     public async Task<RankingSnapshot> GetLatest()
@@ -173,7 +176,7 @@ public class RankingService : IRankingService
                     }
                 }
                 // Bonus cars
-                if (carClass == 4) // TODO bonu car
+                if (carClass == Car.BonusClass)
                 {
                     _driver2bonusCarPoints.Inc(driverId, p);
                     int place = _pointsProvider.GetPlaceFromBonusCarPoints(p);
@@ -286,7 +289,7 @@ public class RankingService : IRankingService
         }
         catch (Exception ex)
         {
-            throw;
+            _logger.LogError(ex, "Error while calculating ranking snapshot");
         }
     }
 }

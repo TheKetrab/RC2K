@@ -47,14 +47,14 @@
                         result += ";" + parts[i];
                     }
                 }
-                routeCoordinates = result.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+                routeCoordinates = result.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             }
             else {
                 routeCoordinates = await this.getRoute(coordinates, api);
                 result = routeCoordinates.map(x => x.join(',')).join(';');
             }
         } else {
-            routeCoordinates = path.split(';').map(x => x.split(',').map(y => parseFloat(y)));
+            routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             result = null;
         }
 
@@ -64,6 +64,52 @@
         map.fitBounds(polyline.getBounds());
 
         return result; // returns newly calculated path or null it was previously cached
+    },
+
+    initMultiMap:
+    /**
+     * @param {string} mapElementId - HTML id
+     * @param {number[][]} allWaypoints - waypoints of all paths to calculate origin
+     * @param {number[][][]} startsEnds - starts and ends markers
+     * @param {string[]} path - list of already computed paths
+     */
+    async function (mapElementId, waypoints, startsEnds, paths) {
+
+        if (waypoints.length < 2)
+            throw new Error("Start and Finish required.");
+
+        // Initialize the map centered at the origin
+        let origin = {
+            lat: waypoints.reduce((acc, x) => acc + x.lat, 0) / waypoints.length,
+            lng: waypoints.reduce((acc, x) => acc + x.lng, 0) / waypoints.length
+        }
+        const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
+
+        // Set up the OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Markers
+        for (var se of startsEnds) {
+            L.marker(se[0], { icon: this.startMarkerMini }).addTo(map)
+            L.marker(se[1], { icon: this.endMarkerMini }).addTo(map)
+        }
+
+        // Path
+        const polylines = [];
+        for (const path of paths) {
+            routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
+            const latLngs = routeCoordinates.map(coord => L.latLng(coord[1], coord[0]));
+            const polyline = L.polyline(latLngs, { color: 'blue', weight: 5 });
+            polyline.addTo(map);
+            polylines.push(polyline);
+        }
+
+        const group = new L.featureGroup(polylines).addTo(map);
+        map.fitBounds(group.getBounds());
+
     },
 
     getRoute:
@@ -100,11 +146,26 @@
         prefix: 'fa',
     }),
 
+    startMarkerMini: L.AwesomeMarkers.icon({
+        icon: 'flag',
+        markerColor: 'green',
+        prefix: 'fa',
+        iconSize: [32,32]
+    }),
+
     endMarker: L.AwesomeMarkers.icon({
         icon: 'flag',
         markerColor: 'red',
         prefix: 'fa',
         iconColor: 'dark-gray'
+    }),
+
+    endMarkerMini: L.AwesomeMarkers.icon({
+        icon: 'flag',
+        markerColor: 'red',
+        prefix: 'fa',
+        iconColor: 'dark-gray',
+        iconSize: [32,32]
     }),
 
 };

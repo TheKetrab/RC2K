@@ -24,8 +24,7 @@ public class CarRepository(RallyDbContext dbContext, ICarCache cache)
         return dbValue;
     }
 
-    public Task<List<Car>> GetBonusCars() =>
-        Task.FromResult<List<Car>>([new Car() { Id = 123, Class = 0, Name = "Fake" }]);
+    public Task<List<Car>> GetBonusCars() => GetAllByClass(Car.BonusClass);
 
     public async Task<List<Car>> GetAllByClass(int @class)
     {

@@ -6,9 +6,25 @@ public static class Auth
 {
     public static void Authorize(AuthenticationState state)
     {
-        if (state.User.Identity?.IsAuthenticated is not true)
+        if (!TryAuthorize(state))
         {
             throw new NotAuthorizedException("Required logged in user.");
+        }
+    }
+
+    public static void Authorize(AuthenticationState state, string role)
+    {
+        if (!TryAuthorize(state, role))
+        {
+            throw new NotAuthorizedException($"Required role: {role}");
+        }
+    }
+
+    public static void AuthorizeSelf(AuthenticationState state, string username)
+    {
+        if (!TryAuthorizeSelf(state, username))
+        {
+            throw new NotAuthorizedException($"Allowed only for user {username}");
         }
     }
 
@@ -17,20 +33,13 @@ public static class Auth
         return state.User.Identity?.IsAuthenticated ?? false;
     }
 
-
-    public static void Authorize(AuthenticationState state, string role)
+    public static bool TryAuthorize(AuthenticationState state, string role)
     {
-        if (!state.User.IsInRole(role))
-        {
-            throw new NotAuthorizedException($"Required role: {role}");
-        }
+        return state.User.IsInRole(role);
     }
 
-    public static void AuthorizeSelf(AuthenticationState state, string username)
+    public static bool TryAuthorizeSelf(AuthenticationState state, string username)
     {
-        if (state.User.Identity?.Name != username)
-        {
-            throw new NotAuthorizedException($"Allowed only for user {username}");
-        }
+        return state.User.Identity?.Name == username;
     }
 }
