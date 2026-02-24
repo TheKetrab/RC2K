@@ -94,7 +94,7 @@ public class HstUploadManager : IHstUploadManager
             }
             else
             {
-                labels += _carService.IsA8(hstTimeEntry.Car) ? ",A8" : ",BRC";
+                labels += _carService.IsA8InternalCarId(hstTimeEntry.Car) ? ",A8" : ",BRC";
             }
         }
         else
