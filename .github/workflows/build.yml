@@ -45,5 +45,5 @@ jobs:
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TheKetrab_RC2K" /o:"theketrab" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.exclusions="**/Migrations/*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           dotnet build "src/RC2K.sln"
           # Run tests and collect coverage in OpenCover format using coverlet.msbuild
-          dotnet test "src/RC2K.sln" --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="TestResults/coverage.opencover.xml"
+          dotnet test "src/RC2K.sln" --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="TestResults/coverage.opencover.xml" /p:Exclude="[RC2K.DomainModel]*,[RC2K.Extensions]*,[RC2K.Parser]*,[RC2K.Presentation]*"
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
