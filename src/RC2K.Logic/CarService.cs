@@ -18,15 +18,19 @@ public class CarService : ICarService
     public Task<List<Car>> GetAllByClass(int @class) =>
         _rallyUoW.Cars.GetAllByClass(@class);
 
-    public bool IsA8(int carId)
+    /// <summary>
+    /// Checks if given internal binary car id (not RC2K domain id!) is for A8 car.
+    /// </summary>
+    /// <param name="internalCarId">Car id stored in game.</param>
+    public bool IsA8InternalCarId(int internalCarId)
     {
         return
-            carId == 2 || // cordoba
-            carId == 4 || // subaru
-            carId == 7 || // evo5
-            carId == 10 || // wira
-            carId == 14 || // peugeot
-            carId == 22; // evo4
+            internalCarId == 2 || // cordoba
+            internalCarId == 4 || // subaru
+            internalCarId == 7 || // evo5
+            internalCarId == 10 || // wira
+            internalCarId == 14 || // peugeot
+            internalCarId == 22; // evo4
     }
 
     public Task<List<Car>> GetBonusCars() =>
