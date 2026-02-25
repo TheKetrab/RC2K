@@ -14,8 +14,7 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IUserService UserService
-@inject IDialogService DialogService
-
+@inject DialogHelper DialogHelper
 @inject ICaptchaVerifier CaptchaVerifier
 
 <MyErrorBoundary @ref="_errorBoundaryRef">
@@ -212,32 +211,24 @@
         }
         if (Proofs.Count == 0)
         {
-            errors.Add("You need to add proofs! Screen with stage, car and time is required. Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver or other storage and put url here.");
+            errors.Add("You need to add proofs! Screen with stage, car and time is required. " +
+                "Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver " +
+                "or other storage and put url here.");
         }
         return errors;
     }
 
     private async Task HandleNewDriverUploadTime()
     {
-        var res = await DialogService.ShowMessageBox("Driver creation", "There is no driver with this name yet. If you continue, you will get a unique pass-code for this driver, that you will have to enter every time when you will upload another time entry using your nickname. Do you want to continue?", yesText: "Yes", cancelText: "No");
-        if (res is null || res.Value is not true)
+        if (!await DialogHelper.ShowYesNoDialog("Driver creation",
+            "There is no driver with this name yet. If you continue, you will get a unique pass-code for this driver, " +
+            "that you will have to enter every time when you will upload another time entry using your nickname. " +
+            "Do you want to continue?", yes: "Yes", no: "No"))
         {
             return;
         }
 
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var dialog = await DialogService.ShowAsync<NationalitySelectorDialog>("Select nationality", options)!;
-        var dialogResult = await dialog.Result;
-        if (dialogResult is null)
-        {
-            return;
-        }
-
-        string? nat = null;
-        if (!dialogResult.Canceled)
-        {
-            nat = dialogResult.Data?.ToString();
-        }
+        string? nat = await DialogHelper.ShowDialogAndGetResult<NationalitySelectorDialog, string>("Select nationality");
         var result = await DriverService.CreateAnonymous(UploadTimeModel.DriverName, nat);
         if (!result.Success)
         {
@@ -246,7 +237,9 @@
         }
 
         Driver newDriver = result.Payload!;
-        await DialogService.ShowMessageBox("You pass code", $"Driver instance has been created, your pass-code is: {newDriver.Key}. Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
+        await DialogHelper.ShowMessageBox("Your pass code",
+            $"Driver instance has been created, your pass-code is: {newDriver.Key}. " +
+            "Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
 
         var uploadResult = await TimeEntryService.Upload(
             StageId,
@@ -272,21 +265,12 @@
     }
     private async Task HandleExistingDriverUploadTime(Guid driverId)
     {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var dialog = await DialogService.ShowAsync<GetDriverPassCodeDialog>("Get driver pass code", options);
-        if (dialog == null || dialog.Result == null)
+        string? driverCode = await DialogHelper.ShowDialogAndGetResult<GetDriverPassCodeDialog, string>("Get driver pass code");
+        if (driverCode is null)
         {
             return;
         }
 
-        var dialogResult = await dialog.Result;
-
-        if (dialogResult.Canceled || dialogResult.Data == null)
-        {
-            return;
-        }
-
-        string driverCode = dialogResult.Data.ToString()!;
         var uploadResult = await TimeEntryService.Upload(
             StageId,
             UploadTimeModel.Car!.Id,

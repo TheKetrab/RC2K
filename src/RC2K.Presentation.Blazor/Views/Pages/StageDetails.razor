@@ -15,11 +15,12 @@
 @inject ICarService CarService
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
-@inject IDialogService Dialog
+@inject DialogHelper DialogHelper
 @inject NavigationManager NavigationManager
 
 @page "/map"
 @using System.Collections.Generic
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Blazor.Views.Layout
 @using RC2K.Presentation.Shared
 
@@ -270,14 +271,13 @@
 
     private async Task OpenUploadDialog()
     {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var parameters = new DialogParameters<UploadTime>
+        DialogParameters<UploadTime> parameters = new()
         {
             { x => x.StageId, this._stageId },
         };
-        var dialog = await Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
-        var dialogResult = await dialog.Result;
-        if ((dialogResult?.Data == null ? 0 : (int)dialogResult.Data)   == 1)
+
+        object? result = await DialogHelper.ShowDialogAndGetResult<UploadTime, object>("Upload time", parameters);
+        if ((result == null ? 0 : (int)result) == 1)
         {
             await this._timeEntryListRef.ReloadTimeEntries();
         }

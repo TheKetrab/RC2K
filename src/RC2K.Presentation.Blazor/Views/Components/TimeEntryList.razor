@@ -16,7 +16,8 @@
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
-@inject IDialogService DialogService
+@inject DialogHelper DialogHelper
+
 
 <style>
     .mud-chip.mud-chip-size-xs {
@@ -487,21 +488,9 @@
 
     private async Task OpenDeleteConfirmation(TimeEntryListItem item)
     {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
         DialogParameters parameters = new();
         parameters.Add("DynamicMsg", $"If you are sure you want to delete this time entry, type its time: {item.TimeDisplay}");
-        var dialog = await DialogService.ShowAsync<DeleteTimeEntryDialog>("Delete time entry", parameters, options)!;
-        var dialogResult = await dialog.Result;
-        if (dialogResult is null)
-        {
-            return;            
-        }
-
-        string? typedTime = null;
-        if (!dialogResult.Canceled)
-        {
-            typedTime = dialogResult.Data?.ToString();
-        }
+        string? typedTime = await DialogHelper.ShowDialogAndGetResult<DeleteTimeEntryDialog, string>("Delete time entry", parameters);
 
         if (typedTime != item.TimeDisplay)
         {
