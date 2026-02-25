@@ -24,39 +24,6 @@
 @using RC2K.Presentation.Blazor.Views.Layout
 @using RC2K.Presentation.Shared
 
-<style>
-    .class-category-btn {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        position: relative;
-    }
-
-    .mud-button-filled.class-category-btn::before {
-        content: '';
-        width: 5px;
-        height: 10px;
-        position: absolute;
-        bottom: 0;
-        left: -5px;
-        corner-shape: scoop;
-        border-top-left-radius: 5px 10px;
-        background-color: var(--mud-palette-primary);
-    }
-
-    .mud-button-filled.class-category-btn::after {
-        content: '';
-        width: 5px;
-        height: 10px;
-        position: absolute;
-        bottom: 0;
-        right: -5px;
-        corner-shape: scoop;
-        border-top-right-radius: 5px 10px;
-        background-color: var(--mud-palette-primary);
-    }
-
-
-</style>
 
 <div class="MAIN">
     <h1>@_raceName</h1>
@@ -121,42 +88,18 @@
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>Records</h3>
                     <MudStack Row="true" Spacing="0">
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn" 
-                                   Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = null">All</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 8">A8</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 7">A7</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 6">A6</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 5">A5</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
-                                   Color="Color.Primary"
-                                   OnClick="() => _selectedClass = Car.BonusClass">B</MudButton>
+                        <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = null">All</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
+                                        OnClick="() => _selectedClass = 8">A8</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 7">A7</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 6">A6</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 5">A5</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                                        OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
                     </MudStack>
                 </div>
                 <div class="card-body">

@@ -1,0 +1,29 @@
+﻿::deep .class-category-btn {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    position: relative;
+}
+
+::deep .mud-button-filled.class-category-btn::before {
+    content: '';
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    bottom: 0;
+    left: -5px;
+    corner-shape: scoop;
+    border-top-left-radius: 5px 10px;
+    background-color: var(--mud-palette-primary);
+}
+
+::deep .mud-button-filled.class-category-btn::after {
+    content: '';
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    bottom: 0;
+    right: -5px;
+    corner-shape: scoop;
+    border-top-right-radius: 5px 10px;
+    background-color: var(--mud-palette-primary);
+}
