@@ -12,8 +12,8 @@
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
 @inject IUserService UserService
+@inject MessageHelper MessageHelper
 @inject DialogHelper DialogHelper
 @inject ICaptchaVerifier CaptchaVerifier
 
@@ -92,6 +92,9 @@
     private ErrorBoundary? _errorBoundaryRef;
     private CarSelector _carSelectorRef = default!;
 
+    [Parameter]
+    public int StageId { get; set; }
+
     [CascadingParameter]
     public required IMudDialogInstance MudDialog { get; set; }
 
@@ -125,8 +128,6 @@
         }
     }
 
-
-
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender)
@@ -144,8 +145,6 @@
         UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
     }
 
-    [Parameter] public int StageId { get; set; }
-
     UploadTimeModelType UploadTimeModel = new();
 
     public class UploadTimeModelType
@@ -161,7 +160,7 @@
 
     private async Task<bool> IsRobot()
     {
-        return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => Snackbar.Add(msg, Severity.Error));
+        return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => MessageHelper.ShowError(msg));
     }
 
     private async Task UploadClick()
@@ -173,7 +172,7 @@
         List<string> validationResult = DoValidation();
         if (validationResult.Count > 0)
         {
-            Snackbar.Add(string.Join(" ", validationResult), Severity.Error);
+            MessageHelper.ShowError(string.Join(" ", validationResult));
             return;
         }
 
@@ -232,7 +231,7 @@
         var result = await DriverService.CreateAnonymous(UploadTimeModel.DriverName, nat);
         if (!result.Success)
         {
-            Snackbar.Add(result.Message!, Severity.Error);
+            MessageHelper.ShowError(result.Message!);
             return;
         }
 
@@ -263,6 +262,7 @@
             ShowUploadedFailureMessage(uploadResult.Message);
         }
     }
+
     private async Task HandleExistingDriverUploadTime(Guid driverId)
     {
         string? driverCode = await DialogHelper.ShowDialogAndGetResult<GetDriverPassCodeDialog, string>("Get driver pass code");
@@ -292,8 +292,8 @@
         {
             ShowUploadedFailureMessage(uploadResult.Message);
         }
-
     }
+
     private async Task HandleUserUploadTime(Guid driverId)
     {
         var uploadResult = await TimeEntryService.Upload(
@@ -320,20 +320,11 @@
 
     private void ShowUploadedMessage()
     {
-        Snackbar.Add($"Uploaded.", Severity.Success, config =>
-        {
-            config.ShowCloseIcon = true;
-            config.VisibleStateDuration = 10000;
-        });
+        MessageHelper.ShowSuccess("Uploaded.");
     }
 
     private void ShowUploadedFailureMessage(string? msg)
     {
-        Snackbar.Add($"Upload failed. {msg}", Severity.Error, config =>
-        {
-            config.ShowCloseIcon = true;
-            config.VisibleStateDuration = 10000;
-        });
+        MessageHelper.ShowError($"Upload failed. {msg}");
     }
-
 }

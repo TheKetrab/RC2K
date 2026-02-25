@@ -22,7 +22,7 @@ using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Parser;
 using RC2K.Presentation.Blazor.AuthProxy;
-using RC2K.Presentation.Blazor.ViewModels;
+using RC2K.Presentation.Blazor.Views;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 using Serilog;
 using Serilog.Exceptions;
@@ -52,6 +52,7 @@ public static class BuilderConfiguration
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<DialogHelper>();
+        builder.Services.AddScoped<MessageHelper>();
 
         return builder;
     }
