@@ -80,7 +80,7 @@
         <div style="flex: 1; overflow: hidden; border: 1px solid #ddd; border-radius: 4px;">
             @if (_stages.Any())
             {
-                <Map Waypoints="@_allWaypoints" IsMultiMap="true" MultiMapPaths="@_combinedPaths" StartsEnds="@_startsEnds" />
+                <MultiMap Waypoints="@_allWaypoints" MultiMapPaths="@_combinedPaths" StartsEnds="@_startsEnds" />
             }
             else
             {
