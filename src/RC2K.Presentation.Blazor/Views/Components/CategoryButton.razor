@@ -1,0 +1,22 @@
+﻿<div>
+    <MudButton Size="Size.Small"
+               Ripple="false"
+               Class="button-xs class-category-btn"
+               Variant="@Variant"
+               Color="Color.Primary"
+               OnClick="@OnClick">
+        @ChildContent
+    </MudButton>
+</div>
+
+@code
+{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public Variant Variant { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

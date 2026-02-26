@@ -17,6 +17,7 @@
 @inject IMailProvider MailProvider
 @inject NavigationManager NavigationManager
 @inject IDialogService Dialog
+@inject DialogHelper DialogHelper
 @inject IJSRuntime JSRuntime
 @inject ICaptchaVerifier CaptchaVerifier
 @inject IDriverService DriverService
@@ -239,17 +240,12 @@
         MailProvider.SendMail(Model.Username, Model.Email, "RC2K Hub registration confirmation", $"Your verification code is: {emailCode}");
         UserService.SetEmailConfirmationCode(Model.Email, emailCode);
 
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var dialog = await Dialog.ShowAsync<VerifyEmail>("Verify email", options);
-        var dialogResult = await dialog.Result;
-
-        if (dialogResult is null || dialogResult.Canceled)
+        string? userEnteredCode = await DialogHelper.ShowDialogAndGetResult<VerifyEmail, string>("Verify email");
+        if (userEnteredCode is null)
         {
             errors = ["You cancelled email verification."];
             return false;
         }
-
-        string userEnteredCode = dialogResult.Data?.ToString() ?? string.Empty;
 
         if (userEnteredCode != emailCode)
         {
@@ -262,17 +258,12 @@
 
     private async Task<(bool, string)> GetDriverCodeFromUser()
     {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var dialog = await Dialog.ShowAsync<UpgradeDriverToUserDialog>("Upgrade driver to user", options);
-        var dialogResult = await dialog.Result;
-
-        if (dialogResult is null || dialogResult.Canceled)
+        string? driverCode = await DialogHelper.ShowDialogAndGetResult<UpgradeDriverToUserDialog, string>("Upgrade driver to user");
+        if (driverCode is null)
         {
             errors = ["You cancelled upgrading driver to user."];
             return (false, "");
         }
-
-        string driverCode = dialogResult.Data?.ToString() ?? string.Empty;
 
         return (true, driverCode);
     }

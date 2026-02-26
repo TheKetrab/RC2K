@@ -1,0 +1,47 @@
+﻿@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime;
+
+<div id="@mapElementId" style="width: 100%; height: 500px;"></div>
+
+@code {
+
+    private const string mapElementId = "map";
+
+    [Parameter]
+    public IList<double[]> Waypoints { get; set; } = [];
+
+    [Parameter]
+    public double[][][]? StartsEnds { get; set; }
+        
+    [Parameter]
+    public string[]? MultiMapPaths { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await DrawMultiMap();
+    }
+
+
+    private async Task DrawMultiMap()
+    {
+        var waypoints = Waypoints.Select(w => new { lat = w[0], lng = w[1] }).ToArray();
+        try
+        {
+            if (MultiMapPaths is null)
+            {
+                throw new Exception();
+            }
+            await JSRuntime.InvokeVoidAsync("mapInterop.initMultiMap", mapElementId, waypoints, StartsEnds, MultiMapPaths);
+        }
+        catch (Exception)
+        {
+            
+        }
+    }
+
+}

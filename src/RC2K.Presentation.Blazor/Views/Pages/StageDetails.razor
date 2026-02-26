@@ -15,47 +15,15 @@
 @inject ICarService CarService
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
-@inject IDialogService Dialog
+@inject DialogHelper DialogHelper
 @inject NavigationManager NavigationManager
 
 @page "/map"
 @using System.Collections.Generic
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Blazor.Views.Layout
 @using RC2K.Presentation.Shared
 
-<style>
-    .class-category-btn {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        position: relative;
-    }
-
-    .mud-button-filled.class-category-btn::before {
-        content: '';
-        width: 5px;
-        height: 10px;
-        position: absolute;
-        bottom: 0;
-        left: -5px;
-        corner-shape: scoop;
-        border-top-left-radius: 5px 10px;
-        background-color: var(--mud-palette-primary);
-    }
-
-    .mud-button-filled.class-category-btn::after {
-        content: '';
-        width: 5px;
-        height: 10px;
-        position: absolute;
-        bottom: 0;
-        right: -5px;
-        corner-shape: scoop;
-        border-top-right-radius: 5px 10px;
-        background-color: var(--mud-palette-primary);
-    }
-
-
-</style>
 
 <div class="MAIN">
     <h1>@_raceName</h1>
@@ -120,42 +88,18 @@
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>Records</h3>
                     <MudStack Row="true" Spacing="0">
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn" 
-                                   Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = null">All</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 8">A8</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 7">A7</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 6">A6</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 5">A5</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Ripple="false"
-                                   Class="button-xs class-category-btn"
-                                   Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
-                                   Color="Color.Primary"
-                                   OnClick="() => _selectedClass = Car.BonusClass">B</MudButton>
+                        <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = null">All</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
+                                        OnClick="() => _selectedClass = 8">A8</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 7">A7</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 6">A6</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
+                                        OnClick="() => _selectedClass = 5">A5</CategoryButton>
+                        <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                                        OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
                     </MudStack>
                 </div>
                 <div class="card-body">
@@ -175,140 +119,3 @@
         <div class="break"></div>
     </div>
 </div>
-
-
-@code {
-
-    [Parameter]
-    public required string RaceName { get; init; }
-
-    [Parameter]
-    public required int Id { get; init; }
-
-    [SupplyParameterFromQuery]
-    [Parameter]
-    public bool ShowWaypoints { get; set; } = true;
-
-    private string _directionParameter = string.Empty;
-    [SupplyParameterFromQuery(Name = "direction")]
-    public string DirectionParameter
-    {
-        get => _directionParameter;
-        set
-        {
-            _directionParameter = value;
-            Direction = value == "Arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
-        }
-    }
-
-    public DomainModel.Direction Direction { get; set; }
-
-    public bool IsArcade => Direction == DomainModel.Direction.Arcade;
-
-    private int? _selectedClass;
-    private int _stageId;
-    private string _api = string.Empty;
-    private IList<double[]> _waypoints = [];
-    private string _name = string.Empty;
-    private string _raceName = string.Empty;
-    private string _description = string.Empty;
-    private string _imgName = string.Empty;
-    private DomainModel.StageDetails _stageDetails = new();
-    private List<DomainModel.TimeEntry> _timeEntries = new();
-    private string? _path;
-    private TimeEntryList _timeEntryListRef = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var stage = await StageService.GetByCode(Id, Direction);
-        if (stage == null)
-        {
-            NavigationManager.NavigateTo("/stages");
-            return;
-        }
-
-        _stageId = stage.Id;
-        _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
-        _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
-
-        _path = await StageService.GetPath(Id);
-
-        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
-        _name = stage.StageData?.Name ?? string.Empty;
-        _imgName = stage.StageData?.ImgName ?? string.Empty;
-        _description = stage.StageData?.Description ?? string.Empty;
-        _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await RecalculateHeight();
-    }
-
-    private async Task RecalculateHeight()
-    {
-        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
-    }
-
-    private Task HandleOnTimeEntryListLoaded()
-    {
-        Task.Run(async () =>
-        {
-            await Task.Delay(500);
-            await RecalculateHeight();
-        });
-        return Task.CompletedTask;
-    }
-
-    private async Task HandleNewPathCachedEvent(string path)
-    {
-        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
-        if (stage == null) return;
-        int stageCode = stage.Code;
-        await StageService.SetPath(stageCode, path);
-    }
-
-    private async Task OpenUploadDialog()
-    {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var parameters = new DialogParameters<UploadTime>
-        {
-            { x => x.StageId, this._stageId },
-        };
-        var dialog = await Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
-        var dialogResult = await dialog.Result;
-        if ((dialogResult?.Data == null ? 0 : (int)dialogResult.Data)   == 1)
-        {
-            await this._timeEntryListRef.ReloadTimeEntries();
-        }
-    }
-
-    private void GoToPrevious()
-    {
-        if (Id % 10 == 1) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
-    }
-    private void GoToNext()
-    {
-        if (Id % 10 == 6) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
-    }
-    private void GoToArcadeVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-    private void GoToSimulationVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-}
