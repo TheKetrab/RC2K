@@ -28,12 +28,11 @@
                      T="RankingListItem"
                      Items="@_items"
                      id="ranking-entry-list-table"
-                     Hideable="false"
+                     
                      HorizontalScrollbar="true"
                      Bordered="true"
-                     ShowColumnOptions="false"
                      RowsPerPage="100"
-                     ShowMenuIcon="true"
+                     ShowMenuIcon="@_showColumnsMenu"
                      RowClassFunc="_rowClassFunc">
             <Columns>
                 @* Identity columns *@
@@ -84,10 +83,19 @@
 @code {
 
     private List<RankingListItem> _items = [];
+    private bool _showColumnsMenu = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
     // async loading
     private bool overlayVisible;
     private bool dataLoaded;
+
+    protected async override Task OnInitializedAsync()
+    {
+        _showColumnsMenu = (await AuthStateTask).User.Identity?.IsAuthenticated ?? false;
+    }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
