@@ -10,7 +10,7 @@
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
 
-
+<div>
 @{
     if (!dataLoaded)
     {
@@ -24,15 +24,21 @@
     else
     {
         <MudDataGrid SortMode="SortMode.Single"
+                     Style="max-height: 80vh;"
                      T="RankingListItem"
                      Items="@_items"
                      id="ranking-entry-list-table"
+                     Hideable="false"
+                     HorizontalScrollbar="true"
+                     Bordered="true"
                      ShowColumnOptions="false"
                      RowsPerPage="100"
-                     RowStyleFunc="_rowStyleFunc">
+                     ShowMenuIcon="true"
+                     RowClassFunc="_rowClassFunc">
             <Columns>
+                @* Identity columns *@
                 <PropertyColumn Property="x => x.Data.Place" Title="#" Sortable="false" />
-                <TemplateColumn Title="Driver">
+                <TemplateColumn Title="Driver" StickyLeft="true">
                     <CellTemplate>
                         <MudStack Row>
                             <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
@@ -46,25 +52,26 @@
                 <PropertyColumn Property="x => x.Data.BonusPoints" Title="BP" />
                 <AuthorizeView>
                     <Authorized>
-                        <PropertyColumn Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
-                        <PropertyColumn Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
+                        @* Details columns (can be hidden) *@
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.GeneralTop30Count" Title="G#30" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.GeneralTop10Count" Title="G#10" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.GeneralTop3Count" Title="G#3" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.GeneralTop1Count" Title="G#1" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA8Points" Title="A8CP" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true"  Property="x => x.Data.CarA8PointsTop5Count" Title="A8#5" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA8PointsTop1Count" Title="A8#1" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA7Points" Title="A7CP" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarA7PointsTop5Count" Title="A7#5" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA7PointsTop1Count" Title="A7#1" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA6Points" Title="A6CP" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarA6PointsTop5Count" Title="A6#5" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA6PointsTop1Count" Title="A6#1" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA5Points" Title="A5CP" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarA5PointsTop5Count" Title="A5#5" Sortable="false" />
+                        <PropertyColumn Hideable="true" Property="x => x.Data.CarA5PointsTop1Count" Title="A5#1" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarBonusPoints" Title="BCP" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarBonusPointsTop5Count" Title="B#5" Sortable="false" />
+                        <PropertyColumn Hideable="true" Hidden="true" Property="x => x.Data.CarBonusPointsTop1Count" Title="B#1" Sortable="false" />
                     </Authorized>
                 </AuthorizeView>
             </Columns>
@@ -72,6 +79,7 @@
         </MudDataGrid>
     }
 }
+</div>
 
 @code {
 
@@ -111,20 +119,20 @@
         dataLoaded = true;
     }
 
-    private string _rowStyleFunc(RankingListItem item, int index)
+    private string _rowClassFunc(RankingListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
         if (name is not null)
         {
             if (item.DisplayName == name)
             {
-                return $"background-color: {Rc2kColorPallete.complementary200};";
+                return "ranking-list-table-user-row";
             }
         }
 
         if (index % 2 != 0)
         {
-            return $"background-color: {Rc2kColorPallete.primary50};";
+            return "ranking-list-table-even-row";
         }
         return string.Empty;
     }
