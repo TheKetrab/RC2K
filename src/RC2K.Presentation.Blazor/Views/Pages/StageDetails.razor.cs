@@ -49,6 +49,7 @@ public partial class StageDetails
     private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
     private TimeEntryList _timeEntryListRef = default!;
+    private PointsList _pointsListRef = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,14 +83,16 @@ public partial class StageDetails
         await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
     }
 
-    private Task HandleOnTimeEntryListLoaded()
+    private async Task HandleOnTimeEntryListLoaded()
     {
+        var pointsInfo = _timeEntryListRef.PointsInfo;
+        await _pointsListRef.SetPointsInfo(pointsInfo);
+
         Task.Run(async () =>
         {
             await Task.Delay(500);
             await RecalculateHeight();
         });
-        return Task.CompletedTask;
     }
 
     private async Task HandleNewPathCachedEvent(string path)

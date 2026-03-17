@@ -137,6 +137,7 @@ h1:focus {
         font-size: .75rem !important;
     }
 
-#time-entry-list-table .mud-table-cell {
+#time-entry-list-table .mud-table-cell,
+#points-list-table .mud-table-cell {
     padding: 0 3px;
 }

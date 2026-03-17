@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
 using RC2K.DomainModel;
+using RC2K.Logic.Interfaces.Dtos;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 using RC2K.Presentation.Shared;
 
@@ -10,10 +11,10 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public partial class TimeEntryList
 {
-
     private MudDataGrid<TimeEntryListItem>? _gridRef;
     private List<TimeEntryListItem> _items = [];
 
+    public PointsInfo? PointsInfo { get; set; }
     public TimeEntry? Best { get; set; }
     public Dictionary<Guid, int> GeneralPoints { get; set; } = [];
     public Dictionary<Guid, int> CarPoints { get; set; } = [];
@@ -86,6 +87,7 @@ public partial class TimeEntryList
         Best = info.Best;
         GeneralPoints = info.GeneralPoints;
         CarPoints = info.CarPoints;
+        PointsInfo = info.PointsInfo;
 
         var items = info.OrderedTimeEntries.Select(x => new TimeEntryListItem(this, x)).ToList();
         foreach (var itm in items)

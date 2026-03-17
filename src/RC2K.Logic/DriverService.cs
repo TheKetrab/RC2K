@@ -59,6 +59,17 @@ public class DriverService : IDriverService
         return res;
     }
 
+    public async Task<Driver?> GetById(Guid id)
+    {
+        Driver? driver = await _driverRepository.GetById(id);
+        if (driver is not null)
+        {
+            FillingContext context = new();
+            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
+        }
+        return driver;
+    }
+
     public async Task<Driver?> GetByName(string name)
     {
         User? user = await _userRepository.GetByName(name);

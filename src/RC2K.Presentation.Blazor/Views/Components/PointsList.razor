@@ -1,0 +1,70 @@
+﻿@using RC2K.DomainModel
+@using RC2K.Extensions
+@using RC2K.Logic
+@using RC2K.Logic.Interfaces
+@using RC2K.Presentation.Blazor.ViewModels
+@using RC2K.Presentation.Blazor.Views.Dialogs
+@using RC2K.Presentation.Shared
+@using RC2K.Presentation.Shared.ViewModels
+@using SerilogTimings;
+@rendermode InteractiveServer
+@inject IStageService StageService
+@inject ITimeEntryService TimeEntryService
+@inject IDriverService DriverService
+@inject ICarService CarService
+@inject IPointsProvider PointsProvider
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject DialogHelper DialogHelper
+
+@{
+    if (!dataLoaded)
+    {
+        <div style="position: relative;">
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
+            <MudOverlay Visible="overlayVisible" Absolute="true">
+                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+            </MudOverlay>
+        </div>
+    }
+    else
+    {
+        <MudDataGrid @ref="_gridRef"
+                     T="PointsListItem"
+                     Items="@_items"
+                     id="points-list-table"
+                     ShowColumnOptions="false"
+                     RowsPerPage="100"
+                     RowStyleFunc="_rowStyleFunc">
+            <Columns>
+                <PropertyColumn Property="x => x.Place" Title="#" Sortable="false" />
+                <PropertyColumn Property="x => x.TotalPoints" Title="Sum" />
+                <TemplateColumn Title="Gap">
+                    <CellTemplate>
+                        @if (context.Item.Gap != 0)
+                        {
+                            <span>@context.Item.Gap</span>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Driver">
+                    <CellTemplate>
+                        <MudStack Row>
+                            <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
+                            <span>@context.Item.DisplayName</span>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.GeneralPoints" Title="GP" />
+                <PropertyColumn Property="x => x.CarA8Points" Title="A8" />
+                <PropertyColumn Property="x => x.CarA7Points" Title="A7" />
+                <PropertyColumn Property="x => x.CarA6Points" Title="A6" />
+                <PropertyColumn Property="x => x.CarA5Points" Title="A5" />
+                <PropertyColumn Property="x => x.CarBonusPoints" Title="B" />
+            </Columns>
+        </MudDataGrid>
+
+    }
+
+}
