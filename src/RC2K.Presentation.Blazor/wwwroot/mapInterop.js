@@ -169,24 +169,3 @@
     }),
 
 };
-
-
-window.calculateContainerHeight = (containerId) => {
-
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    const stageInfo = container.querySelector('.stage-info');
-    const stageImg = container.querySelector('.stage-img');
-    const stageDescription = container.querySelector('.stage-description');
-    const stageTimes = container.querySelector('.stage-times');
-    const stageMap = container.querySelector('.stage-map');
-
-    if (stageInfo && stageImg && stageDescription && stageTimes && stageMap) {
-
-        const maxHeight = 50 + Math.max(stageInfo.offsetHeight + stageTimes.offsetHeight,
-            stageImg.offsetHeight + stageDescription.offsetHeight + stageMap.offsetHeight);
-
-        container.style.height = maxHeight + 'px';
-    }
-};

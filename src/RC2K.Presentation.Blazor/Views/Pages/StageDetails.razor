@@ -24,108 +24,128 @@
 @using RC2K.Presentation.Blazor.Views.Layout
 @using RC2K.Presentation.Shared
 
+@*
+  Mobile (1 col)
+   | A - Details
+   | B - Image
+   | C - Description
+   | D - Records
+   | E - Top points
+   | F - Map
+   | G - Altitude
+   v
+
+  Desktop (2 col)
+   A | B
+   D | C
+   E | F
+     | G
+*@
+
 
 <div class="MAIN">
     <h1>@_raceName</h1>
-    <div class="container" id="containerId" accesskey="">
-
-        <div class="item left stage-info">
-            <div class="card" style="position: relative;">
-                <div class="card-header">
-                    <h3>Stage details</h3>
-                </div>
-                <div class="card-body">
-                    <div style="position: absolute; top: 0; right: 0; padding: 4px;">
-                        <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id%10==1)" OnClick="GoToPrevious">&lt;</MudButton>
-                        @if (IsArcade)
-                        {
-                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">To simulation</MudButton>
-                        }
-                        else
-                        {
-                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">To arcade</MudButton>
-                        }
-                        <MudButton class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id % 10 == 6)" OnClick="GoToNext">&gt;</MudButton>
+    <div class="container">
+        <div class="left-box">
+            <div class="item stage-info">
+                <div class="card" style="position: relative;">
+                    <div class="card-header">
+                        <h3>Stage details</h3>
                     </div>
-                    <h1 Style=@($"color: {@Rc2kColorPallete.primary700}")>
-                        @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
-                    </h1>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Length:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
-                    </MudStack>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Road:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Asphalt % / @_stageDetails.Dirt % / @_stageDetails.Gravel % / @_stageDetails.Snow %</MudText>
-                    </MudStack>
-                    <div style="max-width: @((int)_stageDetails.Length * 2)%;">
-                        <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])" />
+                    <div class="card-body">
+                        <div style="position: absolute; top: 0; right: 0; padding: 4px;">
+                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id % 10 == 1)" OnClick="GoToPrevious">&lt;</MudButton>
+                            @if (IsArcade)
+                            {
+                                <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">To simulation</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">To arcade</MudButton>
+                            }
+                            <MudButton class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id % 10 == 6)" OnClick="GoToNext">&gt;</MudButton>
+                        </div>
+                        <h1 Style=@($"color: {@Rc2kColorPallete.primary700}")>
+                            @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
+                        </h1>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><b>Length:</b></MudText>
+                            <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><b>Road:</b></MudText>
+                            <MudText Typo="Typo.body1">@_stageDetails.Asphalt % / @_stageDetails.Dirt % / @_stageDetails.Gravel % / @_stageDetails.Snow %</MudText>
+                        </MudStack>
+                        <div style="max-width: @((int)_stageDetails.Length * 2)%;">
+                            <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])" />
+                        </div>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
+                            <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
+                        </MudStack>
                     </div>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
-                    </MudStack>
+                    <div class="card-footer"></div>
                 </div>
-                <div class="card-footer"></div>
             </div>
-        </div>
-        <div class="item right stage-img">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
-                <img src="img/maps/@_imgName" style="width: 100%;" />
-            </div>
-        </div>
-        <div class="item right stage-description">
-            <div class="card">
-                <div class="card-header"><h3>Description</h3></div>
-                <div class="card-body">
-                    @_description
-                </div>
-                <div class="card-footer"></div>
-            </div>
-        </div>
-        <div class="item left stage-times">
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Records</h3>
-                    <MudStack Row="true" Spacing="0">
-                        <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
-                                        OnClick="() => _selectedClass = null">All</CategoryButton>
-                        <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
-                                        OnClick="() => _selectedClass = 8">A8</CategoryButton>
-                        <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
-                                        OnClick="() => _selectedClass = 7">A7</CategoryButton>
-                        <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
-                                        OnClick="() => _selectedClass = 6">A6</CategoryButton>
-                        <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
-                                        OnClick="() => _selectedClass = 5">A5</CategoryButton>
-                        <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
-                                        OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
-                    </MudStack>
-                </div>
-                <div class="card-body">
-                    <TimeEntryList @ref="_timeEntryListRef" PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
-                </div>
-                <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
-                </div>
+            <div class="item stage-times">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Records</h3>
+                        <MudStack Row="true" Spacing="0">
+                            <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = null">All</CategoryButton>
+                            <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = 8">A8</CategoryButton>
+                            <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = 7">A7</CategoryButton>
+                            <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = 6">A6</CategoryButton>
+                            <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = 5">A5</CategoryButton>
+                            <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                                            OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
+                        </MudStack>
+                    </div>
+                    <div class="card-body">
+                        <TimeEntryList @ref="_timeEntryListRef" PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
+                    </div>
+                    <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
+                    </div>
 
-            </div>
-        </div>
-        <div class="item left stage-points">
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Driver points</h3>
-                </div>
-                <div class="card-body">
-                    <PointsList @ref="_pointsListRef" />
                 </div>
             </div>
-        </div>
-        <div class="item right stage-map">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
-                <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
+            <div class="item stage-points">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Driver points</h3>
+                    </div>
+                    <div class="card-body">
+                        <PointsList @ref="_pointsListRef" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="break"></div>
+        <div class="right-box">
+            <div class="item stage-img">
+                <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
+                    <img src="img/maps/@_imgName" style="width: 100%;" />
+                </div>
+            </div>
+            <div class="item stage-description">
+                <div class="card">
+                    <div class="card-header"><h3>Description</h3></div>
+                    <div class="card-body">
+                        @_description
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="item stage-map">
+                <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
+                    <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
+                </div>
+            </div>
+        </div>
     </div>
 </div>

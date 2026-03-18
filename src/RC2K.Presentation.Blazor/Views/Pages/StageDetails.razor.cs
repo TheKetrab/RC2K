@@ -73,26 +73,10 @@ public partial class StageDetails
         _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await RecalculateHeight();
-    }
-
-    private async Task RecalculateHeight()
-    {
-        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
-    }
-
     private async Task HandleOnTimeEntryListLoaded()
     {
         var pointsInfo = _timeEntryListRef.PointsInfo;
         await _pointsListRef.SetPointsInfo(pointsInfo);
-
-        Task.Run(async () =>
-        {
-            await Task.Delay(500);
-            await RecalculateHeight();
-        });
     }
 
     private async Task HandleNewPathCachedEvent(string path)
