@@ -7,7 +7,6 @@
 @using RC2K.Presentation.Shared
 @using RC2K.Presentation.Shared.ViewModels
 @using SerilogTimings;
-@rendermode InteractiveServer
 @inject IStageService StageService
 @inject ITimeEntryService TimeEntryService
 @inject IDriverService DriverService
@@ -54,7 +53,7 @@
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
                      T="TimeEntryListItem"
-                     Items="@_items"
+                     Items="@Items"
                      id="time-entry-list-table"
                      ShowColumnOptions="false"
                      RowsPerPage="20"
@@ -142,7 +141,7 @@
 
                     <CellTemplate>
                         <MudStack Row Class="my-flag">
-                            <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
+                                <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
                             <span>@context.Item.DisplayName</span>
                         </MudStack>
                     </CellTemplate>
