@@ -25,7 +25,7 @@ public class RankingsRepository(Database database, RankingsMapper mapper, IEnvir
         var query = new QueryDefinition(@"
             SELECT * FROM c WHERE c.type = 'ranking' ORDER BY c._ts DESC");
 
-        var lst = await FetchAll(query);
+        var lst = await FetchAll(query, CancellationToken.None);
         var activeSnapshot = lst.First();
 
         cache.Set(RankingSnapshotKey, activeSnapshot);

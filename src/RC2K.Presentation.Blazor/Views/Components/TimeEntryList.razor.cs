@@ -6,13 +6,38 @@ using RC2K.DomainModel;
 using RC2K.Logic.Interfaces.Dtos;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 using RC2K.Presentation.Shared;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace RC2K.Presentation.Blazor.Views.Components;
 
+public class TimeEntryListItemsCollection : INotifyCollectionChanged, IEnumerable<TimeEntryListItem>
+{
+    private List<TimeEntryListItem> _list = [];
+
+    public void Set(IEnumerable<TimeEntryListItem> items)
+    {
+        _list.Clear();
+        _list.AddRange(items);
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+    }
+
+    public IEnumerator<TimeEntryListItem> GetEnumerator() => _list.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
+}
+
 public partial class TimeEntryList
 {
+
+    private CancellationTokenSource? _cts;
     private MudDataGrid<TimeEntryListItem>? _gridRef;
-    private List<TimeEntryListItem> _items = [];
+    public TimeEntryListItemsCollection Items { get; set; } = new();
 
     public PointsInfo? PointsInfo { get; set; }
     public TimeEntry? Best { get; set; }
@@ -60,10 +85,20 @@ public partial class TimeEntryList
         return selectedTimeEntries;
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnParametersSetAsync()
     {
-        OpenLoadingOverlay();
-        base.OnInitialized();
+        if (VerificationMode)
+        {
+            await ReloadTimeEntriesForVerification();
+        }
+        else
+        {
+            if (prevStageId != StageId)
+            {
+                prevStageId = StageId;
+                await ReloadTimeEntries();
+            }
+        }
     }
 
     private void OpenLoadingOverlay()
@@ -77,11 +112,18 @@ public partial class TimeEntryList
         dataLoaded = true;
     }
 
+    private int? prevStageId;
+
     public async Task ReloadTimeEntries()
     {
         OpenLoadingOverlay();
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
 
-        var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
+        await Task.Delay(250);
+        _cts.Token.ThrowIfCancellationRequested();
+
+        var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId, ct: _cts.Token);
 
         Best = info.Best;
         GeneralPoints = info.GeneralPoints;
@@ -96,10 +138,9 @@ public partial class TimeEntryList
             itm.PlaceByClass = info.PlacesByClass[itm.Data.Id];
         }
 
-        _items = items.OrderBy(x => x.Place).ToList();
+        Items.Set(items.OrderBy(x => x.Place));
 
         CloseLoadingOverlay();
-        StateHasChanged();
         OnLoaded?.Invoke();
     }
 
@@ -110,34 +151,10 @@ public partial class TimeEntryList
         var notVerified = await TimeEntryService.GetAllNotVerified();
         var items = notVerified.Select(x => new TimeEntryListItem(this, x)).ToList();
 
-        _items = items;
+        Items.Set(items.OrderBy(x => x.Place));
 
         CloseLoadingOverlay();
-        StateHasChanged();
         OnLoaded?.Invoke();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            return;
-        }
-
-        if (VerificationMode)
-        {
-            await ReloadTimeEntriesForVerification();
-        }
-        else
-        {
-            await ReloadTimeEntries();
-        }
-    }
-
-    void GoToPage(int p)
-    {
-        var newLocation = NavigationManager.GetUriWithQueryParameter("Page", p);
-        NavigationManager.NavigateTo(newLocation);
     }
 
     private Func<TimeEntryListItem, bool> _quickFilter => x =>

@@ -1,5 +1,6 @@
 @using RC2K.DomainModel.Exceptions
 @using RC2K.Presentation.Shared
+@using Microsoft.AspNetCore.Components.Routing
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,9 +35,7 @@
 </head>
 
 <body onload="(() => setRecaptchaVisibility(false))()">
-    <Routes />
-    <NavigationTracker />
-    <MatPortalHost></MatPortalHost>
+    <Routes @rendermode="new InteractiveServerRenderMode()" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
     <script src="_content/Blazor-Analytics/blazor-analytics.js"></script>
@@ -69,7 +68,6 @@
     setRecaptchaVisibility = function (visible) {
       const badge = document.querySelector('.grecaptcha-badge');
       if (badge) {
-          debugger;
           badge.style.display = visible ? 'block' : 'none';
       }
     };

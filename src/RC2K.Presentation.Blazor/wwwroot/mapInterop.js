@@ -1,4 +1,6 @@
-﻿window.mapInterop = {
+﻿
+window.mapInterop = {
+    mapInstance: null,
     initMap: async function (mapElementId, waypoints, showWaypoints, api, path) {
         
         if (waypoints.length < 2)
@@ -9,7 +11,13 @@
             lat: waypoints.reduce((acc, x) => acc + x.lat, 0) / waypoints.length,
             lng: waypoints.reduce((acc, x) => acc + x.lng, 0) / waypoints.length
         }
+
+        if (this.mapInstance !== undefined && this.mapInstance !== null) {
+            this.mapInstance.remove();
+        }
+
         const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
+        this.mapInstance = map;
 
         // Set up the OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -19,7 +27,6 @@
 
         // Markers
         L.marker(waypoints[0], { icon: this.startMarker }).addTo(map)
-        debugger;
         if (showWaypoints) {
             waypoints.slice(1, -1).forEach(point => L.marker(point).addTo(map));
         }

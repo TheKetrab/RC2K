@@ -34,13 +34,13 @@ public class TimeEntryService : ITimeEntryService
         };
     }
 
-    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null)
+    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default)
     {
         var timeEntries = carId is not null
-            ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value)
-            : await _timeEntryRepository.GetByStageId(stageId);
+            ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value, ct)
+            : await _timeEntryRepository.GetByStageId(stageId, ct);
 
-        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
+        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers, ct);
 
         return timeEntries;
     }
@@ -230,11 +230,11 @@ public class TimeEntryService : ITimeEntryService
         );
     }
 
-    public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1)
+    public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1, CancellationToken ct = default)
     {
         using (Operation.Time("Fetch TimeEntryList | StageId = {stageId} | Maximum = {maximum}", stageId, maximum))
         {
-            List<TimeEntry> timeEntries = await this.Get(stageId);
+            List<TimeEntry> timeEntries = await this.Get(stageId, ct: ct);
             TimeEntry? best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
 
             Dictionary<Guid, int> places = _pointsProvider.CalculatePlace(timeEntries);

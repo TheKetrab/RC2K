@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using MudBlazor;
 using RC2K.DomainModel;
 using RC2K.Extensions;
@@ -88,9 +87,9 @@ public partial class StageDetails
     private async Task OpenUploadDialog()
     {
         DialogParameters<UploadTime> parameters = new()
-    {
-        { x => x.StageId, this._stageId },
-    };
+        {
+            { x => x.StageId, this._stageId },
+        };
 
         object? result = await DialogHelper.ShowDialogAndGetResult<UploadTime, object>("Upload time", parameters);
         if ((result == null ? 0 : (int)result) == 1)
@@ -106,7 +105,7 @@ public partial class StageDetails
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;
 
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: false);
     }
     private void GoToNext()
     {
@@ -115,16 +114,16 @@ public partial class StageDetails
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;
 
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: false);
     }
     private void GoToArcadeVersion()
     {
         string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
+        NavigationManager.NavigateTo(uri, forceLoad: false);
     }
     private void GoToSimulationVersion()
     {
         string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
+        NavigationManager.NavigateTo(uri, forceLoad: false);
     }
 }

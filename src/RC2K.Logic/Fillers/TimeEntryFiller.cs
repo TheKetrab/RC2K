@@ -10,32 +10,22 @@ public class TimeEntryFiller(ICarRepository carRepository,
                              IVerifyInfoRepository verifyInfoRepository)
     : ITimeEntryFiller
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public async Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    public async Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
-        await _semaphore.WaitAsync();
-        try
+        if (context.TimeEntries.ContainsKey(timeEntry.Id))
         {
-            if (context.TimeEntries.ContainsKey(timeEntry.Id))
-            {
-                return;
-            }
-            context.TimeEntries.Add(timeEntry.Id, timeEntry);
-
-            timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
-            timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
-
-            await FillDriver(timeEntry, context, fillers);
-            await FillVerifyInfo(timeEntry, context, fillers);
+            return;
         }
-        finally
-        {
-            _semaphore.Release();
-        }
+        context.TimeEntries.Add(timeEntry.Id, timeEntry);
+
+        timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
+        timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
+
+        await FillDriver(timeEntry, context, fillers, ct);
+        await FillVerifyInfo(timeEntry, context, fillers, ct);
     }
 
-    private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Drivers.TryGetValue(timeEntry.DriverId, out Driver? driver))
         {
@@ -43,12 +33,12 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.Driver = (await driverRepository.GetById(timeEntry.DriverId)) ?? throw new KeyNotFoundException();
-            await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers);
+            timeEntry.Driver = (await driverRepository.GetById(timeEntry.DriverId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers, ct);
         }
     }
 
-    private async Task FillVerifyInfo(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    private async Task FillVerifyInfo(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (timeEntry.VerifyInfoId is null)
         {
@@ -61,8 +51,8 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.VerifyInfo = (await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value)) ?? throw new KeyNotFoundException();
-            await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers);
+            timeEntry.VerifyInfo = (await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value, ct)) ?? throw new KeyNotFoundException();
+            await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers, ct);
         }
     }
 

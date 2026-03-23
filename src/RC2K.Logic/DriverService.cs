@@ -59,13 +59,13 @@ public class DriverService : IDriverService
         return res;
     }
 
-    public async Task<Driver?> GetById(Guid id)
+    public async Task<Driver?> GetById(Guid id, CancellationToken ct = default)
     {
-        Driver? driver = await _driverRepository.GetById(id);
+        Driver? driver = await _driverRepository.GetById(id, ct);
         if (driver is not null)
         {
             FillingContext context = new();
-            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
+            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers, ct);
         }
         return driver;
     }
@@ -76,7 +76,7 @@ public class DriverService : IDriverService
         if (user is not null)
         {
             FillingContext context = new();
-            await _fillers.UserFiller.FillRecursive(user, context, _fillers);
+            await _fillers.UserFiller.FillRecursive(user, context, _fillers, CancellationToken.None);
             return user.Driver;
         }
 
@@ -84,7 +84,7 @@ public class DriverService : IDriverService
         if (anonymousDriver is not null) 
         {
             FillingContext context = new();
-            await _fillers.DriverFiller.FillRecursive(anonymousDriver, context, _fillers);
+            await _fillers.DriverFiller.FillRecursive(anonymousDriver, context, _fillers, CancellationToken.None);
             return anonymousDriver;
         }
 
