@@ -47,7 +47,18 @@ public static class LevelHelper
             { RallyCode.Pirelli, "pirelli" },
             { RallyCode.Vauxhall, "vauxhall" }
         };
-    
+
+    private readonly static IReadOnlyDictionary<RallyCode, string> _rallyCode2imageName =
+        new Dictionary<RallyCode, string>()
+        {
+                { RallyCode.Sony, "WELMNX" },
+                { RallyCode.Stena, "WELUL" },
+                { RallyCode.Seat, "WELJC" },
+                { RallyCode.Scottish, "WELSCT" },
+                { RallyCode.Pirelli, "WELPIR" },
+                { RallyCode.Vauxhall, "WELVX" }
+        };
+
     private readonly static IReadOnlyDictionary<int, RallyCode> _codePrefix2RallyCodeMap =
         new Dictionary<int, RallyCode>(_rallyCode2CodePrefixMap.ToDictionary(x => x.Value, x => x.Key));
 
@@ -66,9 +77,15 @@ public static class LevelHelper
     public static string RallyCodeToRallyShortName(RallyCode rallyCode) =>
         _rallyCode2shortName[rallyCode];
 
+    public static string RallyCodeToRallyImageName(RallyCode rallyCode) =>
+        _rallyCode2imageName[rallyCode];
+
     public static string StageCodeToRallyShortName(int stageCode) =>
         RallyCodeToRallyShortName(GetRallyCodeByStageCode(stageCode));
 
     public static string StageCodeToRallyName(int stageCode) =>
         RallyCodeToRallyName(GetRallyCodeByStageCode(stageCode));
+
+    public static string StageCodeToRallyImageName(int stageCode) =>
+        RallyCodeToRallyImageName(GetRallyCodeByStageCode(stageCode));
 }

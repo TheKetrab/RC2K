@@ -50,7 +50,7 @@
                 </TemplateColumn>
                 <TemplateColumn Title="Driver">
                     <CellTemplate>
-                        <MudStack Row>
+                        <MudStack Row Class="my-flag">
                             <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
                             <span>@context.Item.DisplayName</span>
                         </MudStack>
