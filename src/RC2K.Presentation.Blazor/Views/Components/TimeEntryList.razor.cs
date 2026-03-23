@@ -34,6 +34,8 @@ public class TimeEntryListItemsCollection : INotifyCollectionChanged, IEnumerabl
 
 public partial class TimeEntryList
 {
+
+    private CancellationTokenSource? _cts;
     private MudDataGrid<TimeEntryListItem>? _gridRef;
     public TimeEntryListItemsCollection Items { get; set; } = new();
 
@@ -115,8 +117,13 @@ public partial class TimeEntryList
     public async Task ReloadTimeEntries()
     {
         OpenLoadingOverlay();
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
 
-        var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId);
+        await Task.Delay(250);
+        _cts.Token.ThrowIfCancellationRequested();
+
+        var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId, ct: _cts.Token);
 
         Best = info.Best;
         GeneralPoints = info.GeneralPoints;

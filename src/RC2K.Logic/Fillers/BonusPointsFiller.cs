@@ -28,7 +28,7 @@ public class BonusPointsFiller(IDriverRepository driverRepository)
         }
     }
 
-    private async Task FillDriver(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers)
+    private async Task FillDriver(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Drivers.TryGetValue(bonusPoints.DriverId, out Driver? driver))
         {
@@ -36,8 +36,8 @@ public class BonusPointsFiller(IDriverRepository driverRepository)
         }
         else
         {
-            bonusPoints.Driver = (await driverRepository.GetById(bonusPoints.DriverId)) ?? throw new KeyNotFoundException();
-            await fillers.DriverFiller.FillRecursive(bonusPoints.Driver, context, fillers);
+            bonusPoints.Driver = (await driverRepository.GetById(bonusPoints.DriverId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.DriverFiller.FillRecursive(bonusPoints.Driver, context, fillers, ct);
         }
     }
 }

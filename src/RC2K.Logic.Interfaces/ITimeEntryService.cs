@@ -10,10 +10,10 @@ public interface ITimeEntryService
     Task<Result> Upload(TimeEntry timeEntry);
     Task Delete(List<TimeEntry> timeEntries);
 
-    Task<List<TimeEntry>> Get(int stageId, int? carId = null);
+    Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default);
     Task<List<TimeEntry>> GetAllNotVerified();
     Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment);
     Task Verify(List<TimeEntry> timeEntries, string comment);
-    Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1);
+    Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1, CancellationToken ct = default);
 
 }

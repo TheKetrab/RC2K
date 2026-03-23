@@ -28,7 +28,7 @@ public class VerifyInfoFiller(IUserRepository userRepository)
         }
     }
 
-    private async Task FillVerifier(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers)
+    private async Task FillVerifier(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Users.TryGetValue(verifyInfo.VerifierId, out User? user))
         {
@@ -36,8 +36,8 @@ public class VerifyInfoFiller(IUserRepository userRepository)
         }
         else
         {
-            verifyInfo.Verifier = (await userRepository.GetById(verifyInfo.VerifierId)) ?? throw new KeyNotFoundException();
-            await fillers.UserFiller.FillRecursive(verifyInfo.Verifier, context, fillers);
+            verifyInfo.Verifier = (await userRepository.GetById(verifyInfo.VerifierId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.UserFiller.FillRecursive(verifyInfo.Verifier, context, fillers, ct);
         }
     }
 }

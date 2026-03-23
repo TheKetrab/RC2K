@@ -28,7 +28,7 @@ public class UserFiller(IDriverRepository driverRepository)
         }
     }
 
-    private async Task FillDriver(User user, FillingContext context, IFillersBag fillers)
+    private async Task FillDriver(User user, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Drivers.TryGetValue(user.DriverId, out Driver? driver))
         {
@@ -36,8 +36,8 @@ public class UserFiller(IDriverRepository driverRepository)
         }
         else
         {
-            user.Driver = (await driverRepository.GetById(user.DriverId)) ?? throw new KeyNotFoundException();
-            await fillers.DriverFiller.FillRecursive(user.Driver, context, fillers);
+            user.Driver = (await driverRepository.GetById(user.DriverId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.DriverFiller.FillRecursive(user.Driver, context, fillers, ct);
         }
     }
 }

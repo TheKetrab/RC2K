@@ -66,7 +66,7 @@ public partial class PointsList
             }
 
             Guid driverId = tp.Key;
-            Driver driver = (await DriverService.GetById(driverId))!;
+            Driver driver = (await DriverService.GetById(driverId, CancellationToken.None))!;
             var itm = new PointsListItem(this, driver, rankedPlace, tp.Value,
                 pointsInfo.GeneralPoints.TryGetValue(driverId, out int valGp) ? valGp : 0,
                 pointsInfo.CarA8Points.TryGetValue(driverId, out int valA8) ? valA8 : 0,

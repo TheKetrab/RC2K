@@ -32,7 +32,7 @@ public class RankingFiller(IDriverRepository driverRepository)
         }
     }
 
-    private async Task FillDriver(RankingEntry entry, FillingContext context, IFillersBag fillers)
+    private async Task FillDriver(RankingEntry entry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Drivers.TryGetValue(entry.DriverId, out Driver? driver))
         {
@@ -40,8 +40,8 @@ public class RankingFiller(IDriverRepository driverRepository)
         }
         else
         {
-            entry.Driver = (await driverRepository.GetById(entry.DriverId)) ?? throw new KeyNotFoundException();
-            await fillers.DriverFiller.FillRecursive(entry.Driver, context, fillers);
+            entry.Driver = (await driverRepository.GetById(entry.DriverId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.DriverFiller.FillRecursive(entry.Driver, context, fillers, ct);
         }
     }
 

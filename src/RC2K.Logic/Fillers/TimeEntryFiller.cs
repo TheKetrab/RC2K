@@ -35,7 +35,7 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
     }
 
-    private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Drivers.TryGetValue(timeEntry.DriverId, out Driver? driver))
         {
@@ -43,12 +43,12 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.Driver = (await driverRepository.GetById(timeEntry.DriverId)) ?? throw new KeyNotFoundException();
-            await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers);
+            timeEntry.Driver = (await driverRepository.GetById(timeEntry.DriverId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.DriverFiller.FillRecursive(timeEntry.Driver, context, fillers, ct);
         }
     }
 
-    private async Task FillVerifyInfo(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    private async Task FillVerifyInfo(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (timeEntry.VerifyInfoId is null)
         {
@@ -61,8 +61,8 @@ public class TimeEntryFiller(ICarRepository carRepository,
         }
         else
         {
-            timeEntry.VerifyInfo = (await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value)) ?? throw new KeyNotFoundException();
-            await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers);
+            timeEntry.VerifyInfo = (await verifyInfoRepository.GetById(timeEntry.VerifyInfoId.Value, ct)) ?? throw new KeyNotFoundException();
+            await fillers.VerifyInfoFiller.FillRecursive(timeEntry.VerifyInfo, context, fillers, ct);
         }
     }
 
