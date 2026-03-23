@@ -37,21 +37,19 @@ public partial class StageDetails
 
     public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
-    private int? _selectedClass;
     private int _stageId;
+    private int _stageCode;
     private string _api = string.Empty;
     private IList<double[]> _waypoints = [];
     private string _name = string.Empty;
-    private string _raceName = string.Empty;
     private string _description = string.Empty;
     private string _imgName = string.Empty;
     private DomainModel.StageDetails _stageDetails = new();
-    private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
     private TimeEntryList _timeEntryListRef = default!;
     private PointsList _pointsListRef = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var stage = await StageService.GetByCode(Id, Direction);
         if (stage == null)
@@ -61,12 +59,12 @@ public partial class StageDetails
         }
 
         _stageId = stage.Id;
+        _stageCode = stage.Code;
         _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
         _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
         _path = await StageService.GetPath(Id);
 
-        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
         _name = stage.StageData?.Name ?? string.Empty;
         _imgName = stage.StageData?.ImgName ?? string.Empty;
         _description = stage.StageData?.Description ?? string.Empty;

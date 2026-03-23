@@ -36,7 +36,6 @@
                      id="points-list-table"
                      ShowColumnOptions="false"
                      RowsPerPage="100"
-                     Height="200px"
                      RowStyleFunc="_rowStyleFunc">
             <Columns>
                 <PropertyColumn Property="x => x.Place" Title="#" Sortable="false" />
@@ -57,12 +56,12 @@
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
-                <PropertyColumn Property="x => x.GeneralPoints" Title="GP" />
-                <PropertyColumn Property="x => x.CarA8Points" Title="A8" />
-                <PropertyColumn Property="x => x.CarA7Points" Title="A7" />
-                <PropertyColumn Property="x => x.CarA6Points" Title="A6" />
-                <PropertyColumn Property="x => x.CarA5Points" Title="A5" />
-                <PropertyColumn Property="x => x.CarBonusPoints" Title="B" />
+                <PropertyColumn Property="x => x.GeneralPoints" Title="GP" CellClass="gp" />
+                <PropertyColumn Property="x => x.CarA8Points" Title="A8" CellClass="cp" />
+                <PropertyColumn Property="x => x.CarA7Points" Title="A7" CellClass="cp" />
+                <PropertyColumn Property="x => x.CarA6Points" Title="A6" CellClass="cp" />
+                <PropertyColumn Property="x => x.CarA5Points" Title="A5" CellClass="cp" />
+                <PropertyColumn Property="x => x.CarBonusPoints" Title="B" CellClass="cp" />
             </Columns>
         </MudDataGrid>
 

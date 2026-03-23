@@ -31,6 +31,25 @@
     else
     {
         <div @onclick="@(() => CloseContextMenu())" style="position: relative;">
+            <MudStack Row="true" Spacing="0" Style="
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    padding-right: 5px;
+                    transform: translateY(-100%);">
+                <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = null">All</CategoryButton>
+                <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = 8">A8</CategoryButton>
+                <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = 7">A7</CategoryButton>
+                <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = 6">A6</CategoryButton>
+                <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = 5">A5</CategoryButton>
+                <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                                OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
+            </MudStack>
         <MudDataGrid @ref="_gridRef"
                      MultiSelection="@(VerificationMode)"
                      SortMode="SortMode.Single"
@@ -62,7 +81,7 @@
                                 {
                                     <span>@context.Item.PlaceByCar</span>
                                 }
-                                else if (this.FilterClass != null)
+                                else if (this._selectedClass != null)
                                 {
                                     <span>@context.Item.PlaceByClass</span>
                                 }

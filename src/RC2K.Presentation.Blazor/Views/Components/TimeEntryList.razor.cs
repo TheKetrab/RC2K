@@ -34,9 +34,6 @@ public partial class TimeEntryList
     [Parameter] 
     public bool VerificationMode { get; set; }
 
-    [Parameter]
-    public int? FilterClass { get; set; }
-
     // async loading
     private bool overlayVisible;
     private bool dataLoaded;
@@ -50,8 +47,10 @@ public partial class TimeEntryList
     public bool filterLabelsCheckBox;
     public string? filterLabelsText;
     public bool filterMfmiCheckBox;
+    private int? _selectedClass;
 
     private TimeEntryListItem? _currentContextMenuItem;
+
 
     public List<TimeEntry> GetSelectedTimeEntries()
     {
@@ -193,13 +192,13 @@ public partial class TimeEntryList
 
     private bool IsOkForClassFilter(TimeEntryListItem item)
     {
-        if (FilterClass == null)
+        if (_selectedClass == null)
         {
             // 'ALL' filter means not bonus
             return item.Data.Car?.Class != Car.BonusClass;
         }
 
-        return item.Data.Car?.Class == FilterClass;
+        return item.Data.Car?.Class == _selectedClass;
     }
 
     private async Task CopyIdToClipboard(Guid id)
