@@ -7,25 +7,15 @@ namespace RC2K.Logic.Fillers;
 public class BonusPointsFiller(IDriverRepository driverRepository)
     : IBonusPointsFiller
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public async Task FillRecursive(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers)
+    public async Task FillRecursive(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
-        await _semaphore.WaitAsync();
-        try
+        if (context.BonusPoints.ContainsKey(bonusPoints.Id))
         {
-            if (context.BonusPoints.ContainsKey(bonusPoints.Id))
-            {
-                return;
-            }
-            context.BonusPoints.Add(bonusPoints.Id, bonusPoints);
+            return;
+        }
+        context.BonusPoints.Add(bonusPoints.Id, bonusPoints);
 
-            await FillDriver(bonusPoints, context, fillers);
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+        await FillDriver(bonusPoints, context, fillers, ct);
     }
 
     private async Task FillDriver(BonusPoints bonusPoints, FillingContext context, IFillersBag fillers, CancellationToken ct)

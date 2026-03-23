@@ -7,28 +7,18 @@ namespace RC2K.Logic.Fillers;
 public class RankingFiller(IDriverRepository driverRepository)
     : IRankingFiller
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public async Task FillRecursive(RankingSnapshot ranking, FillingContext context, IFillersBag fillers)
+    public async Task FillRecursive(RankingSnapshot ranking, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
-        await _semaphore.WaitAsync();
-        try
+        if (context.Rankings.ContainsKey(ranking.Id))
         {
-            if (context.Rankings.ContainsKey(ranking.Id))
-            {
-                return;
-            }
-            context.Rankings.Add(ranking.Id, ranking);
-
-            foreach (var entry in ranking.Entries)
-            {
-                entry.Driver = await driverRepository.GetById(entry.DriverId);
-                await FillDriver(entry, context, fillers);
-            }
+            return;
         }
-        finally
+        context.Rankings.Add(ranking.Id, ranking);
+
+        foreach (var entry in ranking.Entries)
         {
-            _semaphore.Release();
+            entry.Driver = await driverRepository.GetById(entry.DriverId, ct);
+            await FillDriver(entry, context, fillers, ct);
         }
     }
 

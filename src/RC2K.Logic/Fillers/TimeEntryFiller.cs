@@ -10,29 +10,19 @@ public class TimeEntryFiller(ICarRepository carRepository,
                              IVerifyInfoRepository verifyInfoRepository)
     : ITimeEntryFiller
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public async Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers)
+    public async Task FillRecursive(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
-        await _semaphore.WaitAsync();
-        try
+        if (context.TimeEntries.ContainsKey(timeEntry.Id))
         {
-            if (context.TimeEntries.ContainsKey(timeEntry.Id))
-            {
-                return;
-            }
-            context.TimeEntries.Add(timeEntry.Id, timeEntry);
-
-            timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
-            timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
-
-            await FillDriver(timeEntry, context, fillers);
-            await FillVerifyInfo(timeEntry, context, fillers);
+            return;
         }
-        finally
-        {
-            _semaphore.Release();
-        }
+        context.TimeEntries.Add(timeEntry.Id, timeEntry);
+
+        timeEntry.Stage = await stageRepository.GetById(timeEntry.StageId);
+        timeEntry.Car = await carRepository.GetById(timeEntry.CarId);
+
+        await FillDriver(timeEntry, context, fillers, ct);
+        await FillVerifyInfo(timeEntry, context, fillers, ct);
     }
 
     private async Task FillDriver(TimeEntry timeEntry, FillingContext context, IFillersBag fillers, CancellationToken ct)
