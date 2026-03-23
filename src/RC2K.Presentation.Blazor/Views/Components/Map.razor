@@ -9,13 +9,13 @@
 
     [Parameter]
     public IList<double[]> Waypoints { get; set; } = [];
-    
+
     [Parameter]
     public bool ShowWaypoints { get; set; }
-    
+
     [Parameter]
     public string? Path { get; set; }
-    
+
     [Parameter]
     public string? Api { get; set; } // bike/car
 
@@ -24,12 +24,18 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!needsRedraw && !firstRender)
         {
             return;
         }
 
         await DrawMap();
+    }
+
+    private bool needsRedraw;
+    protected override void OnParametersSet()
+    {
+        needsRedraw = true;
     }
 
     private async Task DrawMap()
