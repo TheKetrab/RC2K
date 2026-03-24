@@ -60,6 +60,7 @@ main {
     
     --header-height: 3em;
     --header-margin-top: .5em;
+    --bottom-banner-height: 100px;
 }
 
 .pane {

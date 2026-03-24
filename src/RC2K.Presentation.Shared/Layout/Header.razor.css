@@ -77,3 +77,10 @@ header.sticked {
     flex-grow: 1;
     justify-content: flex-end;
 }
+
+
+@media (max-width: 768px) {
+    .header-main-box > img {
+        display: none;
+    }
+}

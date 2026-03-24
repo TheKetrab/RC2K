@@ -1,0 +1,64 @@
+﻿@inherits ComponentBase
+
+<style>
+
+    .subtext-underscore-long {
+        box-shadow: 1px 1px 10px #00000066;
+        border-radius: 10px;
+        content: '';
+        height: 5px;
+        background: linear-gradient(90deg, rgb(236 255 164 / 80%) 0%, rgb(237 255 132 / 80%) 50%, rgb(237 221 83 / 0.90) 100%);
+        width: 40%;
+        transition: transform .4s ease, opacity .4s ease;
+        transform-origin: right;
+        transition-delay: .15s;
+    }
+
+    .subtext-underscore-short {
+        box-shadow: 1px 1px 10px #00000066;
+        border-radius: 10px;
+        content: '';
+        height: 5px;
+        background: linear-gradient(90deg, rgba(237, 221, 83, 0.90) 0%, rgb(253 255 112 / 90%) 50%);
+        width: 8%;
+        transition: transform .4s ease, opacity .4s ease;
+        transition-delay: 0s;
+    }
+
+
+    .page.page-scrolled .subtext-underscore-long {
+        transform: scaleX(0);
+        opacity: 50%;
+        transition-delay: 0s;
+    }
+
+    .page.page-scrolled .subtext-underscore-short {
+        transform: rotate(450deg) scaleX(0.5);
+        opacity: 0%;
+        transition-delay: .15s;
+    }
+
+</style>
+
+<div>
+<div class="the-background">
+    
+        <div class="aurora-text">
+            RC2K Hub
+        </div>
+        <div class="subtext">
+            <div class="subtext-content">
+                <span class="subtext-item">Compete</span>
+                <span class="subtext-item">*</span>
+                <span class="subtext-item">Explore</span>
+                <span class="subtext-item">*</span>
+                <span class="subtext-item">Showcase</span>
+            </div>
+            <div class="subtext-underscore" style="display: flex; gap: 10px; width: 100%; justify-content: right;">
+                <div class="subtext-underscore-long"></div>
+                <div class="subtext-underscore-short"></div>
+            </div>
+        </div>
+</div>
+</div>
+
