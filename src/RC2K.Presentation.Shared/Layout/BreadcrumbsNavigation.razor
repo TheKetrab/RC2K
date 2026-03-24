@@ -1,38 +1,84 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager Navigation
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Routing
 @using RC2K.Presentation.Shared.ViewModels
 @using RC2K.Presentation.Shared.Layout
-@using BreadcrumbLink = RC2K.Presentation.Shared.ViewModels.BreadcrumbLink;
-<Breadcrumbs Links="@breadcrumbLinks" />
 
+<style>
+    .breadcrumbs-navigation {
+        position: absolute;
+        margin-top: 10px;
+        padding: 0;
+        padding-left: 12rem;
+        padding-right: 1.5em;
+        background-color: var(--primary50);
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+</style>
+
+
+<MudBreadcrumbs Items="_items" Separator=">" Class="breadcrumbs-navigation" />
+ 
 @code {
-    private List<BreadcrumbLink> breadcrumbLinks = [];
+    private List<BreadcrumbItem>? _items;
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        breadcrumbLinks.Add(new BreadcrumbLink
-        {
-            Address = Navigation.BaseUri,
-            IsActive = Navigation.Uri == Navigation.BaseUri,
-            OrderIndex = 1,
-            Title = "home"
-        });
+        _items = GetBreadcrumbsItems();
+        NavigationManager.LocationChanged += LocationChanged;
+    }
 
-        string[] path = new Uri(Navigation.Uri).LocalPath
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+    private void LocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        _items = GetBreadcrumbsItems();
+        StateHasChanged();
+    }
+
+    private List<BreadcrumbItem> GetBreadcrumbsItems()
+    {
+        string[] path = new Uri(NavigationManager.Uri).LocalPath
             .Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if (path.Length == 0 ||
+            path.Length > 0 && path[0] == "home")
+        {
+            return [new BreadcrumbItem("Home", "", disabled: true, icon: Icons.Material.Filled.Home)]; ;
+        }
+
+        List<BreadcrumbItem> breadcrumbs = [new BreadcrumbItem("Home", "", icon: Icons.Material.Filled.Home)];
+
 
         for (int i = 0; i < path.Length; i++)
         {
-            string link = path[i];
-            BreadcrumbLink lastLink = breadcrumbLinks.Last();
-            breadcrumbLinks.Add(new BreadcrumbLink
-            {
-                Address = Path.Combine(lastLink.Address, link),
-                IsActive = link == path.Last(),
-                OrderIndex = i + 1,
-                Title = link
-            });
+            BreadcrumbItem last = breadcrumbs.Last();
+            bool disabled = i == path.Length - 1;
+            string itemText = MapName(path[i]);
+            string link = Path.Combine(last.Href ?? "#", path[i]);
+            string? icon = MapIcon(path[i]);
+
+            breadcrumbs.Add(new BreadcrumbItem(itemText, link, disabled, icon));
         }
-        base.OnParametersSet();
+
+        return breadcrumbs;
+
     }
-}
+
+    private string MapName(string pathItem)
+    {
+        return char.ToUpperInvariant(pathItem[0]) + pathItem[1..];
+    }
+
+    private string? MapIcon(string pathItem)
+    {
+        if (pathItem == "stages") return Icons.Material.Filled.Map;
+        return null;
+    }
+
+} 
