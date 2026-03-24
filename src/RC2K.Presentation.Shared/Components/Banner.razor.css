@@ -40,6 +40,57 @@
     animation: aurora-mist 10s ease-in-out infinite;
 }
 
+
+.subtext-underscore-long {
+    box-shadow: 1px 1px 10px #00000066;
+    border-radius: 10px;
+    content: '';
+    height: 5px;
+    width: 40%;
+    transition: transform .4s ease, opacity .4s ease;
+    transform-origin: right;
+    transition-delay: .15s;
+}
+
+.subtext-underscore-short {
+    box-shadow: 1px 1px 10px #00000066;
+    border-radius: 10px;
+    content: '';
+    height: 5px;
+    width: 8%;
+    transition: transform .4s ease, opacity .4s ease;
+    transition-delay: 0s;
+}
+
+.page.page-scrolled .subtext-underscore-long {
+    transform: scaleX(0);
+    opacity: 50%;
+    transition-delay: 0s;
+}
+
+.page.page-scrolled .subtext-underscore-short {
+    transform: rotate(450deg) scaleX(0.5);
+    opacity: 0%;
+    transition-delay: .15s;
+}
+
+.subtext-underscore {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: right;
+}
+
+.subtext-underscore-short,
+.subtext-underscore-long {
+   background:
+        radial-gradient(circle at 20% 30%, #ffffff 0%, transparent 80%),
+        radial-gradient(circle at 80% 70%, #fffef5 0%, transparent 80%),
+        radial-gradient(circle at 50% 20%, #a5e800 0%, transparent 80%),
+        radial-gradient(circle at 30% 80%, #562727 0%, transparent 80%);
+   animation: aurora-mist 10s ease-in-out infinite;
+}
+
 @keyframes aurora-mist {
     0% {
         background-position: 0% 0%;
