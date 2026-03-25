@@ -70,6 +70,12 @@ public partial class StageDetails
         _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
     }
 
+    private Task HandleOnTimeEntryListReloadRequested()
+    {
+        _pointsListRef?.OpenLoadingOverlay();
+        return Task.CompletedTask;
+    }
+
     private async Task HandleOnTimeEntryListLoaded()
     {
         var pointsInfo = _timeEntryListRef.PointsInfo;

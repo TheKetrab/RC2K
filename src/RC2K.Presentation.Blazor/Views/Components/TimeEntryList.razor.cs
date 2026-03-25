@@ -56,6 +56,9 @@ public partial class TimeEntryList
     [Parameter]
     public Func<Task>? OnLoaded { get; set; }
 
+    [Parameter]
+    public Func<Task>? OnReloadRequested { get; set; }
+
     [Parameter] 
     public bool VerificationMode { get; set; }
 
@@ -117,6 +120,9 @@ public partial class TimeEntryList
     public async Task ReloadTimeEntries()
     {
         OpenLoadingOverlay();
+        if (OnReloadRequested != null)
+            await OnReloadRequested();
+        
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
 
@@ -141,7 +147,9 @@ public partial class TimeEntryList
         Items.Set(items.OrderBy(x => x.Place));
 
         CloseLoadingOverlay();
-        OnLoaded?.Invoke();
+
+        if (OnLoaded != null)
+            await OnLoaded();
     }
 
     public async Task ReloadTimeEntriesForVerification()

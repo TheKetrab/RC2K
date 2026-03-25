@@ -37,10 +37,11 @@ public partial class PointsList
         base.OnInitialized();
     }
 
-    private void OpenLoadingOverlay()
+    public void OpenLoadingOverlay()
     {
         overlayVisible = true;
         dataLoaded = false;
+        StateHasChanged();
     }
     private void CloseLoadingOverlay()
     {
