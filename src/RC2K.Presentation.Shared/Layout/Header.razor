@@ -21,10 +21,16 @@
 
     function observeHeader(element, dotNetObjRef) {
 
+        const parent = element.closest(".page");
         const observer = new IntersectionObserver(
             async ([e]) => {
                 let isSticked = e.intersectionRatio < 0.99;
-              await dotNetObjRef.invokeMethodAsync('SetIsSticked', isSticked);
+                await dotNetObjRef.invokeMethodAsync('SetIsSticked', isSticked);
+                if (isSticked) {
+                    parent.classList.add("page-scrolled");
+                } else {
+                    parent.classList.remove("page-scrolled");
+                }
             },
             { threshold: [0.99] });
 

@@ -26,56 +26,95 @@
 <div style="@($@"
      background-image: url(_content/RC2K.Presentation.Shared/img/home/home{DayTime}.png);
      background-size: cover;
-     background-size: 100% 100%;
-     min-height: calc(100vh - var(--header-margin-top) - var(--header-height));
+     background-position-y: {BackgroundOffset}px;
+     background-size: 100% 110%;
+     min-height: clamp(400px, calc(100vh - var(--header-margin-top) - var(--header-height) - var(--bottom-banner-height)), 1000px);
      padding-top: 80px;
      display: flex;
      flex-direction: column;
      justify-content: space-between;
      ")">
 
-    <div style="width: 100%; padding: 1em 2em;" class="pane2">
-        <h1 Class="font-weight-bold mb-4" Color="Color.Primary">
-            RC2K Hub
-        </h1>
+        <Banner />
 
-        <MudText Class="mb-4">
-            Welcome to the giant portal for fans of the great game <strong>Mobil 1 Rally Championship 2000</strong>.
-            We are dedicated to bringing the community together by tracking and celebrating driver performance across the globe.
-        </MudText>
+     @* <div>
+        <MudGrid Class="mb-6" Justify="Justify.FlexEnd">
+            <MudItem xs="12" sm="3">
+                <MudPaper Outlined="true" Class="pa-4" Style="@($"background: {Rc2kColorPallete.gray200}")">
+                    <MudText Class="font-weight-bold" Color="Color.Primary">» Global Standings</MudText>
+                    <MudText>Compete for the fastest overall time on every stage in the game.</MudText>
+                </MudPaper>
+                <MudPaper Outlined="true" Class="pa-4 mt-2" Style="@($"background: {Rc2kColorPallete.gray50}")">
+                    <MudText Class="font-weight-bold" Color="Color.Secondary">» Car-Specific Rankings</MudText>
+                    <MudText>Master individual vehicles and top the charts for every class.</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div> *@
 
-        <MudText Typo="Typo.body1" Class="mb-2">
-            Our database features the full list of <span class="emph">72 official stages</span> known as simulation & arcade versions,
-            alongside an is dedicated to contain ever-growing collection of <span class="emph">community-created maps</span>.
-        </MudText>
-    </div>
-
-    <div>
-        <div>
-            <MudGrid Class="mb-6" Justify="Justify.FlexEnd">
-                <MudItem xs="12" sm="3">
-                    <MudPaper Outlined="true" Class="pa-4" Style="@($"background: {Rc2kColorPallete.gray200}")">
-                        <MudText Class="font-weight-bold" Color="Color.Primary">» Global Standings</MudText>
-                        <MudText>Compete for the fastest overall time on every stage in the game.</MudText>
-                    </MudPaper>
-                    <MudPaper Outlined="true" Class="pa-4 mt-2" Style="@($"background: {Rc2kColorPallete.gray50}")">
-                        <MudText Class="font-weight-bold" Color="Color.Secondary">» Car-Specific Rankings</MudText>
-                        <MudText>Master individual vehicles and top the charts for every class.</MudText>
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </div>
-
-        <MudAlert Class="mb-12" Severity="Severity.Normal" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" NoIcon="true"
-                  Style="font-style: italic; background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.1), transparent); border-top: 1px solid rgba(255, 204, 0, 0.3); border-bottom: 1px solid rgba(255, 204, 0, 0.3);">
-            „With nearly <span class="emph2">2,000 unique classifications</span> to conquer,<br /> there is always a new record to break.”
-
-            <MudText Color="Color.Secondary" Align="Align.Center" Class="mt-1" Style="font-style: italic;">
-                In which one will you prove to be the best?
-            </MudText>
-        </MudAlert>
-    </div>
+    <div style="align-self: flex-end; color: rgb(255 255 255 / 75%); font-family: Anta; padding-right: 5px;">
+        v1.2.0-static
 </div>
+
+</div>
+
+<style>
+
+    .bottom-banner {
+
+        height: var(--bottom-banner-height);
+        padding: 10px 15px;
+        font-size: 12pt;
+        border-radius: 0;
+        font-family: Anta, sans-serif;
+
+        background: linear-gradient(90deg, #272727cf, rgb(37 37 37), rgb(30 30 30), rgb(30 30 30 / 71%));
+        border-top: 1px solid rgba(255, 204, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .bottom-banner-content {
+        height: 100%;
+        border-top: 1px solid rgba(255, 204, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+        place-content: center;
+    }
+
+    .bottom-banner-content > p {
+        text-align: center;
+        color: white;
+    }
+
+</style>
+
+<div class="bottom-banner">
+    <div class="bottom-banner-content">
+        <p>„With nearly <span class="emph2">2,000 unique classifications</span> to conquer,<br /> there is always a new record to break.”</p>
+        <p><span class="emph2">In which one will you prove to be the best?</span></p>
+    </div>
+
+</div>
+
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-5">
+
+    <MudText Style="font-size: 20pt; text-align: center;" Class="mb-4">
+        Welcome to the giant portal for fans of the great game <strong>Mobil 1 Rally Championship 2000</strong>.
+        We are dedicated to bringing the community together by tracking and celebrating driver performance across the globe.
+    </MudText>
+
+    <MudText Style="font-size: 20pt; text-align: center;" Class="mb-2">
+        Our database features the full list of <span class="emph">72 official stages</span> known as simulation & arcade versions,
+        alongside an is dedicated to contain ever-growing collection of <span class="emph">community-created maps</span>.
+    </MudText>
+</MudContainer>
+
+
+
+
+
 
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-5">
@@ -255,7 +294,7 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
-
+ 
 @code {
     public int DayTime
     {
@@ -271,4 +310,13 @@
             };
         }
     }
+
+    public int BackgroundOffset => DayTime switch
+    {
+        1 => 0,
+        2 => 0,
+        3 => -50,
+        4 => -50,
+        _ => 0
+    };
 }
