@@ -31,12 +31,12 @@ public class DialogHelper(IDialogService dialogService)
 
     public async Task ShowMessageBox(string title, string message)
     {
-        await dialogService.ShowMessageBox(title, message, options: _commonOptions);
+        await dialogService.ShowMessageBoxAsync(title, message, options: _commonOptions);
     }
 
     public async Task<bool> ShowYesNoDialog(string title, string message, string yes, string no)
     {
-        var res = await dialogService.ShowMessageBox(title, message,  options: _commonOptions);
+        var res = await dialogService.ShowMessageBoxAsync(title, message,  options: _commonOptions);
         return res is true;
     }
 
