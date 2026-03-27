@@ -79,13 +79,22 @@ public partial class TimeEntryList
 
     private TimeEntryListItem? _currentContextMenuItem;
 
-
     public List<TimeEntry> GetSelectedTimeEntries()
     {
         var selectedTimeEntries =
             _gridRef?.SelectedItems.Select(x => x.Data).ToList() ?? [];
 
         return selectedTimeEntries;
+    }
+
+    private double _tableHeight = 250;
+
+    private async Task GetTableHeight()
+    {
+        _tableHeight = await JSRuntime.InvokeAsync<double>(
+            "eval",
+            "document.getElementById('time-entry-list-table')?.offsetHeight || 0"
+        );
     }
 
     protected override async Task OnParametersSetAsync()
@@ -96,6 +105,13 @@ public partial class TimeEntryList
         }
         else
         {
+            if (_gridRef != null)
+            {
+                await GetTableHeight();
+            }
+
+
+
             if (prevStageId != StageId)
             {
                 prevStageId = StageId;

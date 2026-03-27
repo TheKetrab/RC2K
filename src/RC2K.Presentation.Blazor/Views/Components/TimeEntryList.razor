@@ -17,241 +17,239 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject DialogHelper DialogHelper
 
-@{
-    if (!dataLoaded)
-    {
-        <div style="position: relative;">
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100px" />
-            <MudOverlay Visible="overlayVisible" Absolute="true">
-                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
-            </MudOverlay>
-        </div>
-    }
-    else
-    {
-        <div @onclick="@(() => CloseContextMenu())" style="position: relative;">
-            <MudStack Row="true" Spacing="0" Style="
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    padding-right: 5px;
-                    transform: translateY(-100%);">
-                <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = null">All</CategoryButton>
-                <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = 8">A8</CategoryButton>
-                <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = 7">A7</CategoryButton>
-                <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = 6">A6</CategoryButton>
-                <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = 5">A5</CategoryButton>
-                <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
-                                OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
-            </MudStack>
-        <MudDataGrid @ref="_gridRef"
-                     MultiSelection="@(VerificationMode)"
-                     SortMode="SortMode.Single"
-                     T="TimeEntryListItem"
-                     Items="@Items"
-                     id="time-entry-list-table"
-                     ShowColumnOptions="false"
-                     RowsPerPage="20"
-                     QuickFilter="_quickFilter"
-                     RowStyleFunc="_rowStyleFunc">
-            <Columns>
+@if (!dataLoaded)
+{
+    <div style="position: relative;">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="@($"{this._tableHeight}px")" />
+        <MudOverlay Visible="overlayVisible" Absolute="true">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        </MudOverlay>
+    </div>
+}
+else
+{
+    <div @onclick="@(() => CloseContextMenu())" style="position: relative;">
+    <MudStack Row="true" Spacing="0" Style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding-right: 5px;
+            transform: translateY(-100%);">
+        <CategoryButton Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = null">All</CategoryButton>
+        <CategoryButton Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = 8">A8</CategoryButton>
+        <CategoryButton Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = 7">A7</CategoryButton>
+        <CategoryButton Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = 6">A6</CategoryButton>
+        <CategoryButton Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = 5">A5</CategoryButton>
+        <CategoryButton Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
+                        OnClick="() => _selectedClass = Car.BonusClass">B</CategoryButton>
+    </MudStack>
+    <MudDataGrid @ref="_gridRef"
+                    MultiSelection="@(VerificationMode)"
+                    SortMode="SortMode.Single"
+                    T="TimeEntryListItem"
+                    Items="@Items"
+                    id="time-entry-list-table"
+                    ShowColumnOptions="false"
+                    RowsPerPage="20"
+                    QuickFilter="_quickFilter"
+                    RowStyleFunc="_rowStyleFunc">
+        <Columns>
 
-                @if (VerificationMode)
-                {
-                    <TemplateColumn Title="Stage">
-                        <CellTemplate>
-                            <MudLink Href="@context.Item.StageLink">
-                                @context.Item.StageName
-                            </MudLink>
-                        </CellTemplate>
-                    </TemplateColumn>
-                }
-                @if (VerificationMode == false)
-                {
-                    <TemplateColumn Title="#">
-                        <CellTemplate>
-                            @{
-                                if (this.filterCarCheckBox && this.filterCar != null)
-                                {
-                                    <span>@context.Item.PlaceByCar</span>
-                                }
-                                else if (this._selectedClass != null)
-                                {
-                                    <span>@context.Item.PlaceByClass</span>
-                                }
-                                else
-                                {
-                                    <span>@context.Item.Place</span>
-                                }
+            @if (VerificationMode)
+            {
+                <TemplateColumn Title="Stage">
+                    <CellTemplate>
+                        <MudLink Href="@context.Item.StageLink">
+                            @context.Item.StageName
+                        </MudLink>
+                    </CellTemplate>
+                </TemplateColumn>
+            }
+            @if (VerificationMode == false)
+            {
+                <TemplateColumn Title="#">
+                    <CellTemplate>
+                        @{
+                            if (this.filterCarCheckBox && this.filterCar != null)
+                            {
+                                <span>@context.Item.PlaceByCar</span>
                             }
-                        </CellTemplate>
-                    </TemplateColumn>
-                }
-                <TemplateColumn Title="Time">
-                    <CellTemplate>
-                        <div style="display: flex; align-items: center;">
-                            <span style="@($"color: {(context.Item.Verified ? "green" : "red")}; cursor: context-menu;")" 
-                                  @oncontextmenu="(e) => ShowContextMenu(e, context.Item)"
-                                  @oncontextmenu:preventDefault="true">
-                                @context.Item.TimeDisplay
-                            </span>
-                        </div>
+                            else if (this._selectedClass != null)
+                            {
+                                <span>@context.Item.PlaceByClass</span>
+                            }
+                            else
+                            {
+                                <span>@context.Item.Place</span>
+                            }
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+            }
+            <TemplateColumn Title="Time">
+                <CellTemplate>
+                    <div style="display: flex; align-items: center;">
+                        <span style="@($"color: {(context.Item.Verified ? "green" : "red")}; cursor: context-menu;")" 
+                                @oncontextmenu="(e) => ShowContextMenu(e, context.Item)"
+                                @oncontextmenu:preventDefault="true">
+                            @context.Item.TimeDisplay
+                        </span>
+                    </div>
                         
-                        <MudPopover @onclick:stopPropagation="true"
-                                    Open="@(_currentContextMenuItem == context.Item)" 
-                                    AnchorOrigin="Origin.BottomCenter"
-                                    TransformOrigin="Origin.TopCenter"
-                                    Style="z-index: 1000;">
-                            <MudPaper Elevation="3" Style="padding: 4px;">
-                                <MudStack Spacing="0">
+                    <MudPopover @onclick:stopPropagation="true"
+                                Open="@(_currentContextMenuItem == context.Item)" 
+                                AnchorOrigin="Origin.BottomCenter"
+                                TransformOrigin="Origin.TopCenter"
+                                Style="z-index: 1000;">
+                        <MudPaper Elevation="3" Style="padding: 4px;">
+                            <MudStack Spacing="0">
+                                <MudButton Size="Size.Small" 
+                                            Color="Color.Default"
+                                            OnClick="@(() => CopyIdToClipboard(context.Item.Data.Id))"
+                                            FullWidth="true"
+                                            Style="justify-content: flex-start;">
+                                    <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" Style="margin-right: 8px;" />
+                                    Copy ID
+                                </MudButton>
+                                @if (CanDeleteTimeEntry(context.Item))
+                                {
                                     <MudButton Size="Size.Small" 
-                                               Color="Color.Default"
-                                               OnClick="@(() => CopyIdToClipboard(context.Item.Data.Id))"
-                                               FullWidth="true"
-                                               Style="justify-content: flex-start;">
-                                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" Style="margin-right: 8px;" />
-                                        Copy ID
+                                                Color="Color.Error"
+                                                OnClick="@(() => OpenDeleteConfirmation(context.Item))"
+                                                FullWidth="true"
+                                                Style="justify-content: flex-start;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Style="margin-right: 8px;" />
+                                        Delete
                                     </MudButton>
-                                    @if (CanDeleteTimeEntry(context.Item))
-                                    {
-                                        <MudButton Size="Size.Small" 
-                                                   Color="Color.Error"
-                                                   OnClick="@(() => OpenDeleteConfirmation(context.Item))"
-                                                   FullWidth="true"
-                                                   Style="justify-content: flex-start;">
-                                            <MudIcon Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Style="margin-right: 8px;" />
-                                            Delete
-                                        </MudButton>
-                                    }
-                                </MudStack>
-                            </MudPaper>
-                        </MudPopover>
-                    </CellTemplate>
-                </TemplateColumn>
-                @if (!VerificationMode)
-                {
-                    <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
-                }
-                <TemplateColumn Title="Driver">
+                                }
+                            </MudStack>
+                        </MudPaper>
+                    </MudPopover>
+                </CellTemplate>
+            </TemplateColumn>
+            @if (!VerificationMode)
+            {
+                <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+            }
+            <TemplateColumn Title="Driver">
 
-                    <CellTemplate>
-                        <MudStack Row Class="my-flag">
-                                <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
-                            <span>@context.Item.DisplayName</span>
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn Title="Car">
-                    <CellTemplate>
-                        <div class="car" data-car-id="@(context.Item.Data.Car!.Id - 1)"></div>
-                    </CellTemplate>
-                </TemplateColumn>
-                <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
-                <TemplateColumn Title="Proofs">
+                <CellTemplate>
+                    <MudStack Row Class="my-flag">
+                            <span class="fi @($"fi-{@context.Item.Data.Driver!.Nationality}")"></span>
+                        <span>@context.Item.DisplayName</span>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Car">
+                <CellTemplate>
+                    <div class="car" data-car-id="@(context.Item.Data.Car!.Id - 1)"></div>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.UploadTimeDisplay" Title="Uploaded" />
+            <TemplateColumn Title="Proofs">
+                <CellTemplate>
+                    <p style="display: flex;">
+                        @{
+                            foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
+                            {
+                                <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                            }
+                            if (context.Item.IsHST)
+                            {
+                                <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(ProofType.Hst)" Size="Size.Small" />
+                            }
+                        }
+                    </p>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Labels">
+                <CellTemplate>
+                    <p>
+                        @{
+                            foreach (var label in context.Item.Labels)
+                            {
+                                string color = label switch
+                                {
+                                    "TA" => "#8df5fc",
+                                    "A8" => "#f0baff",
+                                    "Arcade" => "#ff809b",
+                                    "BRC" => "#f1ffb0",
+                                    "BRC20" => "#e0c444ff",
+                                    "MFMI18" => "#c71a99ff",
+                                    "MFMI19" => "#d18fd9",
+                                    "MFMI20" => "#83ba73ff",
+                                    "MFMI21" => "#bfb84eff",
+                                    "MFMI22" => "#99e63cff",
+                                    "MFMI23" => "#4d69f7ff",
+                                    "MFMI24" => "#6eb3db",
+                                    "MFMI25" => "#f25a46ff",
+                                    _ => "#cbf092ff"
+                                };
+
+                                <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
+                            }
+                        }
+                    </p>
+                </CellTemplate>
+            </TemplateColumn>
+            @if (!VerificationMode)
+            {
+                <TemplateColumn Title="Points">
                     <CellTemplate>
                         <p style="display: flex;">
-                            @{
-                                foreach (var p in context.Item.Data.Proofs.OrderBy(x => x.Type))
-                                {
-                                    <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
-                                }
-                                if (context.Item.IsHST)
-                                {
-                                    <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(ProofType.Hst)" Size="Size.Small" />
-                                }
+                            @if (context.Item.GeneralPoints > 0)
+                            {
+                                <span style="color: var(--primary);">+@context.Item.GeneralPoints</span>
+                            }
+                            @if (context.Item.CarPoints > 0)
+                            {
+                                <span style="color: var(--secondary);">+@context.Item.CarPoints</span>
                             }
                         </p>
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Title="Labels">
-                    <CellTemplate>
-                        <p>
-                            @{
-                                foreach (var label in context.Item.Labels)
-                                {
-                                    string color = label switch
-                                    {
-                                        "TA" => "#8df5fc",
-                                        "A8" => "#f0baff",
-                                        "Arcade" => "#ff809b",
-                                        "BRC" => "#f1ffb0",
-                                        "BRC20" => "#e0c444ff",
-                                        "MFMI18" => "#c71a99ff",
-                                        "MFMI19" => "#d18fd9",
-                                        "MFMI20" => "#83ba73ff",
-                                        "MFMI21" => "#bfb84eff",
-                                        "MFMI22" => "#99e63cff",
-                                        "MFMI23" => "#4d69f7ff",
-                                        "MFMI24" => "#6eb3db",
-                                        "MFMI25" => "#f25a46ff",
-                                        _ => "#cbf092ff"
-                                    };
+            }
+            @if (VerificationMode)
+            {
+                <SelectColumn T="TimeEntryListItem" />
+            }
 
-                                    <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>
-                                }
-                            }
-                        </p>
-                    </CellTemplate>
-                </TemplateColumn>
-                @if (!VerificationMode)
-                {
-                    <TemplateColumn Title="Points">
-                        <CellTemplate>
-                            <p style="display: flex;">
-                                @if (context.Item.GeneralPoints > 0)
-                                {
-                                    <span style="color: var(--primary);">+@context.Item.GeneralPoints</span>
-                                }
-                                @if (context.Item.CarPoints > 0)
-                                {
-                                    <span style="color: var(--secondary);">+@context.Item.CarPoints</span>
-                                }
-                            </p>
-                        </CellTemplate>
-                    </TemplateColumn>
-                }
-                @if (VerificationMode)
-                {
-                    <SelectColumn T="TimeEntryListItem" />
-                }
+        </Columns>
+        <PagerContent>
+            <AuthorizeView>
+                <Authorized>
+                    <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10, 20, 50]" />
+                </Authorized>
+            </AuthorizeView>
+        </PagerContent>
+    </MudDataGrid>
 
-            </Columns>
-            <PagerContent>
-                <AuthorizeView>
-                    <Authorized>
-                        <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10, 20, 50]" />
-                    </Authorized>
-                </AuthorizeView>
-            </PagerContent>
-        </MudDataGrid>
-
-        <AuthorizeView>
-            <Authorized>
-                <MudPaper>
-                    <MudStack Row Style="align-items: center;">
-                        <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
-                        <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
-                    </MudStack>
-                    <MudStack Row Style="align-items: center;">
-                        <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
-                        <CarSelector @bind-SelectedCar="filterCar" />
-                    </MudStack>
-                    <MudStack Row Style="align-items: center;">
-                        <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
-                        <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
-                    </MudStack>
-                    <MudStack Row Style="align-items: center;">
-                        <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
-                    </MudStack>
-                </MudPaper>
-            </Authorized>
-        </AuthorizeView>
-        </div>
-    }
-
+    <AuthorizeView>
+        <Authorized>
+            <MudPaper>
+                <MudStack Row Style="align-items: center;">
+                    <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
+                    <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
+                </MudStack>
+                <MudStack Row Style="align-items: center;">
+                    <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
+                    <CarSelector @bind-SelectedCar="filterCar" />
+                </MudStack>
+                <MudStack Row Style="align-items: center;">
+                    <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
+                    <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
+                </MudStack>
+                <MudStack Row Style="align-items: center;">
+                    <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
+                </MudStack>
+            </MudPaper>
+        </Authorized>
+    </AuthorizeView>
+    </div>
 }
+
