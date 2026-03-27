@@ -20,6 +20,6 @@ public class NotificationRepository(
             SELECT * FROM c WHERE c.userId = @userId")
             .WithParameter("@userId", userId);
 
-        return await FetchAll(query);
+        return await FetchAll(query, CancellationToken.None);
     }
 }

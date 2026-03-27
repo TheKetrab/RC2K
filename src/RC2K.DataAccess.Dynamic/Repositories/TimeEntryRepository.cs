@@ -26,26 +26,26 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
         var query = new QueryDefinition(@"
             SELECT * FROM c WHERE NOT IS_DEFINED(c.verifyInfoId) OR IS_NULL(c.verifyInfoId)");
 
-        return await FetchAll(query);
+        return await FetchAll(query, CancellationToken.None);
     }
 
-    public async Task<List<TimeEntry>> GetByStageId(int stageId)
+    public async Task<List<TimeEntry>> GetByStageId(int stageId, CancellationToken ct)
     {
         var query = new QueryDefinition(@"
             SELECT * FROM c WHERE c.stageId = @stageId")
             .WithParameter("@stageId", stageId);
 
-        return await FetchAll(query);
+        return await FetchAll(query, ct);
     }
 
-    public async Task<List<TimeEntry>> GetByStageIdAndCarId(int stageId, int carId)
+    public async Task<List<TimeEntry>> GetByStageIdAndCarId(int stageId, int carId, CancellationToken ct)
     {
         var query = new QueryDefinition(@"
             SELECT * FROM c WHERE c.stageId = @stageId AND c.carId = @carId")
             .WithParameter("@stageId", stageId)
             .WithParameter("@carId", carId);
 
-        return await FetchAll(query);
+        return await FetchAll(query, ct);
     }
 
     public async Task<List<TimeEntry>> GetByStageIdAndCarIdAndDriverIdAndTime(int stageId, int carId, Guid driverId, TimeOnly time)
@@ -63,6 +63,6 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
             .WithParameter("@driverId", driverId)
             .WithParameter("@centiseconds", centiseconds);
 
-        return await FetchAll(query);
+        return await FetchAll(query, CancellationToken.None);
     }
 }

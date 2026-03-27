@@ -60,6 +60,7 @@ main {
     
     --header-height: 3em;
     --header-margin-top: .5em;
+    --bottom-banner-height: 100px;
 }
 
 .pane {
@@ -137,6 +138,37 @@ h1:focus {
         font-size: .75rem !important;
     }
 
-#time-entry-list-table .mud-table-cell {
+#time-entry-list-table .mud-table-cell,
+#points-list-table .mud-table-cell {
     padding: 0 3px;
+}
+
+/*::deep .mud-chip.mud-chip-size-xs {
+    border-radius: 12px;
+    font-size: 10px;
+    height: 16px;
+    padding: 0 8px;
+}*/
+
+#points-list-table .gp {
+    color: var(--mud-palette-primary) !important;
+}
+
+#points-list-table .cp {
+    color: var(--mud-palette-secondary) !important;
+}
+
+#points-list-table .mud-table-container {
+    max-height: 200px !important;
+}
+
+#time-entry-list-table .mud-table-container {
+    min-height: 150px !important;
+}
+
+.my-flag {
+    align-items: center;
+}
+.my-flag .fi {
+    box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 50%);
 }

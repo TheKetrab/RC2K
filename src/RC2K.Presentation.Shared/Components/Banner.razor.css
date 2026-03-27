@@ -1,0 +1,114 @@
+﻿
+.the-background {
+    place-items: center;
+}
+
+.subtext {
+    margin-top: -20px;
+    font-size: 32pt;
+    -webkit-text-stroke: .5px #2c2c2c;
+    font-family: "Viga", sans-serif;
+}
+
+.subtext-content {
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    gap: .5em;
+}
+
+.aurora-text {
+    line-height: 1em;
+    font-size: 120pt;
+    -webkit-text-stroke: 1px #2222226e;
+    font-family: "Koulen", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    filter: drop-shadow(#ee2233 0.5rem 0.5rem 1rem);
+
+    background:
+        radial-gradient(circle at 20% 30%, #ffffff 0%, transparent 80%),
+        radial-gradient(circle at 80% 70%, #fffef5 0%, transparent 80%),
+        radial-gradient(circle at 50% 20%, #a5e800 0%, transparent 80%),
+        radial-gradient(circle at 30% 80%, #562727 0%, transparent 80%);
+    
+    background-size: 200% 200%;
+    --webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 15px rgba(79, 172, 254, 0.3));
+    animation: aurora-mist 10s ease-in-out infinite;
+}
+
+
+.subtext-underscore-long {
+    box-shadow: 1px 1px 10px #00000066;
+    border-radius: 10px;
+    content: '';
+    height: 5px;
+    width: 40%;
+    transition: transform .4s ease, opacity .4s ease;
+    transform-origin: right;
+    transition-delay: .15s;
+}
+
+.subtext-underscore-short {
+    box-shadow: 1px 1px 10px #00000066;
+    border-radius: 10px;
+    content: '';
+    height: 5px;
+    width: 8%;
+    transition: transform .4s ease, opacity .4s ease;
+    transition-delay: 0s;
+}
+
+.page.page-scrolled .subtext-underscore-long {
+    transform: scaleX(0);
+    opacity: 50%;
+    transition-delay: 0s;
+}
+
+.page.page-scrolled .subtext-underscore-short {
+    transform: rotate(450deg) scaleX(0.5);
+    opacity: 0%;
+    transition-delay: .15s;
+}
+
+.subtext-underscore {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: right;
+}
+
+.subtext-underscore-short,
+.subtext-underscore-long {
+   background:
+        radial-gradient(circle at 20% 30%, #ffffff 0%, transparent 80%),
+        radial-gradient(circle at 80% 70%, #fffef5 0%, transparent 80%),
+        radial-gradient(circle at 50% 20%, #a5e800 0%, transparent 80%),
+        radial-gradient(circle at 30% 80%, #562727 0%, transparent 80%);
+   animation: aurora-mist 10s ease-in-out infinite;
+}
+
+@keyframes aurora-mist {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    25% {
+        background-position: 100% 0%;
+    }
+
+    50% {
+        background-position: 100% 100%;
+    }
+
+    75% {
+        background-position: 0% 100%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+}

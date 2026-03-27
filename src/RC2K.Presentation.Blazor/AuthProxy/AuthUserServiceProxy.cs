@@ -27,8 +27,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public Task<Result> CreateUserWithPassword(string name, string password, string? nationality, string email) =>
             _service.CreateUserWithPassword(name, password, nationality, email);
 
-        public Task<User?> GetById(Guid id) =>
-            _service.GetById(id);
+        public Task<User?> GetById(Guid id, CancellationToken ct = default) =>
+            _service.GetById(id, ct);
 
         public async Task<string> GetCurrentUserName()
         {

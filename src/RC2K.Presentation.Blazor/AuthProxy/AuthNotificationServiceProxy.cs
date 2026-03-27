@@ -48,7 +48,7 @@ public class AuthNotificationServiceProxy : INotificationService
 
     private async Task AuthorizeSelf(Guid notificationId)
     {
-        Notification? notification = await _notificationRepository.GetById(notificationId);
+        Notification? notification = await _notificationRepository.GetById(notificationId, CancellationToken.None);
         if (notification == null) 
         {
             return;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using MudBlazor;
 using RC2K.DomainModel;
 using RC2K.Extensions;
@@ -37,20 +36,19 @@ public partial class StageDetails
 
     public bool IsArcade => Direction == DomainModel.Direction.Arcade;
 
-    private int? _selectedClass;
     private int _stageId;
+    private int _stageCode;
     private string _api = string.Empty;
     private IList<double[]> _waypoints = [];
     private string _name = string.Empty;
-    private string _raceName = string.Empty;
     private string _description = string.Empty;
     private string _imgName = string.Empty;
     private DomainModel.StageDetails _stageDetails = new();
-    private List<DomainModel.TimeEntry> _timeEntries = new();
     private string? _path;
     private TimeEntryList _timeEntryListRef = default!;
+    private PointsList _pointsListRef = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         var stage = await StageService.GetByCode(Id, Direction);
         if (stage == null)
@@ -60,36 +58,28 @@ public partial class StageDetails
         }
 
         _stageId = stage.Id;
+        _stageCode = stage.Code;
         _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
         _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
 
         _path = await StageService.GetPath(Id);
 
-        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
         _name = stage.StageData?.Name ?? string.Empty;
         _imgName = stage.StageData?.ImgName ?? string.Empty;
         _description = stage.StageData?.Description ?? string.Empty;
         _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private Task HandleOnTimeEntryListReloadRequested()
     {
-        await RecalculateHeight();
-    }
-
-    private async Task RecalculateHeight()
-    {
-        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
-    }
-
-    private Task HandleOnTimeEntryListLoaded()
-    {
-        Task.Run(async () =>
-        {
-            await Task.Delay(500);
-            await RecalculateHeight();
-        });
+        _pointsListRef?.OpenLoadingOverlay();
         return Task.CompletedTask;
+    }
+
+    private async Task HandleOnTimeEntryListLoaded()
+    {
+        var pointsInfo = _timeEntryListRef.PointsInfo;
+        await _pointsListRef.SetPointsInfo(pointsInfo);
     }
 
     private async Task HandleNewPathCachedEvent(string path)
@@ -103,9 +93,9 @@ public partial class StageDetails
     private async Task OpenUploadDialog()
     {
         DialogParameters<UploadTime> parameters = new()
-    {
-        { x => x.StageId, this._stageId },
-    };
+        {
+            { x => x.StageId, this._stageId },
+        };
 
         object? result = await DialogHelper.ShowDialogAndGetResult<UploadTime, object>("Upload time", parameters);
         if ((result == null ? 0 : (int)result) == 1)
@@ -121,7 +111,7 @@ public partial class StageDetails
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;
 
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: false);
     }
     private void GoToNext()
     {
@@ -130,16 +120,16 @@ public partial class StageDetails
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;
 
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
+        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: false);
     }
     private void GoToArcadeVersion()
     {
         string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
+        NavigationManager.NavigateTo(uri, forceLoad: false);
     }
     private void GoToSimulationVersion()
     {
         string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
+        NavigationManager.NavigateTo(uri, forceLoad: false);
     }
 }

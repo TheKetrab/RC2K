@@ -4,17 +4,20 @@ namespace RC2K.Logic;
 
 public static class FillFullDataExtensions
 {
-    public async static Task FillFullData<T>(this List<T> entities, IFiller<T> topLevelFiller, IFillersBag fillers)
+    public async static Task FillFullData<T>(this List<T> entities, IFiller<T> topLevelFiller, IFillersBag fillers, CancellationToken ct = default)
     {
         FillingContext context = new();
-        Task[] tasks = entities.Select(x => topLevelFiller.FillRecursive(x, context, fillers)).ToArray();
-        await Task.WhenAll(tasks);
+        foreach (var entity in entities)
+        {
+            ct.ThrowIfCancellationRequested();
+            await topLevelFiller.FillRecursive(entity, context, fillers, ct);
+        }
     }
 
-    public async static Task FillFullData<T>(this T entity, IFiller<T> topLevelFiller, IFillersBag fillers)
+    public async static Task FillFullData<T>(this T entity, IFiller<T> topLevelFiller, IFillersBag fillers, CancellationToken ct = default)
     {
         FillingContext context = new();
-        await topLevelFiller.FillRecursive(entity, context, fillers);
+        await topLevelFiller.FillRecursive(entity, context, fillers, ct);
     }
 
 }

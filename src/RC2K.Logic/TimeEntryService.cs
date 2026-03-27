@@ -34,13 +34,13 @@ public class TimeEntryService : ITimeEntryService
         };
     }
 
-    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null)
+    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default)
     {
         var timeEntries = carId is not null
-            ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value)
-            : await _timeEntryRepository.GetByStageId(stageId);
+            ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value, ct)
+            : await _timeEntryRepository.GetByStageId(stageId, ct);
 
-        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers);
+        await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers, ct);
 
         return timeEntries;
     }
@@ -166,11 +166,75 @@ public class TimeEntryService : ITimeEntryService
         return new Result() { Success = true };
     }
 
-    public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1)
+    private record DriverWithPoints(Guid DriverId, int Points);
+    private record DriverWithClassAndPoints(Guid DriverId, int Class, int Points);
+
+    private Dictionary<Guid, int> GetDriverIdToCarPointsByClass(IEnumerable<DriverWithClassAndPoints> colCp, int @class)
+    {
+        return colCp
+            .Where(x => x.Class == @class)
+            .GroupBy(x => x.DriverId)
+            .Select(g => new { DriverId = g.Key, Points = g.Sum(x => x.Points) })
+            .ToDictionary(x => x.DriverId, x => x.Points);
+    }
+
+    private PointsInfo CalculatePointsInfo(
+        List<TimeEntry> timeEntries,
+        Dictionary<Guid, int> generalPoints,
+        Dictionary<Guid, int> carPoints)
+    {
+        Dictionary<Guid, TimeEntry> timeEntriesMap = timeEntries.ToDictionary(x => x.Id, x => x);
+
+        var colGp = generalPoints.Join(timeEntriesMap,
+            x => x.Key,
+            y => y.Value.Id,
+            (x, y) => new DriverWithPoints(y.Value.DriverId, x.Value));
+
+        Dictionary<Guid, int> generalPointsByDriver = colGp.ToDictionary(x => x.DriverId, x => x.Points);
+
+        var colCp = carPoints.Join(timeEntriesMap,
+            x => x.Key,
+            y => y.Value.Id,
+            (x, y) => new DriverWithClassAndPoints(y.Value.DriverId, y.Value.Car!.Class, x.Value));
+
+        Dictionary<Guid, int> carPointsA8ByDriver = GetDriverIdToCarPointsByClass(colCp, 8);
+        Dictionary<Guid, int> carPointsA7ByDriver = GetDriverIdToCarPointsByClass(colCp, 7);
+        Dictionary<Guid, int> carPointsA6ByDriver = GetDriverIdToCarPointsByClass(colCp, 6);
+        Dictionary<Guid, int> carPointsA5ByDriver = GetDriverIdToCarPointsByClass(colCp, 5);
+        Dictionary<Guid, int> carPointsBonusByDriver = GetDriverIdToCarPointsByClass(colCp, Car.BonusClass);
+
+        Dictionary<Guid, int> totalPointsByDriver = new[] 
+        { 
+            generalPointsByDriver,
+            carPointsA8ByDriver,
+            carPointsA7ByDriver,
+            carPointsA6ByDriver,
+            carPointsA5ByDriver,
+            carPointsBonusByDriver,
+        }
+        .SelectMany(d => d)
+        .GroupBy(x => x.Key)
+        .ToDictionary(g => g.Key, g => g.Sum(x => x.Value));
+
+        int best = totalPointsByDriver.OrderByDescending(x => x.Value).FirstOrDefault().Value;
+
+        return new PointsInfo(
+            best,
+            totalPointsByDriver,
+            generalPointsByDriver,
+            carPointsA8ByDriver,
+            carPointsA7ByDriver,
+            carPointsA6ByDriver,
+            carPointsA5ByDriver,
+            carPointsBonusByDriver            
+        );
+    }
+
+    public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1, CancellationToken ct = default)
     {
         using (Operation.Time("Fetch TimeEntryList | StageId = {stageId} | Maximum = {maximum}", stageId, maximum))
         {
-            List<TimeEntry> timeEntries = await this.Get(stageId);
+            List<TimeEntry> timeEntries = await this.Get(stageId, ct: ct);
             TimeEntry? best = timeEntries.OrderBy(x => x.Time).FirstOrDefault();
 
             Dictionary<Guid, int> places = _pointsProvider.CalculatePlace(timeEntries);
@@ -181,9 +245,11 @@ public class TimeEntryService : ITimeEntryService
             Dictionary<Guid, int> generalPoints = _pointsProvider.CalculateGeneralStagePoints(timeEntries);
             Dictionary<Guid, int> carPoints = _pointsProvider.CalculateCarStagePoints(timeEntries);
 
+            PointsInfo pointsInfo = CalculatePointsInfo(timeEntries, generalPoints, carPoints);
+            
             if (maximum > 0)
             {
-                // cut off to get only top 'maximum'
+                // cut off to get only top 'maximum' (cut off is NOT for points info on purpose)
                 orderedTimeEntries = orderedTimeEntries.Take(maximum).ToList();
                 HashSet<Guid> existingTimeEntries = orderedTimeEntries.Select(x => x.Id).ToHashSet();
                 generalPoints = generalPoints.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
@@ -200,7 +266,8 @@ public class TimeEntryService : ITimeEntryService
                 carPoints,
                 places,
                 placesByCar,
-                placesByClass);
+                placesByClass,
+                pointsInfo);
         }
     }
 
