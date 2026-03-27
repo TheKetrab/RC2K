@@ -39,15 +39,16 @@ public class TimeEntryServiceTests
         //Arrange
         int stageId = 1;
         List<TimeEntry> timeEntries = [];
-        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId)).Returns(Task.FromResult(timeEntries));
-        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        CancellationToken ct = new();
+        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId, ct)).Returns(Task.FromResult(timeEntries));
+        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
-        var result = await _sut.Get(stageId);
+        var result = await _sut.Get(stageId, ct: ct);
 
         //Assert
-        _timeEntryRepositoryMock.Verify(x => x.GetByStageId(stageId), Times.Once());
+        _timeEntryRepositoryMock.Verify(x => x.GetByStageId(stageId, ct), Times.Once());
         Assert.That(result, Is.EqualTo(timeEntries));
     }
 
@@ -66,15 +67,16 @@ public class TimeEntryServiceTests
             UploadTime = DateTime.UtcNow
         };
         List<TimeEntry> timeEntries = [timeEntry];
-        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId)).Returns(Task.FromResult(timeEntries));
-        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        CancellationToken ct = new();
+        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId, ct)).Returns(Task.FromResult(timeEntries));
+        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
-        var result = await _sut.Get(stageId);
+        var result = await _sut.Get(stageId, ct: ct);
 
         //Assert
-        _timeEntryRepositoryMock.Verify(x => x.GetByStageId(stageId), Times.Once());
+        _timeEntryRepositoryMock.Verify(x => x.GetByStageId(stageId, ct), Times.Once());
         Assert.That(result, Is.EqualTo(timeEntries));
     }
 
@@ -85,15 +87,16 @@ public class TimeEntryServiceTests
         int stageId = 1;
         int carId = 5;
         List<TimeEntry> timeEntries = [];
-        _timeEntryRepositoryMock.Setup(x => x.GetByStageIdAndCarId(stageId, carId)).Returns(Task.FromResult(timeEntries));
-        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        CancellationToken ct = new();
+        _timeEntryRepositoryMock.Setup(x => x.GetByStageIdAndCarId(stageId, carId, ct)).Returns(Task.FromResult(timeEntries));
+        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
-        var result = await _sut.Get(stageId, carId);
+        var result = await _sut.Get(stageId, carId, ct);
 
         //Assert
-        _timeEntryRepositoryMock.Verify(x => x.GetByStageIdAndCarId(stageId, carId), Times.Once());
+        _timeEntryRepositoryMock.Verify(x => x.GetByStageIdAndCarId(stageId, carId, ct), Times.Once());
         Assert.That(result, Is.EqualTo(timeEntries));
     }
 
@@ -112,15 +115,16 @@ public class TimeEntryServiceTests
             UploadTime = DateTime.UtcNow
         };
         List<TimeEntry> timeEntries = [timeEntry];
-        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId)).Returns(Task.FromResult(timeEntries));
-        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        CancellationToken ct = new();
+        _timeEntryRepositoryMock.Setup(x => x.GetByStageId(stageId, ct)).Returns(Task.FromResult(timeEntries));
+        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
-        await _sut.Get(stageId);
+        await _sut.Get(stageId, ct: ct);
 
         //Assert
-        _timeEntryFillerMock.Verify(x => x.FillRecursive(timeEntry, It.IsAny<FillingContext>(), _fillersBagMock.Object), Times.Once());
+        _timeEntryFillerMock.Verify(x => x.FillRecursive(timeEntry, It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Test]
@@ -129,7 +133,7 @@ public class TimeEntryServiceTests
         //Arrange
         List<TimeEntry> timeEntries = [];
         _timeEntryRepositoryMock.Setup(x => x.GetAllNotVerified()).Returns(Task.FromResult(timeEntries));
-        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _timeEntryFillerMock.Setup(x => x.FillRecursive(It.IsAny<TimeEntry>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -144,6 +148,7 @@ public class TimeEntryServiceTests
     public async Task Delete_DeletesAllTimeEntries()
     {
         //Arrange
+        CancellationToken ct = new();
         Guid id1 = Guid.NewGuid();
         Guid id2 = Guid.NewGuid();
         TimeEntry te1 = new TimeEntry 

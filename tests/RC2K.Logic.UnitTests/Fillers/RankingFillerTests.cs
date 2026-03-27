@@ -23,21 +23,23 @@ public class RankingFillerTests
     public async Task FillRecursive_RankingAlreadyInContext_RankingNotFilled()
     {
         //Arrange
+        CancellationToken ct = new();
         RankingSnapshot ranking = AnyRanking();
         FillingContext context = new();
         context.Rankings.Add(ranking.Id, ranking);
 
         //Act
-        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct);
 
         //Assert
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public async Task FillRecursive_EntriesWithoutDrivers_GetsDrivesAndFillsThem()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver1 = AnyDriver();
         Driver driver2 = AnyDriver();
         RankingEntry entry1 = AnyRankingEntry(driver1.Id);
@@ -45,28 +47,29 @@ public class RankingFillerTests
         RankingSnapshot ranking = AnyRanking(entry1, entry2);
 
         FillingContext context = new();
-        _driverRepositoryMock.Setup(x => x.GetById(driver1.Id)).ReturnsAsync(driver1);
-        _driverRepositoryMock.Setup(x => x.GetById(driver2.Id)).ReturnsAsync(driver2);
+        _driverRepositoryMock.Setup(x => x.GetById(driver1.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver1);
+        _driverRepositoryMock.Setup(x => x.GetById(driver2.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver2);
 
         Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(entry1.Driver, Is.EqualTo(driver1));
         Assert.That(entry2.Driver, Is.EqualTo(driver2));
-        _driverRepositoryMock.Verify(x => x.GetById(driver1.Id), Times.Exactly(2));
-        _driverRepositoryMock.Verify(x => x.GetById(driver2.Id), Times.Exactly(2));
-        driverFillerMock.Verify(x => x.FillRecursive(driver1, context, _fillersBagMock.Object), Times.Once());
-        driverFillerMock.Verify(x => x.FillRecursive(driver2, context, _fillersBagMock.Object), Times.Once());
+        _driverRepositoryMock.Verify(x => x.GetById(driver1.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _driverRepositoryMock.Verify(x => x.GetById(driver2.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
+        driverFillerMock.Verify(x => x.FillRecursive(driver1, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
+        driverFillerMock.Verify(x => x.FillRecursive(driver2, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Test]
     public async Task FillRecursive_DriverAlreadyInContext_UseDriverFromContext()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         RankingEntry entry = AnyRankingEntry(driver.Id);
         RankingSnapshot ranking = AnyRanking(entry);
@@ -74,31 +77,32 @@ public class RankingFillerTests
         FillingContext context = new();
         context.Drivers.Add(driver.Id, driver);
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
 
         Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(entry.Driver, Is.EqualTo(driver));
-        _driverRepositoryMock.Verify(x => x.GetById(driver.Id), Times.Once());
-        driverFillerMock.Verify(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), It.IsAny<IFillersBag>()), Times.Never());
+        _driverRepositoryMock.Verify(x => x.GetById(driver.Id, It.IsAny<CancellationToken>()), Times.Once());
+        driverFillerMock.Verify(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), It.IsAny<IFillersBag>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public void FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
+        CancellationToken ct = new();
         RankingEntry entry = AnyRankingEntry(Guid.NewGuid());
         RankingSnapshot ranking = AnyRanking(entry);
         FillingContext context = new();
 
         //Act-Assert
         Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _sut.FillRecursive(ranking, context, _fillersBagMock.Object));
+            _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct));
     }
 
     private static RankingSnapshot AnyRanking(params RankingEntry[] entries)

@@ -49,7 +49,7 @@ public class RankingServiceTests
         };
         
         _rankingRepositoryMock.Setup(x => x.GetCurrent()).Returns(Task.FromResult(ranking));
-        _rankingFillerMock.Setup(x => x.FillRecursive(It.IsAny<RankingSnapshot>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _rankingFillerMock.Setup(x => x.FillRecursive(It.IsAny<RankingSnapshot>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -57,7 +57,7 @@ public class RankingServiceTests
 
         //Assert
         _rankingRepositoryMock.Verify(x => x.GetCurrent(), Times.Once());
-        _rankingFillerMock.Verify(x => x.FillRecursive(ranking, It.IsAny<FillingContext>(), _fillersBagMock.Object), Times.Once());
+        _rankingFillerMock.Verify(x => x.FillRecursive(ranking, It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
         Assert.That(result, Is.EqualTo(ranking));
     }
 

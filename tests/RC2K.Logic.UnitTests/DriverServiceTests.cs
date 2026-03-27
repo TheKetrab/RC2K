@@ -79,7 +79,7 @@ public class DriverServiceTests
         Driver driver = new Driver { Id = Guid.NewGuid(), Known = false, Name = "TestDriver" };
         List<Driver> drivers = [driver];
         _driverRepositoryMock.Setup(x => x.GetAll()).Returns(Task.FromResult(drivers));
-        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -87,7 +87,7 @@ public class DriverServiceTests
 
         //Assert
         _driverRepositoryMock.Verify(x => x.GetAll(), Times.Once());
-        _driverFillerMock.Verify(x => x.FillRecursive(driver, It.IsAny<FillingContext>(), _fillersBagMock.Object), Times.Once());
+        _driverFillerMock.Verify(x => x.FillRecursive(driver, It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
         Assert.That(result[driver.Id], Is.EqualTo("TestDriver"));
     }
 
@@ -111,7 +111,7 @@ public class DriverServiceTests
         
         List<Driver> drivers = [driver];
         _driverRepositoryMock.Setup(x => x.GetAll()).Returns(Task.FromResult(drivers));
-        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -140,7 +140,7 @@ public class DriverServiceTests
         user.Driver = driver;
         
         _userRepositoryMock.Setup(x => x.GetByName(userName)).Returns(Task.FromResult<User?>(user));
-        _userFillerMock.Setup(x => x.FillRecursive(It.IsAny<User>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _userFillerMock.Setup(x => x.FillRecursive(It.IsAny<User>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -155,12 +155,13 @@ public class DriverServiceTests
     public async Task GetByName_ReturnsAnonymousDriverByName()
     {
         //Arrange
+        CancellationToken ct = new();
         string driverName = "AnonymousDriver";
         Driver driver = new Driver { Id = Guid.NewGuid(), Known = false, Name = driverName };
         
         _userRepositoryMock.Setup(x => x.GetByName(driverName)).Returns(Task.FromResult<User?>(null));
         _driverRepositoryMock.Setup(x => x.GetByName(driverName)).Returns(Task.FromResult<Driver?>(driver));
-        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act

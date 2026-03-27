@@ -279,15 +279,16 @@ public class UserServiceTests
             Roles = ["user"],
             Email = "test@example.com"
         };
+        CancellationToken ct = new();
         
-        _userRepositoryMock.Setup(x => x.GetById(userId)).Returns(Task.FromResult<User?>(user));
+        _userRepositoryMock.Setup(x => x.GetById(userId, ct)).Returns(Task.FromResult<User?>(user));
 
         //Act
         var result = await _sut.GetById(userId);
 
         //Assert
         Assert.That(result, Is.EqualTo(user));
-        _userRepositoryMock.Verify(x => x.GetById(userId), Times.Once());
+        _userRepositoryMock.Verify(x => x.GetById(userId, ct), Times.Once());
     }
 
     [Test]
