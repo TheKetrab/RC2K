@@ -41,7 +41,14 @@
    E | F
      | G
 *@
-
+<style>
+    .road-element {
+        transition: width .25s ease-in;
+        box-shadow: 1px 1px 5px #3d3d3d7a;
+        border-radius: 2px 10px 10px 2px;
+        overflow: hidden;
+    }
+</style>
 
 <div class="MAIN">
     <div class="container">
@@ -82,7 +89,7 @@
                     <div class="card-body">
                         
                         <div style="display: flex; justify-content: space-between;">
-                            <div>
+                            <div style="flex-grow: 1;">
                                 <h1 Style=@($"color: {@Rc2kColorPallete.primary700}; margin-bottom: .5em;")>
                                     @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade" : "")}")
                                 </h1>
@@ -90,10 +97,10 @@
                                     <MudText Typo="Typo.body1"><b>Length:</b></MudText>
                                     <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
                                 </MudStack>
-                                <MudStack Row="true">
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
                                     <MudText Typo="Typo.body1"><b>Road:</b></MudText>
-                                    <div style="max-width: @((int)_stageDetails.Length * 2)%;">
-                                        <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])" />
+                                    <div style="width: @((int)_stageDetails.Length * 2)%;" class="road-element">
+                                        <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["asphalt", "dirt", "gravel", "snow"])" />
                                     </div>
                                 </MudStack>
                                 <MudStack Row="true">
