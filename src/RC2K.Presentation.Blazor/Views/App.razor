@@ -39,7 +39,7 @@
 </head>
 
 <body onload="(() => setRecaptchaVisibility(false))()">
-    <Routes @rendermode="new InteractiveServerRenderMode()" />
+    <Routes @rendermode="GetRenderMode(HttpContext)" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
     <script src="_content/Blazor-Analytics/blazor-analytics.js"></script>
@@ -82,7 +82,23 @@
 </html>
 
 
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
 
+    private IComponentRenderMode? GetRenderMode(HttpContext context)
+    {
+        var path = context.Request.Path.Value ?? "";
+
+        if (path.StartsWith("/login", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/logout", StringComparison.OrdinalIgnoreCase))
+        {
+            return null; // trigger Static SSR
+        }
+
+        return InteractiveServer;
+    }
+}
 
 @code
 {
