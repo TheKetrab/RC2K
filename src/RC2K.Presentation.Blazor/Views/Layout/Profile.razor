@@ -2,6 +2,7 @@
 @using RC2K.Presentation.Blazor.Views.Components;
 @using RC2K.Presentation.Shared.ViewModels
 @using RC2K.Presentation.Shared.Layout
+@using RC2K.Logic.Interfaces
 @rendermode InteractiveServer
 
 <div class="profile">
@@ -19,9 +20,15 @@
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Score)"
                                    Href="score"
                                    Style="padding: 0; margin: auto 10px;" />
-                    <MudIconButton Icon="@IconMapper.Thin(Icon.Mail)"
-                                   Href="user/notifications"
-                                   Style="padding: 0; margin: auto 10px;" />
+                    <MudBadge Content="@notificationCount" 
+                              Visible="@(notificationCount > 0)"
+                              Color="@Color.Error"
+                              Overlap="true"
+                              Class="notification-badge">
+                        <MudIconButton Icon="@IconMapper.Thin(Icon.Mail)"
+                                       Href="user/notifications"
+                                       Style="padding: 0; margin: auto 10px;" />
+                    </MudBadge>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Upload)"
                                    Href="user/uploadHst"
                                    Style="padding: 0; margin: auto 10px;" />
@@ -38,9 +45,17 @@
                                    Style="padding: 0; margin: auto 10px;" />
                 </div>
             </div>
-            <button class="profile-btn" @onclick="ToggleProfileVisible">
-                <ion-icon name="person-circle-outline" class="btn-svg" />
-            </button>
+            <div style="position: relative;">
+                <MudBadge Content="@notificationCount" 
+                          Visible="@(notificationCount > 0)"
+                          Color="@Color.Error"
+                          Overlap="true"
+                          Class="notification-badge-profile">
+                    <button class="profile-btn" @onclick="ToggleProfileVisible">
+                        <ion-icon name="person-circle-outline" class="btn-svg" />
+                    </button>
+                </MudBadge>
+            </div>
 
 
         </Authorized>
@@ -50,9 +65,41 @@
 
 @code {
 
+    [Inject]
+    private INotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
     bool profileContentIsVisible = false;
     bool allowOverflowVisibleBool = false;
     string mode = "Light/Auto/Dark";
+    int notificationCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotifications();
+    }
+
+    private async Task LoadNotifications()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user?.Identity?.IsAuthenticated == true && user.Identity.Name is not null)
+            {
+                var notifications = await NotificationService.GetUserNotifications(user.Identity.Name);
+                notificationCount = notifications.Count;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading notifications: {ex.Message}");
+        }
+    }
 
     private async Task ToggleProfileVisible()
     {
