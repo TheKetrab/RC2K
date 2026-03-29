@@ -11,6 +11,7 @@ public interface ITimeEntryService
     Task Delete(List<TimeEntry> timeEntries);
 
     Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default);
+    Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId);
     Task<List<TimeEntry>> GetAllNotVerified();
     Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment);
     Task Verify(List<TimeEntry> timeEntries, string comment);

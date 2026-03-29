@@ -18,7 +18,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public event EventHandler<(string,double)>? RequestUnitsHandler;
 
-    private ItemQueryIteratorHelper _iterator = new();
+    protected ItemQueryIteratorHelper _iterator = new();
 
     protected CosmosRepository(
         Database database,
@@ -47,10 +47,8 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     {
         using var it = Container.GetItemQueryIterator<TModel>(query);
         var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel, ct);
-        
-        string queryText = query.QueryText.Linearize();
-        string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
-        RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
+
+        RequestUnitsHandlerInvoke(query, ru);
         
         return result;
     }
@@ -79,4 +77,12 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     {
         await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(EntityName));
     }
+
+    protected void RequestUnitsHandlerInvoke(QueryDefinition query, double ru)
+    {
+        string queryText = query.QueryText.Linearize();
+        string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
+        RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
+    }
+        
 }

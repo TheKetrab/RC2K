@@ -38,6 +38,10 @@ public class HstUploadManager : IHstUploadManager
         int errorNo = 0;
         List<(int, string, string)> errors = [];
 
+
+        var bests = await _timeEntryService.GetBestTimesForDriver(driver.Id);
+
+        bool anyUploaded = false;
         int total = hstTimeEntries.Count();
         foreach (var x in hstTimeEntries.Select((x,i) => new { hstTimeEntry = x, i = i }))
         {
@@ -50,14 +54,22 @@ public class HstUploadManager : IHstUploadManager
             Stage stage = (await _stageService.GetByCode(stageCode, direction))!;
             int stageId = stage.Id;
 
+            int carId = x.hstTimeEntry.Car + 1; // in RC2K Hub cars ids starts from 1
+            int time = x.hstTimeEntry.Centiseconds;
+
+            if (bests.TryGetValue((stageId, carId), out long best) && best <= time)
+            {
+                continue;
+            }
+
             TimeEntry te = new TimeEntry()
             {
                 Id = Guid.NewGuid(),
-                CarId = x.hstTimeEntry.Car + 1, // in RC2K Hub cars ids starts from 1
+                CarId = carId, 
                 DriverId = driver.Id,
                 Driver = driver,
                 StageId = stageId,
-                Time = Utils.Utils.CentisecondsToTimeOnly(x.hstTimeEntry.Centiseconds),
+                Time = Utils.Utils.CentisecondsToTimeOnly(time),
                 UploadTime = DateTime.Now,
                 Labels = GetLabels(x.hstTimeEntry),
             };
@@ -69,11 +81,20 @@ public class HstUploadManager : IHstUploadManager
                 {
                     errors.Add((++errorNo, $"{stage.StageData!.Name} | {stage.Direction} | car={te.CarId} | time={te.Time.ToString("m:ss.ff")}", res.Message!));
                 }
+                else
+                {
+                    anyUploaded = true;
+                }
             }
             catch (Exception ex)
             {
                 errors.Add((++errorNo, $"{stage.StageData!.Name} | {stage.Direction} | car={te.CarId} | time={te.Time}", ex.Message));
             }
+        }
+
+        if (!anyUploaded && errors.Count == 0)
+        {
+            return new Result<List<(int, string, string)>> { Success = true, Payload = [new(1, "---", "None time to upload")] };
         }
 
         return new Result<List<(int, string, string)>>
