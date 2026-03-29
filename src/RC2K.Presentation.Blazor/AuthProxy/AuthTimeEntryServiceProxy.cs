@@ -67,6 +67,9 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public Task<List<TimeEntry>> GetAllNotVerified() =>
             _service.GetAllNotVerified();
 
+        public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId) =>
+            _service.GetBestTimesForDriver(driverId);
+
         public async Task<Result> Upload(
             int stageId, int carId, Guid driverId,
             int min, int sec, int cc,

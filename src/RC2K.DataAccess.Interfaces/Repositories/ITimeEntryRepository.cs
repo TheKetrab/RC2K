@@ -15,4 +15,5 @@ public interface ITimeEntryRepository
     Task<List<TimeEntry>> GetByStageId(int stageId, CancellationToken ct);
     Task<List<TimeEntry>> GetByStageIdAndCarId(int stageId, int carId, CancellationToken ct);
     Task<List<TimeEntry>> GetByStageIdAndCarIdAndDriverIdAndTime(int stageId, int carId, Guid driverId, TimeOnly time);
+    Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId);
 }

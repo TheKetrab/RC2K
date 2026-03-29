@@ -271,5 +271,8 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-
+    public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId)
+    {
+        return _timeEntryRepository.GetBestTimesForDriver(driverId);
+    }
 }
