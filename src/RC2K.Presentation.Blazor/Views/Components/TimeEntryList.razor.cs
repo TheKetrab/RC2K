@@ -79,6 +79,8 @@ public partial class TimeEntryList
 
     private TimeEntryListItem? _currentContextMenuItem;
 
+    private HashSet<TimeEntryListItem> _selectedItems = new();
+
     public List<TimeEntry> GetSelectedTimeEntries()
     {
         var selectedTimeEntries =

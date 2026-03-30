@@ -94,3 +94,26 @@
     /*transform: scale(1.02);*/
     transform: scale(0.5);
 }
+
+.notification-badge {
+    position: relative;
+}
+
+.notification-badge-profile {
+    position: relative;
+}
+
+/* MudBadge styling adjustments */
+:deep(.mud-badge) {
+    position: relative;
+}
+
+:deep(.mud-badge-badge) {
+    font-weight: bold;
+    font-size: 11px;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

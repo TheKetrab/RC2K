@@ -50,6 +50,7 @@ else
     </MudStack>
     <MudDataGrid @ref="_gridRef"
                     MultiSelection="@(VerificationMode)"
+                    @bind-SelectedItems="_selectedItems"
                     SortMode="SortMode.Single"
                     T="TimeEntryListItem"
                     Items="@Items"

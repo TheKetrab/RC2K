@@ -95,6 +95,7 @@
     protected async override Task OnInitializedAsync()
     {
         _showColumnsMenu = (await AuthStateTask).User.Identity?.IsAuthenticated ?? false;
+        OpenLoadingOverlay();
     }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)

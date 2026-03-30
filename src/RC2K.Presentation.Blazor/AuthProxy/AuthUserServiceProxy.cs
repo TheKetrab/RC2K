@@ -46,5 +46,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
         public Task<Result> UpgradeDriverToUser(string name, string driverPassCode, string password, string email)
             => _service.UpgradeDriverToUser(name, driverPassCode, password, email);
+
+        public Task<User?> GetUserByName(string name)
+            => _service.GetUserByName(name);
     }
 }

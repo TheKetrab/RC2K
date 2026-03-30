@@ -21,6 +21,8 @@ public class NotificationService : INotificationService
         _logger = logger;
     }
 
+    public event EventHandler<Guid>? NotificationsUpdated;
+
     public async Task<List<Notification>> GetUserNotifications(string userName)
     {
         User? user = await _userRepository.GetByName(userName);
@@ -30,6 +32,17 @@ public class NotificationService : INotificationService
         }
 
         return await _notificationRepository.GetNotifications(user.Id);
+    }
+
+    public async Task<int> GetUserNotificationsCount(string userName)
+    {
+        User? user = await _userRepository.GetByName(userName);
+        if (user is null)
+        {
+            return 0;
+        }
+
+        return await _notificationRepository.GetNotificationsCount(user.Id);
     }
 
     public async Task NotifyMasterAdmin(string message)
@@ -54,10 +67,28 @@ public class NotificationService : INotificationService
         };
 
         await _notificationRepository.Create(notification);
+        NotificationsUpdated?.Invoke(this, userId);
+        
     }
 
-    public async Task Delete(Guid id)
+    public async Task Delete(Guid userId, Guid id)
     {
         await _notificationRepository.Delete(id.ToString());
+        NotificationsUpdated?.Invoke(this, userId);
     }
+
+    public async Task DeleteMany(List<Guid> userIds, List<Guid> ids)
+    {
+        foreach (var id in ids)
+        {
+            // TODO bulk delete
+            await _notificationRepository.Delete(id.ToString());
+        }
+
+        foreach (var userId in userIds)
+        {
+            NotificationsUpdated?.Invoke(this, userId);
+        }
+    }
+
 }
