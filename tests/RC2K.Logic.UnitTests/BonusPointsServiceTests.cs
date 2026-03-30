@@ -47,14 +47,14 @@ public class BonusPointsServiceTests
         BonusPoints bp = new BonusPoints { Id = Guid.NewGuid(), DriverId = Guid.NewGuid() };
         List<BonusPoints> bonusPoints = [bp];
         _bonusPointsRepositoryMock.Setup(x => x.GetAll()).Returns(Task.FromResult(bonusPoints));
-        _bonusPointsFillerMock.Setup(x => x.FillRecursive(It.IsAny<BonusPoints>(), It.IsAny<FillingContext>(), _fillersBagMock.Object))
+        _bonusPointsFillerMock.Setup(x => x.FillRecursive(It.IsAny<BonusPoints>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         //Act
         await _sut.GetAll();
 
         //Assert
-        _bonusPointsFillerMock.Verify(x => x.FillRecursive(bp, It.IsAny<FillingContext>(), _fillersBagMock.Object), Times.Once());
+        _bonusPointsFillerMock.Verify(x => x.FillRecursive(bp, It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Test]

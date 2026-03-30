@@ -15,260 +15,158 @@
 @inject ICarService CarService
 @inject IPointsProvider PointsProvider
 @inject IJSRuntime JSRuntime;
-@inject IDialogService Dialog
+@inject DialogHelper DialogHelper
 @inject NavigationManager NavigationManager
 
 @page "/map"
 @using System.Collections.Generic
+@using RC2K.Presentation.Blazor.Views.Dialogs
 @using RC2K.Presentation.Blazor.Views.Layout
 @using RC2K.Presentation.Shared
 
+@*
+  Mobile (1 col)
+   | A - Details
+   | B - Image
+   | C - Description
+   | D - Records
+   | E - Top points
+   | F - Map
+   | G - Altitude
+   v
+
+  Desktop (2 col)
+   A | B
+   D | C
+   E | F
+     | G
+*@
+<style>
+    .road-element {
+        transition: width .25s ease-in;
+        box-shadow: 1px 1px 5px #3d3d3d7a;
+        border-radius: 2px 10px 10px 2px;
+        overflow: hidden;
+    }
+</style>
+
 <div class="MAIN">
-    <h1>@_raceName</h1>
-    <div class="container" id="containerId" accesskey="">
-
-        <div class="item left stage-info">
-            <div class="card" style="position: relative;">
-                <div class="card-header">
-                    <h3>Stage details</h3>
-                </div>
-                <div class="card-body">
-                    <div style="position: absolute; top: 0; right: 0; padding: 4px;">
-                        <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id%10==1)" OnClick="GoToPrevious">&lt;</MudButton>
-                        @if (IsArcade)
-                        {
-                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion">To simulation</MudButton>
-                        }
-                        else
-                        {
-                            <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion">To arcade</MudButton>
-                        }
-                        <MudButton class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Id % 10 == 6)" OnClick="GoToNext">&gt;</MudButton>
+    <div class="container">
+        <div class="left-box">
+            <div class="item stage-info">
+                <div class="card" style="position: relative;">
+                    <div class="card-header" style="display: flex; justify-content: space-between;">
+                        <h3>Stage details</h3>
+                        <div style="">
+                            <MudButton Class="button-xs"
+                                       Size="Size.Small" 
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(Id % 10 == 1)"
+                                       OnClick="GoToPrevious" 
+                                       Style="border-top-right-radius: 0; border-bottom-right-radius: 0;">&lt;</MudButton>
+                            @if (IsArcade)
+                            {
+                                <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToSimulationVersion" Style="border-radius: 0;">
+                                    <span style="padding: 0 .3em;">To simulation</span>
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudButton Class="button-xs" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="GoToArcadeVersion" Style="border-radius: 0;">
+                                    <span style="padding: 0 .3em;">To arcade</span>
+                                </MudButton>
+                            }
+                            <MudButton Class="button-xs"
+                                       Size="Size.Small"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(Id % 10 == 6)"
+                                       Style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+                                       OnClick="GoToNext">&gt;</MudButton>
+                        </div>
                     </div>
-                    <h1 Style=@($"color: {@Rc2kColorPallete.primary700}")>
-                        @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade version" : "")}")
-                    </h1>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Length:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
-                    </MudStack>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Road:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Asphalt % / @_stageDetails.Dirt % / @_stageDetails.Gravel % / @_stageDetails.Snow %</MudText>
-                    </MudStack>
-                    <div style="max-width: @((int)_stageDetails.Length * 2)%;">
-                        <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["brown", "bronze", "gray", "light-blue"])" />
-                    </div>
-                    <MudStack Row="true">
-                        <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
-                        <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
-                    </MudStack>
-                </div>
-                <div class="card-footer"></div>
-            </div>
-        </div>
-        <div class="item right stage-img">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
-                <img src="img/maps/@_imgName" style="width: 100%;" />
-            </div>
-        </div>
-        <div class="item right stage-description">
-            <div class="card">
-                <div class="card-header"><h3>Description</h3></div>
-                <div class="card-body">
-                    @_description
-                </div>
-                <div class="card-footer"></div>
-            </div>
-        </div>
-        <div class="item left stage-times">
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Records</h3>
-                    <MudStack Row="true" Spacing="0">
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs" 
-                                   Variant="@(_selectedClass == null ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = null">All</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs" 
-                                   Variant="@(_selectedClass == 8 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 8">A8</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs" 
-                                   Variant="@(_selectedClass == 7 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 7">A7</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs" 
-                                   Variant="@(_selectedClass == 6 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 6">A6</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs" 
-                                   Variant="@(_selectedClass == 5 ? Variant.Filled : Variant.Text)" 
-                                   Color="Color.Primary" 
-                                   OnClick="() => _selectedClass = 5">A5</MudButton>
-                        <MudButton Size="Size.Small"
-                                   Class="button-xs"
-                                   Variant="@(_selectedClass == Car.BonusClass ? Variant.Filled : Variant.Text)"
-                                   Color="Color.Primary"
-                                   OnClick="() => _selectedClass = Car.BonusClass">B</MudButton>
-                    </MudStack>
-                </div>
-                <div class="card-body">
-                    <TimeEntryList @ref="_timeEntryListRef" PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" FilterClass="@_selectedClass" />
-                </div>
-                <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
-                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
-                </div>
+                    <div class="card-body">
+                        
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="flex-grow: 1;">
+                                <h1 Style=@($"color: {@Rc2kColorPallete.primary700}; margin-bottom: .5em;")>
+                                    @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade" : "")}")
+                                </h1>
+                                <MudStack Row="true">
+                                    <MudText Typo="Typo.body1"><b>Length:</b></MudText>
+                                    <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
+                                </MudStack>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.body1"><b>Road:</b></MudText>
+                                    <div style="width: @((int)_stageDetails.Length * 2)%;" class="road-element">
+                                        <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["asphalt", "dirt", "gravel", "snow"])" />
+                                    </div>
+                                </MudStack>
+                                <MudStack Row="true">
+                                    <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
+                                    <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
+                                </MudStack>
+                            </div>
+                            <div style="margin: auto 0;">
+                                <div style="border-radius: 0.375rem; overflow: hidden;">
+                                    <img src="img/rallies/@(RC2K.Extensions.LevelHelper.StageCodeToRallyImageName(_stageCode)).PNG" style="max-width: 200px;" />
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="item stage-times">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Records</h3>
+                    </div>
+                    <div class="card-body">
+                        <TimeEntryList @ref="_timeEntryListRef" PerPage="20" StageId="@_stageId" OnLoaded="HandleOnTimeEntryListLoaded" OnReloadRequested="HandleOnTimeEntryListReloadRequested" />
+
+                        
+
+                    </div>
+                    <div class="card-footer" style="display: flex; flex-direction: row-reverse;">
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenUploadDialog">Upload time</MudButton>
+                    </div>
+
+                </div>
+            </div>
+            <div class="item stage-points">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Driver points</h3>
+                    </div>
+                    <div class="card-body">
+                        <PointsList @ref="_pointsListRef" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="item right stage-map">
-            <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
-                <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
+        <div class="right-box">
+            <div class="item stage-img">
+                <div class="card" style="overflow: hidden; padding: 0; margin: 0; width: 75%;">
+                    <img src="img/maps/@_imgName" style="width: 100%;" />
+                </div>
+            </div>
+            <div class="item stage-description">
+                <div class="card">
+                    <div class="card-header"><h3>Description</h3></div>
+                    <div class="card-body">
+                        @_description
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="item stage-map">
+                <div class="card" style="overflow: hidden; padding: 0; margin: 0;">
+                    <Map Waypoints="@_waypoints" ShowWaypoints="@ShowWaypoints" NewPathCached="@HandleNewPathCachedEvent" Path="@_path" Api="@_api" />
+                </div>
             </div>
         </div>
-        <div class="break"></div>
     </div>
 </div>
-
-
-@code {
-
-    [Parameter]
-    public required string RaceName { get; init; }
-
-    [Parameter]
-    public required int Id { get; init; }
-
-    [SupplyParameterFromQuery]
-    [Parameter]
-    public bool ShowWaypoints { get; set; } = true;
-
-    private string _directionParameter = string.Empty;
-    [SupplyParameterFromQuery(Name = "direction")]
-    public string DirectionParameter
-    {
-        get => _directionParameter;
-        set
-        {
-            _directionParameter = value;
-            Direction = value == "Arcade" ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation;
-        }
-    }
-
-    public DomainModel.Direction Direction { get; set; }
-
-    public bool IsArcade => Direction == DomainModel.Direction.Arcade;
-
-    private int? _selectedClass;
-    private int _stageId;
-    private string _api = string.Empty;
-    private IList<double[]> _waypoints = [];
-    private string _name = string.Empty;
-    private string _raceName = string.Empty;
-    private string _description = string.Empty;
-    private string _imgName = string.Empty;
-    private DomainModel.StageDetails _stageDetails = new();
-    private List<DomainModel.TimeEntry> _timeEntries = new();
-    private string? _path;
-    private TimeEntryList _timeEntryListRef = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var stage = await StageService.GetByCode(Id, Direction);
-        if (stage == null)
-        {
-            NavigationManager.NavigateTo("/stages");
-            return;
-        }
-
-        _stageId = stage.Id;
-        _api = stage.StageWaypoints?.ApiHint ?? string.Empty;
-        _waypoints = await StageService.GetWaypoints(Id, stage.Direction == DomainModel.Direction.Arcade);
-
-        _path = await StageService.GetPath(Id);
-
-        _raceName = LevelHelper.RallyCodeToRallyName(Enum.Parse<RallyCode>(RaceName, true));
-        _name = stage.StageData?.Name ?? string.Empty;
-        _imgName = stage.StageData?.ImgName ?? string.Empty;
-        _description = stage.StageData?.Description ?? string.Empty;
-        _stageDetails = stage.StageData?.StageDetails ?? new DomainModel.StageDetails();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await RecalculateHeight();
-    }
-
-    private async Task RecalculateHeight()
-    {
-        await JSRuntime.InvokeVoidAsync("calculateContainerHeight", "containerId");
-    }
-
-    private Task HandleOnTimeEntryListLoaded()
-    {
-        Task.Run(async () =>
-        {
-            await Task.Delay(500);
-            await RecalculateHeight();
-        });
-        return Task.CompletedTask;
-    }
-
-    private async Task HandleNewPathCachedEvent(string path)
-    {
-        var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
-        if (stage == null) return;
-        int stageCode = stage.Code;
-        await StageService.SetPath(stageCode, path);
-    }
-
-    private async Task OpenUploadDialog()
-    {
-        DialogOptions options = new() { CloseButton = true, BackdropClick = true };
-        var parameters = new DialogParameters<UploadTime>
-        {
-            { x => x.StageId, this._stageId },
-        };
-        var dialog = await Dialog.ShowAsync<UploadTime>("Upload time", parameters, options);
-        var dialogResult = await dialog.Result;
-        if ((dialogResult?.Data == null ? 0 : (int)dialogResult.Data)   == 1)
-        {
-            await this._timeEntryListRef.ReloadTimeEntries();
-        }
-    }
-
-    private void GoToPrevious()
-    {
-        if (Id % 10 == 1) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id - 1}{query}", forceLoad: true);
-    }
-    private void GoToNext()
-    {
-        if (Id % 10 == 6) return;
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = uri.Query;
-
-        NavigationManager.NavigateTo($"/stages/{RaceName}/{Id + 1}{query}", forceLoad: true);
-    }
-    private void GoToArcadeVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Arcade");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-    private void GoToSimulationVersion()
-    {
-        string uri = NavigationManager.GetUriWithQueryParameter("direction", "Simulation");
-        NavigationManager.NavigateTo(uri, forceLoad: true);
-    }
-}

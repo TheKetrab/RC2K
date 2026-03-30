@@ -1,8 +1,4 @@
-﻿using RC2K.DomainModel;
-using RC2K.Presentation.Blazor.Views.Components;
-
-namespace RC2K.Presentation.Blazor.Views.Dialogs;
-
+﻿namespace RC2K.Presentation.Blazor.Views.Dialogs;
 
 public class GetDriverPassCodeDialog : TextBoxDialog
 {

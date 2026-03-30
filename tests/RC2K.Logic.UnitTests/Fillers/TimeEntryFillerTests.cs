@@ -32,21 +32,23 @@ public class TimeEntryFillerTests
         TimeEntry timeEntry = AnyTimeEntry();
         FillingContext context = new();
         context.TimeEntries.Add(timeEntry.Id, timeEntry);
+        CancellationToken ct = new();
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.Driver, Is.Null);
         Assert.That(timeEntry.VerifyInfo, Is.Null);
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
-        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public async Task FillRecursive_DriverAlreadyInContext_UseDriverFromContext()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         Stage stage = AnyStage();
         Car car = AnyCar();
@@ -61,25 +63,26 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.Driver, Is.EqualTo(driver));
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
-        driverFillerMock.Verify(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), It.IsAny<IFillersBag>()), Times.Never());
+        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+        driverFillerMock.Verify(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), It.IsAny<IFillersBag>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public async Task FillRecursive_DriverNotInContext_GetsDriverAndFillsIt()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         Stage stage = AnyStage();
         Car car = AnyCar();
         TimeEntry timeEntry = AnyTimeEntry(driver.Id, stage.Id, car.Id);
         FillingContext context = new();
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
@@ -87,25 +90,26 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.Driver, Is.EqualTo(driver));
-        _driverRepositoryMock.Verify(x => x.GetById(driver.Id), Times.Once());
-        driverFillerMock.Verify(x => x.FillRecursive(driver, context, _fillersBagMock.Object), Times.Once());
+        _driverRepositoryMock.Verify(x => x.GetById(driver.Id, It.IsAny<CancellationToken>()), Times.Once());
+        driverFillerMock.Verify(x => x.FillRecursive(driver, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Test]
     public async Task FillRecursive_VerifyInfoWithoutId_VerifyInfoNotFilled()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         Stage stage = AnyStage();
         Car car = AnyCar();
         TimeEntry timeEntry = AnyTimeEntry(driver.Id, stage.Id, car.Id, verifyInfoId: null);
         FillingContext context = new();
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
@@ -113,17 +117,18 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.VerifyInfo, Is.Null);
-        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public async Task FillRecursive_VerifyInfoAlreadyInContext_UseVerifyInfoFromContext()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         VerifyInfo verifyInfo = AnyVerifyInfo();
         Stage stage = AnyStage();
@@ -132,7 +137,7 @@ public class TimeEntryFillerTests
         FillingContext context = new();
         context.VerifyInfos.Add(verifyInfo.Id, verifyInfo);
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
@@ -140,17 +145,18 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.VerifyInfo, Is.EqualTo(verifyInfo));
-        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
     [Test]
     public async Task FillRecursive_VerifyInfoNotInContext_GetsVerifyInfoAndFillsIt()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         VerifyInfo verifyInfo = AnyVerifyInfo();
         Stage stage = AnyStage();
@@ -158,10 +164,10 @@ public class TimeEntryFillerTests
         TimeEntry timeEntry = AnyTimeEntry(driver.Id, stage.Id, car.Id, verifyInfo.Id);
         FillingContext context = new();
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
-        _verifyInfoRepositoryMock.Setup(x => x.GetById(verifyInfo.Id)).ReturnsAsync(verifyInfo);
+        _verifyInfoRepositoryMock.Setup(x => x.GetById(verifyInfo.Id, It.IsAny<CancellationToken>())).ReturnsAsync(verifyInfo);
 
         Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
         Mock<IVerifyInfoFiller> verifyInfoFillerMock = new Mock<IVerifyInfoFiller>();
@@ -169,18 +175,19 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.VerifyInfoFiller).Returns(verifyInfoFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(timeEntry.VerifyInfo, Is.EqualTo(verifyInfo));
-        _verifyInfoRepositoryMock.Verify(x => x.GetById(verifyInfo.Id), Times.Once());
-        verifyInfoFillerMock.Verify(x => x.FillRecursive(verifyInfo, context, _fillersBagMock.Object), Times.Once());
+        _verifyInfoRepositoryMock.Verify(x => x.GetById(verifyInfo.Id, It.IsAny<CancellationToken>()), Times.Once());
+        verifyInfoFillerMock.Verify(x => x.FillRecursive(verifyInfo, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Test]
     public void FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
+        CancellationToken ct = new();
         Stage stage = AnyStage();
         Car car = AnyCar();
         TimeEntry timeEntry = AnyTimeEntry(Guid.NewGuid(), stage.Id, car.Id);
@@ -191,20 +198,21 @@ public class TimeEntryFillerTests
 
         //Act-Assert
         Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object));
+            _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct));
     }
 
     [Test]
     public void FillRecursive_VerifyInfoNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
+        CancellationToken ct = new();
         Driver driver = AnyDriver();
         Stage stage = AnyStage();
         Car car = AnyCar();
         TimeEntry timeEntry = AnyTimeEntry(driver.Id, stage.Id, car.Id, Guid.NewGuid());
         FillingContext context = new();
 
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
@@ -213,7 +221,7 @@ public class TimeEntryFillerTests
 
         //Act-Assert
         Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object));
+            _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct));
     }
 
     private static TimeEntry AnyTimeEntry(Guid? driverId = null, int? stageId = null, int? carId = null, Guid? verifyInfoId = null) => new TimeEntry()

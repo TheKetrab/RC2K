@@ -26,13 +26,14 @@ public class VerifyInfoFillerTests
         VerifyInfo verifyInfo = AnyVerifyInfo();
         FillingContext context = new();
         context.VerifyInfos.Add(verifyInfo.Id, verifyInfo);
+        CancellationToken ct = new();
 
         //Act
-        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(verifyInfo.Verifier, Is.Null);
-        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), ct), Times.Never());
     }
 
     [Test]
@@ -43,13 +44,14 @@ public class VerifyInfoFillerTests
         VerifyInfo verifyInfo = AnyVerifyInfo(verifier.Id);
         FillingContext context = new();
         context.Users.Add(verifier.Id, verifier);
+        CancellationToken ct = new();
 
         //Act
-        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(verifyInfo.Verifier, Is.EqualTo(verifier));
-        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _userRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), ct), Times.Never());
     }
 
     [Test]
@@ -59,18 +61,19 @@ public class VerifyInfoFillerTests
         User verifier = AnyUser();
         VerifyInfo verifyInfo = AnyVerifyInfo(verifier.Id);
         FillingContext context = new();
-        _userRepositoryMock.Setup(x => x.GetById(verifier.Id)).ReturnsAsync(verifier);
+        CancellationToken ct = new();
+        _userRepositoryMock.Setup(x => x.GetById(verifier.Id, ct)).ReturnsAsync(verifier);
 
         Mock<IUserFiller> userFillerMock = new Mock<IUserFiller>();
         _fillersBagMock.Setup(x => x.UserFiller).Returns(userFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(verifyInfo.Verifier, Is.EqualTo(verifier));
-        _userRepositoryMock.Verify(x => x.GetById(verifier.Id), Times.Once());
-        userFillerMock.Verify(x => x.FillRecursive(verifier, context, _fillersBagMock.Object), Times.Once());
+        _userRepositoryMock.Verify(x => x.GetById(verifier.Id, ct), Times.Once());
+        userFillerMock.Verify(x => x.FillRecursive(verifier, context, _fillersBagMock.Object, ct), Times.Once());
     }
 
     [Test]
@@ -79,10 +82,11 @@ public class VerifyInfoFillerTests
         //Arrange
         VerifyInfo verifyInfo = AnyVerifyInfo();
         FillingContext context = new();
+        CancellationToken ct = new();
 
         //Act-Assert
         Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object));
+            _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct));
     }
 
     private static VerifyInfo AnyVerifyInfo(Guid? verifierId = null) => new VerifyInfo()

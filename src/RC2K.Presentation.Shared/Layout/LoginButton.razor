@@ -1,13 +1,24 @@
 ﻿@using Microsoft.Extensions.Configuration
 @inject IConfiguration Config
+@inject NavigationManager NavigationManager
 
-<MudButton Href="@($"{Config["AppBaseUrl"]}/login")" Color="Color.Primary" Variant="Variant.Filled"
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="ToLogin"
            Style="border-radius: 5em;
         margin: 10px;
         transition: transform .2s ease;
         padding: 0;
         margin: 0;
         height: auto;
-        border-radius: 20px 10px 10px 20px;">
+        border-radius: 20px 10px 10px 20px;"
+>
     Login
 </MudButton>
+
+@code {
+    private void ToLogin()
+    {
+        // login is statically rendered - so forceReload = true
+        // base path given so that we can navigate from www.rc2khub.com to app.rc2khub.com
+        NavigationManager.NavigateTo($"{Config["AppBaseUrl"]}/login", forceLoad: true);
+    }
+}

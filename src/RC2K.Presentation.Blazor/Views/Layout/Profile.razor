@@ -2,6 +2,7 @@
 @using RC2K.Presentation.Blazor.Views.Components;
 @using RC2K.Presentation.Shared.ViewModels
 @using RC2K.Presentation.Shared.Layout
+@inject NavigationManager NavigationManager
 @using RC2K.Logic.Interfaces
 @rendermode InteractiveServer
 
@@ -41,7 +42,7 @@
                     </div>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Logout)"
                                    Color="Color.Error"
-                                   Href="logout"
+                                   OnClick="ToLogout"
                                    Style="padding: 0; margin: auto 10px;" />
                 </div>
             </div>
@@ -118,4 +119,11 @@
 
     string allowOverflowVisible => allowOverflowVisibleBool ? "allow-overflow-visible" : "";
     string visible => profileContentIsVisible ? "visible" : "";
+
+    private void ToLogout()
+    {
+        // logout is statically rendered - so forceReload = true
+        NavigationManager.NavigateTo("/logout", forceLoad: true);
+    }
+
 }

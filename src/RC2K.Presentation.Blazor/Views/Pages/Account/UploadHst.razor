@@ -13,7 +13,7 @@
 
 @inject INotificationService NotificationService
 @inject IUserService UserService
-@inject ISnackbar Snackbar
+@inject MessageHelper MessageHelper
 @inject IHstUploadManager HstUploadManager
 @inject IHstReader HstReader
 
@@ -102,7 +102,7 @@
         }
         catch (Exception)
         {
-            Snackbar.Add("Upload Failed.", Severity.Error);
+            MessageHelper.ShowError("Upload Failed.");
         }
         finally
         {
@@ -131,16 +131,16 @@
         var res = await HstUploadManager.UploadMany(hstData, progress);
         if (!res.Success)
         {
-            Snackbar.Add("Upload Failed.", Severity.Error);
+            MessageHelper.ShowError("Upload Failed.");
         }
         else if (res.Payload!.Any())
         {
-            Snackbar.Add("Some errors", Severity.Warning);
+            MessageHelper.ShowWarning("Some errors");
             _errors = res.Payload!;
         }
         else
         {
-            Snackbar.Add("Upload Successful!", Severity.Success);
+            MessageHelper.ShowSuccess("Upload Successful!");
         }
     }
 

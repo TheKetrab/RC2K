@@ -30,7 +30,7 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             _fillers = fillers;
         }
 
-        public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1)
+        public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1, CancellationToken ct = default)
         {
             var auth = await _asp.GetAuthenticationStateAsync();
             if (!Auth.TryAuthorize(auth))
@@ -41,7 +41,7 @@ namespace RC2K.Presentation.Blazor.AuthProxy
                 }
             }
 
-            var result = await _service.CalculateTimeEntriesWithPoints(stageId, maximum);
+            var result = await _service.CalculateTimeEntriesWithPoints(stageId, maximum, ct);
             return result;
         }
 
@@ -61,22 +61,25 @@ namespace RC2K.Presentation.Blazor.AuthProxy
             await _service.Delete(timeEntries);
         }
 
-        public Task<List<TimeEntry>> Get(int stageId, int? carId = null) =>
-            _service.Get(stageId, carId);
+        public Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default) =>
+            _service.Get(stageId, carId, ct);
 
         public Task<List<TimeEntry>> GetAllNotVerified() =>
             _service.GetAllNotVerified();
+
+        public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId) =>
+            _service.GetBestTimesForDriver(driverId);
 
         public async Task<Result> Upload(
             int stageId, int carId, Guid driverId,
             int min, int sec, int cc,
             List<Proof> proofs, string? labels)
         {
-            Driver driver = await _driverRepository.GetById(driverId)
+            Driver driver = await _driverRepository.GetById(driverId, CancellationToken.None)
                 ?? throw new ArgumentException();
 
             FillingContext context = new();
-            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers);
+            await _fillers.DriverFiller.FillRecursive(driver, context, _fillers, CancellationToken.None);
 
             try
             {
@@ -97,7 +100,7 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 
         public async Task<Result> Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels, string driverKey)
         {
-            Driver driver = await _driverRepository.GetById(driverId)
+            Driver driver = await _driverRepository.GetById(driverId, CancellationToken.None)
                 ?? throw new ArgumentException();
 
             if (driver.Known)

@@ -26,9 +26,10 @@ public class UserFillerTests
         User user = AnyUser();
         FillingContext context = new();
         context.Users.Add(user.Id, user);
+        CancellationToken ct = new();
 
         //Act
-        await _sut.FillRecursive(user, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(user, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(user.Driver, Is.Null);
@@ -42,13 +43,14 @@ public class UserFillerTests
         User user = AnyUser(driver.Id);
         FillingContext context = new();
         context.Drivers.Add(driver.Id, driver);
+        CancellationToken ct = new();
 
         //Act
-        await _sut.FillRecursive(user, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(user, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(user.Driver, Is.EqualTo(driver));
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Never());
+        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), ct), Times.Never());
     }
 
     [Test]
@@ -58,18 +60,19 @@ public class UserFillerTests
         Driver driver = AnyDriver();
         User user = AnyUser(driver.Id);
         FillingContext context = new();
-        _driverRepositoryMock.Setup(x => x.GetById(driver.Id)).ReturnsAsync(driver);
+        CancellationToken ct = new();
+        _driverRepositoryMock.Setup(x => x.GetById(driver.Id, ct)).ReturnsAsync(driver);
 
         Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
-        await _sut.FillRecursive(user, context, _fillersBagMock.Object);
+        await _sut.FillRecursive(user, context, _fillersBagMock.Object, ct);
 
         //Assert
         Assert.That(user.Driver, Is.EqualTo(driver));
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>()), Times.Once());
-        driverFillerMock.Verify(x => x.FillRecursive(driver, context, _fillersBagMock.Object), Times.Once());
+        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), ct), Times.Once());
+        driverFillerMock.Verify(x => x.FillRecursive(driver, context, _fillersBagMock.Object, ct), Times.Once());
     }
 
     [Test]
@@ -78,10 +81,11 @@ public class UserFillerTests
         //Arrange
         User user = AnyUser();
         FillingContext context = new();
+        CancellationToken ct = new();
 
         //Act-Assert
         Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _sut.FillRecursive(user, context, _fillersBagMock.Object));
+            _sut.FillRecursive(user, context, _fillersBagMock.Object, ct));
     }
 
     private static User AnyUser(Guid? driverId = null) => new User()

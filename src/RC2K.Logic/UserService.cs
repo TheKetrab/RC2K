@@ -113,9 +113,9 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<User?> GetById(Guid id)
+    public async Task<User?> GetById(Guid id, CancellationToken ct = default)
     {
-        return await _userRepository.GetById(id);
+        return await _userRepository.GetById(id, ct);
     }
     
     private async Task<Result> UpgradeDriverToUserInternal(Driver driver, string? passwordHash, string email)

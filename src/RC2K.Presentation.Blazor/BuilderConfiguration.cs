@@ -22,7 +22,8 @@ using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Parser;
 using RC2K.Presentation.Blazor.AuthProxy;
-using RC2K.Presentation.Blazor.ViewModels;
+using RC2K.Presentation.Blazor.Views;
+using RC2K.Presentation.Blazor.Views.Dialogs;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -47,9 +48,15 @@ public static class BuilderConfiguration
     public static WebApplicationBuilder ConfigureRazor(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents();
+            .AddInteractiveServerComponents(options =>
+            {
+                options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(15);
+                options.MaxBufferedUnacknowledgedRenderBatches = 5;
+            });
 
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<DialogHelper>();
+        builder.Services.AddScoped<MessageHelper>();
 
         return builder;
     }
