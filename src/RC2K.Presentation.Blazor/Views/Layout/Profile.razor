@@ -2,8 +2,12 @@
 @using RC2K.Presentation.Blazor.Views.Components;
 @using RC2K.Presentation.Shared.ViewModels
 @using RC2K.Presentation.Shared.Layout
-@inject NavigationManager NavigationManager
 @using RC2K.Logic.Interfaces
+@using RC2K.DomainModel
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject INotificationService NotificationService
+@implements IDisposable
 @rendermode InteractiveServer
 
 <div class="profile">
@@ -21,14 +25,14 @@
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Score)"
                                    Href="score"
                                    Style="padding: 0; margin: auto 10px;" />
-                    <MudBadge Content="@notificationCount" 
-                              Visible="@(notificationCount > 0)"
+                    <MudBadge Content="@_notificationsCount" 
+                              Visible="@(_notificationsCount > 0)"
                               Color="@Color.Error"
                               Overlap="true"
-                              Class="notification-badge">
+                              Class="notification-badge" Style="margin: auto 10px;">
                         <MudIconButton Icon="@IconMapper.Thin(Icon.Mail)"
                                        Href="user/notifications"
-                                       Style="padding: 0; margin: auto 10px;" />
+                                       Style="padding: 0; margin: 0" />
                     </MudBadge>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Upload)"
                                    Href="user/uploadHst"
@@ -47,8 +51,8 @@
                 </div>
             </div>
             <div style="position: relative;">
-                <MudBadge Content="@notificationCount" 
-                          Visible="@(notificationCount > 0)"
+                <MudBadge Content="@_notificationsCount" 
+                          Visible="@(_notificationsCount > 0)"
                           Color="@Color.Error"
                           Overlap="true"
                           Class="notification-badge-profile">
@@ -66,40 +70,37 @@
 
 @code {
 
-    [Inject]
-    private INotificationService NotificationService { get; set; } = default!;
-
-    [Inject]
-    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
     bool profileContentIsVisible = false;
     bool allowOverflowVisibleBool = false;
     string mode = "Light/Auto/Dark";
-    int notificationCount = 0;
+    int _notificationsCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadNotifications();
+        await ReloadNotificationsCount();
+        NotificationService.NotificationsUpdated += OnNotificationsUpdates;
     }
 
-    private async Task LoadNotifications()
+    public void Dispose()
     {
-        try
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
+        NotificationService.NotificationsUpdated -= OnNotificationsUpdates;
+    }
 
-            if (user?.Identity?.IsAuthenticated == true && user.Identity.Name is not null)
-            {
-                var notifications = await NotificationService.GetUserNotifications(user.Identity.Name);
-                notificationCount = notifications.Count;
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
+    public async void OnNotificationsUpdates(object sender, Guid userId)
+    {
+        string me = await UserService.GetCurrentUserName();
+        User? currentUser = await UserService.GetUserByName(me);
+        if (currentUser?.Id == userId)
         {
-            Console.WriteLine($"Error loading notifications: {ex.Message}");
+            await ReloadNotificationsCount();
         }
+    }
+
+    private async Task ReloadNotificationsCount()
+    {
+        string me = await UserService.GetCurrentUserName();
+        _notificationsCount = await NotificationService.GetUserNotificationsCount(me);
+        StateHasChanged();
     }
 
     private async Task ToggleProfileVisible()

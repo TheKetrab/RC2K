@@ -165,4 +165,9 @@ public class UserService : IUserService
     {
         _emailConfirmationKeys[email] = code;
     }
+
+    public Task<User?> GetUserByName(string name)
+    {
+        return _userRepository.GetByName(name);
+    }
 }

@@ -22,4 +22,20 @@ public class NotificationRepository(
 
         return await FetchAll(query, CancellationToken.None);
     }
+
+    public async Task<int> GetNotificationsCount(Guid userId)
+    {
+        var query = new QueryDefinition(@"
+            SELECT VALUE COUNT(1) FROM c WHERE c.userId = @userId")
+            .WithParameter("@userId", userId);
+
+        var it = Container.GetItemQueryIterator<int>(query);
+        int count = 0;
+        while (it.HasMoreResults)
+        {
+            count = (await it.ReadNextAsync()).SingleOrDefault();
+        }
+
+        return count;
+    }
 }
