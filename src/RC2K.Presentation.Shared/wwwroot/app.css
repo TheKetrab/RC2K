@@ -3,12 +3,62 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body {
+
+    background-image:
+        radial-gradient(
+            circle at left top,
+            rgba(189, 201, 241, 0.15) 0%,
+            rgb(255 255 255 / 0%) 25%,
+            rgb(255 255 255 / 0) 0%)
+        ,radial-gradient(
+            circle at right bottom,
+            rgba(247, 238, 162, 0.15) 0%,
+            rgb(255 255 255 / 0%) 25%,
+            rgb(255 255 255 / 0%) 100%)
+        ,radial-gradient(#00697c15 1px, transparent 1px)
+        ,radial-gradient(#006a7c15 1px, #ffffff 1px);
+    background-size: 
+        1000px 1000px
+        ,1000px 1000px
+        ,40px 40px
+        ,40px 40px;
+    background-position:
+        0px 0px
+        ,calc(100vw - 1000px) 0px
+        ,0 0
+        ,20px 20px;
+    background-repeat: 
+        no-repeat
+        ,no-repeat
+        ,repeat
+        ,repeat;
+
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+
+}
+
+.page main
+{
+    background-color: #ffffff;
+    min-height: fit-content;
+}
+
 
 .page {
-    /*position: relative;*/
+
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    height: 100vh;
+    width: 100%;
+    overflow-y: auto;
+    
+    background: transparent;
 }
 
 main {
@@ -57,7 +107,8 @@ main {
     --gray800: #424242;
     --gray900: #212121;
     
-    
+    --mud-palette-background: none !important;
+
     --header-height: 3em;
     --header-margin-top: .5em;
     --bottom-banner-height: 100px;
