@@ -3,7 +3,23 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+footer {
+    background: transparent;
+    position: relative;
+}
+
+footer:before {
+    content: '';
+    position: absolute;
+    inset: 0 -5em;
+    background: linear-gradient(90deg, #ffffff00, #ffffff 5em, #ffffff calc(100% - 5em), #ffffff00);
+    z-index: -1;
+}
+
 body {
+
+    --yellow-gradient-size: 1000px;
+    --blue-gradient-size: 1000px;
 
     background-image:
         radial-gradient(
@@ -19,13 +35,13 @@ body {
         ,radial-gradient(#00697c15 1px, transparent 1px)
         ,radial-gradient(#006a7c15 1px, #ffffff 1px);
     background-size: 
-        1000px 1000px
-        ,1000px 1000px
+        var(--blue-gradient-size) var(--blue-gradient-size)
+        ,var(--yellow-gradient-size) var(--yellow-gradient-size)
         ,40px 40px
         ,40px 40px;
     background-position:
         0px 0px
-        ,calc(100vw - 1000px) 0px
+        ,calc(100vw - var(--yellow-gradient-size)) 0px
         ,0 0
         ,20px 20px;
     background-repeat: 
