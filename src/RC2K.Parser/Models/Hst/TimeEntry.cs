@@ -23,7 +23,12 @@ public class TimeEntry
     public string HexGuid { get; set; }
     public int[] CheckpointsCentiseconds { get; set; }
 
-   
+    /// <summary>Byte offset of this entry's start within the HST file stream.</summary>
+    public long ByteOffset { get; }
+
+    /// <summary>Byte offset of the Centiseconds Int32 within the HST file (ByteOffset + 20).</summary>
+    public long CentisecondsOffset => ByteOffset + 20;
+
     public string Time => TimeSpan.FromMilliseconds(Centiseconds * 10).ToString(@"m\:ss\.ff");
     public string CheckpointTime(int i) => TimeSpan.FromMilliseconds(CheckpointsCentiseconds[i] * 10).ToString(@"m\:ss\.ff");
 
@@ -32,6 +37,7 @@ public class TimeEntry
     public TimeEntry(StageEntry parent, BinaryReader reader)
     {
         Parent = parent;
+        ByteOffset = reader.BaseStream.Position;
 
         F1 = reader.ReadInt32();
         F2 = reader.ReadInt32();
