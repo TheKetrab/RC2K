@@ -6,6 +6,10 @@ namespace RC2K.Parser.Models.Hst;
 public class TimeEntry
 {
     public StageEntry Parent { get; }
+    public long ByteOffset { get; }
+    public string Time => TimeSpan.FromMilliseconds(Centiseconds * 10).ToString(@"m\:ss\.ff");
+
+    #region FIELDS
     public int F1 { get; set; }
     public int F2 { get; set; }
     public int Nat { get; set; }
@@ -22,16 +26,12 @@ public class TimeEntry
     public int F14 { get; set; }
     public string HexGuid { get; set; }
     public int[] CheckpointsCentiseconds { get; set; }
-
-   
-    public string Time => TimeSpan.FromMilliseconds(Centiseconds * 10).ToString(@"m\:ss\.ff");
-    public string CheckpointTime(int i) => TimeSpan.FromMilliseconds(CheckpointsCentiseconds[i] * 10).ToString(@"m\:ss\.ff");
-
-    public override string ToString() => $"s: {Parent.StageCode,-15} c:{Car,2} {HexGuid} {Name,20} => {Time}";
+    #endregion
 
     public TimeEntry(StageEntry parent, BinaryReader reader)
     {
         Parent = parent;
+        ByteOffset = reader.BaseStream.Position;
 
         F1 = reader.ReadInt32();
         F2 = reader.ReadInt32();
@@ -52,7 +52,7 @@ public class TimeEntry
         F14 = reader.ReadInt32();
 
         byte[] guidBytes = reader.ReadBytes(8);
-        HexGuid = string.Join('-', BitConverter.ToString(guidBytes).Replace("-", "").Split("",4));
+        HexGuid = string.Join('-', BitConverter.ToString(guidBytes).Replace("-", "").Split("", 4));
 
         CheckpointsCentiseconds = new int[16];
         for (int i = 0; i < 16; i++)
@@ -60,4 +60,10 @@ public class TimeEntry
             CheckpointsCentiseconds[i] = reader.ReadInt32();
         }
     }
+
+    public string CheckpointTime(int i) =>
+        TimeSpan.FromMilliseconds(CheckpointsCentiseconds[i] * 10).ToString(@"m\:ss\.ff");
+
+    public override string ToString() => 
+        $"s: {Parent.StageCode,-15} c:{Car,2} {HexGuid} {Name,20} => {Time}";
 }
