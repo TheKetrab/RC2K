@@ -66,6 +66,13 @@
 				<SolidColorBrush x:Key="TextBoxForegroundFocused" Color="Black"/>
 			</Style.Resources>
 		</Style>
+
+		<Style Selector="DataGridRow.deleted">
+			<Setter Property="Foreground" Value="Red" />
+		</Style>
+		<Style Selector="DataGridRow.deleted TextBlock">
+			<Setter Property="TextDecorations" Value="Strikethrough" />
+		</Style>
     </Window.Styles>
 
     <Border Margin="10" Padding="16" Background="#333333" CornerRadius="6">
@@ -124,10 +131,14 @@
             </Grid>
 
             <!-- STATUS BAR -->
-            <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
-                       Foreground="#AAAAAA" FontSize="11" Margin="0,6,0,0"/>
+			<DockPanel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" LastChildFill="True">
+				<TextBlock DockPanel.Dock="Left" Text="{Binding StatusText}"
+						   Foreground="#AAAAAA" FontSize="11" Margin="0,6,0,0"/>
+				<TextBlock DockPanel.Dock="Right" Text="{Binding SelectionText}"
+						   Foreground="#AAAAAA" FontSize="11" Margin="0,6,0,0" TextAlignment="Right"/>
+			</DockPanel>
 
-            <!-- DATA GRID -->
+			<!-- DATA GRID -->
             <Border Background="Black" CornerRadius="2" Padding="0">
                 <DataGrid ItemsSource="{Binding Entries}"
                           AutoGenerateColumns="False"
@@ -141,22 +152,39 @@
                           Background="Black" Foreground="White"
                           RowBackground="Black"
                           FontSize="13">
-
+					<DataGrid.Styles>
+						<Style Selector="DataGridRow" x:DataType="vm:ScoreEntryViewModel">
+							<Setter Property="Classes.deleted" Value="{Binding IsDeleted}" />
+						</Style>
+					</DataGrid.Styles>
                     <DataGrid.Columns>
+						
                         <DataGridTextColumn Header="#" Binding="{Binding Position}" Width="Auto"/>
                         <DataGridTextColumn Header="NAT" Binding="{Binding Nat}" Width="Auto"/>
-                        <DataGridTextColumn Header="DRIVER" Binding="{Binding DriverName}" Width="*"/>
+						<DataGridTextColumn Header="DRIVER" Binding="{Binding DriverName}" Width="*"/>
 						<DataGridTextColumn Header="CAR" Binding="{Binding Car}" Width="Auto"/>
 						<DataGridTextColumn Header="TIME" Binding="{Binding Time}" Width="*"/>
 						<DataGridTemplateColumn Header="DELETE" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="vm:ScoreEntryViewModel">
+									<Panel Margin="4,2" HorizontalAlignment="Right" >
                                     <Button Content="🗑️" FontSize="14"
                                             Background="Transparent" Foreground="White"
                                             BorderThickness="0" Padding="4,2"
-                                            HorizontalAlignment="Center"
+                                            HorizontalAlignment="Right"
+											IsVisible="{Binding !IsDeleted}"
                                             Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).DeleteEntryCommand}"
                                             CommandParameter="{Binding}"/>
+									<Button Content="Restore"
+                                            FontSize="11"
+                                            Padding="8,2"
+											HorizontalAlignment="Right"
+                                            Background="#555555"
+                                            Foreground="Yellow"
+                                            IsVisible="{Binding IsDeleted}"
+                                            Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).RestoreEntryCommand}"
+                                            CommandParameter="{Binding}"/>
+									</Panel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

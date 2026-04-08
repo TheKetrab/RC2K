@@ -10,22 +10,36 @@ namespace RC2K.Presentation.HstEraser.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    private class LoadedData
+    {
+        public string FilePath { get; }
+        public HighScores HighScores { get; }
+        public Dictionary<long, TimeEntry> Offset2te { get; }
+
+        public LoadedData(string filePath)
+        {
+            FilePath = filePath;
+            
+            var bytes = File.ReadAllBytes(FilePath);
+            using var ms = new MemoryStream(bytes);
+            using var reader = new BinaryReader(ms);
+            HighScores = new HighScores(reader);
+
+            Offset2te = HighScores.GetAll()
+                .ToDictionary(x => x.ByteOffset, x => x);
+        }
+    }
+
     private static readonly int[] RallyBaseCodes = [41, 61, 31, 71, 51, 21];
 
-    private byte[]? _fileBytes; // loaded hst file in memory
-    private HighScores? _highScores; // readonly parsed hst file
     private readonly HashSet<long> _pendingDeletions = [];
 
+    private LoadedData? _loadedData;
+
+    private HstWriter _hstWriter;
+
     public ObservableCollection<string> Rallies { get; } = [];
-    public ObservableCollection<ScoreEntryViewModel> Entries { get; } = [
-        new ScoreEntryViewModel() {
-            Car = "C",
-            Centiseconds = 8433,
-            DriverName = "ketrab",
-            Nat = "pl",
-            Position = 1,
-        }
-        ];
+    public ObservableCollection<ScoreEntryViewModel> Entries { get; } = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StageName))]
@@ -48,6 +62,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private string _statusText = string.Empty;
+
+    [ObservableProperty]
+    private string _selectionText = string.Empty;
 
     private IReadOnlyList<RallyInfoDao> _rallyInfos = [];
 
@@ -87,6 +104,13 @@ public partial class MainViewModel : ObservableObject
         {
             SelectedRallyIndex = 0;
         }
+
+        DataGenerator gen = new();
+        _hstWriter = new HstWriter(
+            zeroCar: gen.GenerateCar,
+            zeroNat: gen.GenerateNationality,
+            zeroName: gen.GenerateDriverName);
+
     }
 
     partial void OnSelectedRallyIndexChanged(int value) => RefreshEntries();
@@ -115,14 +139,27 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void DeleteEntry(ScoreEntryViewModel? entry)
     {
-        if (entry is null || entry.Centiseconds == 0)
+        if (entry is null)
         {
             return;
         }
 
-        entry.Centiseconds = 0;
         entry.IsDeleted = true;
-        _pendingDeletions.Add(entry.CentisecondsOffset);
+        _pendingDeletions.Add(entry.ByteOffset);
+        UpdateSelectionText();
+    }
+
+    [RelayCommand]
+    private void RestoreEntry(ScoreEntryViewModel? entry)
+    {
+        if (entry is null)
+        {
+            return;
+        }
+
+        entry.IsDeleted = false;
+        _pendingDeletions.Remove(entry.ByteOffset);
+        UpdateSelectionText();
     }
 
     [RelayCommand]
@@ -143,25 +180,28 @@ public partial class MainViewModel : ObservableObject
         try
         {
             _pendingDeletions.Clear();
-            _fileBytes = File.ReadAllBytes(HstFilePath);
-            using var ms = new MemoryStream(_fileBytes);
-            using var reader = new BinaryReader(ms);
-            _highScores = new HighScores(reader);
+            UpdateSelectionText();
+            _loadedData = new LoadedData(HstFilePath);
             StatusText = "File loaded successfully.";
             RefreshEntries();
         }
         catch (Exception ex)
         {
             StatusText = $"Error: {ex.Message}";
-            _highScores = null;
-            _fileBytes = null;
+            _loadedData = null;
+
         }
+    }
+
+    private void UpdateSelectionText()
+    {
+        SelectionText = $"Selected time entries to delete: {_pendingDeletions.Count}";
     }
 
     [RelayCommand]
     private void Update()
     {
-        if (_fileBytes is null || _highScores is null)
+        if (_loadedData is null)
         {
             StatusText = "No file loaded.";
             return;
@@ -175,27 +215,17 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            foreach (long offset in _pendingDeletions)
-            {
-                HstWriter.ZeroEntry(_fileBytes, offset);
-            }
+            CreateCurrentHstBackup();
 
-            // Create a backup of the original file before overwriting
-            string directory = Path.GetDirectoryName(HstFilePath) ?? string.Empty;
-            string backupFileName = $"hst.{DateTime.Now:yyyyMMdd_HHmmss}.dat.backup";
-            string backupPath = Path.Combine(directory, backupFileName);
-            File.Copy(HstFilePath, backupPath);
-
-            HstWriter.Save(HstFilePath, _fileBytes);
+            var timeEntriesToDelete = _pendingDeletions.Select(x => _loadedData.Offset2te[x]);
+            using var file = File.OpenWrite(_loadedData.FilePath);
+            _hstWriter.ShredTimeEntries(file, timeEntriesToDelete);
 
             int count = _pendingDeletions.Count;
             _pendingDeletions.Clear();
+            UpdateSelectionText();
 
-            // Reload to reflect changes
-            using var ms = new MemoryStream(_fileBytes);
-            using var reader = new BinaryReader(ms);
-            _highScores = new HighScores(reader);
-
+            _loadedData = new LoadedData(_loadedData.FilePath); // reload
             StatusText = $"Updated {count} entry/entries. File saved.";
             RefreshEntries();
         }
@@ -205,11 +235,24 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    private void CreateCurrentHstBackup()
+    {
+        if (_loadedData is null)
+        {
+            return;
+        }
+
+        string directory = Path.GetDirectoryName(_loadedData.FilePath) ?? string.Empty;
+        string backupFileName = $"hst_{DateTime.Now:yyyyMMdd_HHmmss}.dat.backup";
+        string backupPath = Path.Combine(directory, backupFileName);
+        File.Copy(_loadedData.FilePath, backupPath);
+    }
+
     private void RefreshEntries()
     {
         Entries.Clear();
 
-        if (_highScores is null ||
+        if (_loadedData is null ||
             SelectedRallyIndex < 0 ||
             SelectedRallyIndex >= RallyBaseCodes.Length)
         {
@@ -236,33 +279,33 @@ public partial class MainViewModel : ObservableObject
         for (int i = 0; i < stageEntry.TimeEntries.Length; i++)
         {
             var te = stageEntry.TimeEntries[i];
-            bool pendingDelete = _pendingDeletions.Contains(te.CentisecondsOffset);
+            bool pendingDelete = _pendingDeletions.Contains(te.ByteOffset);
             Entries.Add(new ScoreEntryViewModel
             {
                 Position = i + 1,
                 Nat = RC2K.Parser.Utils.GetNat(te.Nat),
                 DriverName = te.Name,
                 Car = RC2K.Parser.Utils.GetCar(te.Car),
-                Centiseconds = pendingDelete ? 0 : te.Centiseconds,
-                CentisecondsOffset = te.CentisecondsOffset,
-                IsDeleted = pendingDelete
+                Centiseconds = te.Centiseconds,
+                IsDeleted = pendingDelete,
+                ByteOffset = te.ByteOffset
             });
         }
     }
 
     private TimeEntriesCollection? GetCollection()
     {
-        if (_highScores is null)
+        if (_loadedData is null)
         {
             return null;
         }
 
         return (IsArcade, IsTimeTrial) switch
         {
-            (false, false) => _highScores.TimesSimulationNormal,
-            (false, true) => _highScores.TimesSimulationTimeTrial,
-            (true, false) => _highScores.TimesArcadeNormal,
-            (true, true) => _highScores.TimesArcadeTimeTrial,
+            (false, false) => _loadedData.HighScores.TimesSimulationNormal,
+            (false, true) => _loadedData.HighScores.TimesSimulationTimeTrial,
+            (true, false) => _loadedData.HighScores.TimesArcadeNormal,
+            (true, true) => _loadedData.HighScores.TimesArcadeTimeTrial,
         };
     }
 }

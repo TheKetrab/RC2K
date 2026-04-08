@@ -25,12 +25,7 @@ public partial class ScoreEntryViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(Time))]
     private bool _isDeleted;
 
-    public string Time => IsDeleted
-        ? "0:00.00"
-        : RC2K.Utils.Utils.CentisecondsToTimeOnly(Centiseconds).ToString("m\\:ss\\.ff");
+    public string Time => RC2K.Utils.Utils.CentisecondsToTimeOnly(Centiseconds).ToString("m\\:ss\\.ff");
 
-    /// <summary>
-    /// Byte offset of the Centiseconds field in the HST file.
-    /// </summary>
-    public long CentisecondsOffset { get; set; }
+    public long ByteOffset { get; set; }
 }

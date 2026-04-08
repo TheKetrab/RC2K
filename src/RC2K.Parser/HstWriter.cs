@@ -1,20 +1,76 @@
+using RC2K.Parser.Models.Hst;
+using System.Reflection.PortableExecutable;
+using System.Text;
+using System.Xml.Linq;
+
 namespace RC2K.Parser;
 
-public static class HstWriter
+public class HstWriter
 {
-    /// <summary>
-    /// Zeros the Centiseconds field at the given byte offset in the raw file bytes.
-    /// </summary>
-    public static void ZeroEntry(byte[] fileBytes, long centisecondsOffset)
+    private Func<int> _zeroCar;
+    private Func<int> _zeroNat;
+    private Func<string> _zeroName;
+
+    public HstWriter(Func<int> zeroCar, Func<int> zeroNat, Func<string> zeroName)
     {
-        BitConverter.GetBytes(0).CopyTo(fileBytes, centisecondsOffset);
+        _zeroCar = zeroCar;
+        _zeroNat = zeroNat;
+        _zeroName = zeroName;
     }
 
-    /// <summary>
-    /// Saves the modified byte array back to a file.
-    /// </summary>
-    public static void Save(string filePath, byte[] fileBytes)
+    public void ShredTimeEntries(Stream stream, IEnumerable<TimeEntry> entries)
     {
-        File.WriteAllBytes(filePath, fileBytes);
+        using BinaryWriter writer = new BinaryWriter(stream);
+
+        foreach (var entry in entries)
+        {
+            writer.BaseStream.Seek(entry.ByteOffset, SeekOrigin.Begin);
+            WriteZeroTimeEntry(writer);
+        }
+    }
+
+    private void WriteZeroTimeEntry(BinaryWriter writer)
+    {
+        writer.Write(0); // F1
+        writer.Write(0); // F2
+
+        writer.Write(_zeroNat()); // Nat
+
+        writer.Write(0); // F4
+
+        writer.Write(_zeroCar()); // Car
+
+        writer.Write(0); // Centiseconds
+        writer.Write(0); // F7
+        writer.Write(0); // F8
+
+        // Name - 32 bytes
+        string name = _zeroName();
+        if (name.Length >= 32)
+        {
+            throw new ArgumentException($"Name must be shorter than 32 chars, but was: {name}");
+        }
+
+        byte[] stringBytes = Encoding.ASCII.GetBytes(name);
+        writer.Write(stringBytes);
+        int padZeros = 32 - (stringBytes.Length);
+        if (padZeros > 0)
+        {
+            writer.Write(new byte[padZeros]);
+        }
+
+        writer.Write(0); // F10
+        writer.Write(0); // F11
+        writer.Write(0); // F12
+        writer.Write(0); // F13
+        writer.Write(0); // F14
+
+        writer.Write(0L); // Guid, 8 bytes
+
+        // CheckpointsCentiseconds
+        for (int i = 0; i < 16; i++)
+        {
+            writer.Write(0);
+        }
     }
 }
