@@ -1,7 +1,5 @@
 using RC2K.Parser.Models.Hst;
-using System.Reflection.PortableExecutable;
 using System.Text;
-using System.Xml.Linq;
 
 namespace RC2K.Parser;
 
@@ -31,6 +29,8 @@ public class HstWriter
 
     private void WriteZeroTimeEntry(BinaryWriter writer)
     {
+        const int twentyMin = 20 * 60 * 100;
+
         writer.Write(0); // F1
         writer.Write(0); // F2
 
@@ -40,7 +40,7 @@ public class HstWriter
 
         writer.Write(_zeroCar()); // Car
 
-        writer.Write(0); // Centiseconds
+        writer.Write(twentyMin); // Centiseconds
         writer.Write(0); // F7
         writer.Write(0); // F8
 
