@@ -1,1 +1,136 @@
-﻿
+﻿.page-card-3 {
+    min-height: calc(100vh - var(--header-height));
+    background-color: #282828;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+    .page-card-3 > h1 {
+        font-family: "Viga";
+        font-size: 48px;
+        text-align: center;
+        --webkit-background-clip: text;
+        background: linear-gradient(90deg, white, gray);
+        background-clip: text;
+        color: transparent;
+    }
+
+    .page-card-3 > h3 {
+        font-family: "Roboto";
+        font-size: 16px;
+        text-align: center;
+        padding: 0 300px;
+        margin-bottom: 50px;
+    }
+
+.cards {
+    margin: 20px 60px 40px 60px;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 20px;
+}
+
+.big-card {
+    background: #4D4D4D;
+    border-radius: 25px;
+    height: 100%;
+    padding: 20px;
+}
+
+.small-card {
+    background: #4D4D4D;
+    border-radius: 25px;
+    padding: 15px;
+    cursor: pointer;
+    opacity: .9;
+    transition: opacity .1s ease;
+}
+
+.small-card.is-active, .big-card.is-active {
+    outline: solid 1px var(--complementary500);
+}
+
+.small-card-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+}
+
+.big-card .small {
+    display: none;
+}
+
+.small-card .big {
+    display: none;
+}
+
+.big-card h2 {
+    margin-top: 30px;
+    font-family: "Viga";
+    font-size: 28px;
+}
+
+.big-card h3 {
+    color: yellow;
+}
+
+.big-card article {
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+.big-card svg {
+    width: 100px;
+    height: 100px;
+}
+
+.small-card svg {
+    width: 40px;
+    height: 40px;
+}
+
+.small-card h2 {
+    margin-top: 0px;
+    font-family: "Viga";
+    font-size: 16px;
+}
+
+.small-card h3 {
+    color: yellow;
+    font-size: 12px;
+}
+
+.small-card article {
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+h4 {
+    font-weight: normal;
+}
+
+.small-card h2 {
+    margin-top: 16px;
+}
+
+.small-card h4 {
+    font-size: 12px;
+}
+
+
+.big-cards-box {
+    position: relative;
+}
+
+    .big-cards-box > .big-card {
+        position: absolute;
+        inset: 0;
+    }
+
+.small-card:focus, .small-card:hover {
+    opacity: 1;
+}

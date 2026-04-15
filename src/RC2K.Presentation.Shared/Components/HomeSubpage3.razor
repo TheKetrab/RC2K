@@ -3,149 +3,8 @@
 @inject IJSRuntime JSRuntime;
 
 <style>
-    .page-card-3 {
-        min-height: calc(100vh - var(--header-height));
-        background-color: #282828;
-        display: flex;
-        flex-direction: column;
-        color: white;
-    }
 
-    .page-card-3 > h1 {
-        font-family: "Viga";
-        font-size: 48px;
-        text-align: center;
-            --webkit-background-clip: text;
-        background: linear-gradient(90deg, white, gray);
-        background-clip: text;
-            color: transparent;
-        }
 
-    .page-card-3 > h3 {
-        font-family: "Roboto";
-        font-size: 16px;
-        text-align: center;
-        padding: 0 300px;
-        margin-bottom: 50px;
-    }
-
-    .cards {
-        margin: 20px 60px 40px 60px;
-        flex-grow: 1;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-column-gap: 20px;
-    }
-
-    .big-card {
-        background: #4D4D4D;
-        border-radius: 25px;
-        height: 100%;
-        padding: 20px;
-
-        transform: rotate(-5deg);
-        transform-origin: bottom;
-        transition: transform .5s ease;
-        opacity: 0;
-    }
-
-    .small-card {
-        background: #4D4D4D;
-        border-radius: 25px;
-        padding: 15px;
-        cursor: pointer;
-    }
-
-    .small-card-box {
-
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        grid-column-gap: 15px;
-        grid-row-gap: 15px;
-
-    }
-
-    .big-card .small {
-        display: none;
-    }
-    .small-card .big {
-        display: none;
-    }
-
-    .big-card h2 {
-        margin-top: 30px;
-        font-family: "Viga";
-        font-size: 28px;
-    }
-
-    .big-card h3 {
-        color: yellow;
-    }
-
-    .big-card article {
-        margin-top: 20px;
-        line-height: 1.5;
-    }
-
-    .big-card svg {
-        width: 100px;
-        height: 100px;
-    }
-
-    .small-card svg {
-        width: 40px;
-        height: 40px;
-    }
-
-    .small-card h2 {
-        margin-top: 0px;
-        font-family: "Viga";
-        font-size: 16px;
-    }
-
-    .small-card h3 {
-        color: yellow;
-        font-size: 12px;
-    }
-
-    .small-card article {
-        margin-top: 20px;
-        line-height: 1.5;
-    }
-
-    h4 {
-        font-weight: normal;
-    }
-
-    .small-card h2 {
-        margin-top: 16px;
-    }
-    .small-card h4 {
-        font-size: 12px;
-    }
-
-    .big-card:not(.is-active) {
-        /* display: none; */
-    }
-
-    .big-card.is-active {
-        opacity: 1;
-        transform: rotate(0);
-    }
-
-    .big-cards-box {
-        position: relative;
-    }
-
-    .big-cards-box > .big-card {
-        position: absolute;
-        inset: 0;
-    }
-
-    .small-card:focus {
-        background: yellow;
-    }
 </style>
 
 <div class="page-card-3">
@@ -160,7 +19,7 @@
 
     <div class="cards">
         <div class="big-cards-box">
-            <div id="big-card-overall" class="big-card">
+            <div id="big-card-overall" class="big-card is-active">
                 <svg viewBox="-6 -6 36 36" style="float: right;">
                     <circle cx="12" cy="12" r="16" stroke="gray" stroke-width="2" fill="white" />
                     @((MarkupString)IconMapper.Thin(Icon.Score))
@@ -230,7 +89,7 @@
             <div id="big-card-bonus" class="big-card">
                 <svg viewBox="-6 -6 36 36" style="float: right;">
                     <circle cx="12" cy="12" r="16" stroke="gray" stroke-width="2" fill="white" />
-                    @((MarkupString)IconMapper.Thin(Icon.Car))
+                    @((MarkupString)IconMapper.Thin(Icon.Dolar))
                 </svg>
                 <h4>+500 PTS</h4>
                 <h2>Contest Victory</h2>
@@ -249,7 +108,7 @@
             <div id="big-card-showcase" class="big-card">
                 <svg viewBox="-6 -6 36 36" style="float: right;">
                     <circle cx="12" cy="12" r="16" stroke="gray" stroke-width="2" fill="white" />
-                    @((MarkupString)IconMapper.Thin(Icon.Car))
+                    @((MarkupString)IconMapper.Thin(Icon.Like))
                 </svg>
                 <h4>Coming Soon</h4>
                 <h2>Showcases & Kudos</h2>
@@ -268,7 +127,7 @@
 
         </div>
         <div class="small-card-box">
-            <div tabindex="0" id="small-card-overall" class="small-card"></div>
+            <div tabindex="0" id="small-card-overall" class="small-card is-active"></div>
             <div tabindex="0" id="small-card-car" class="small-card"></div>
             <div tabindex="0" id="small-card-bonus" class="small-card"></div>
             <div tabindex="0" id="small-card-showcase" class="small-card"></div>
@@ -298,10 +157,18 @@
     }
 
     function registerBindings() {
-        registerCardBinding('small-card-overall','big-card-overall');
-        registerCardBinding('small-card-car','big-card-car');
-        registerCardBinding('small-card-bonus','big-card-bonus');
-        registerCardBinding('small-card-showcase','big-card-showcase');
+
+        const allBigIds = [
+            'big-card-overall',
+            'big-card-car',
+            'big-card-bonus',
+            'big-card-showcase'
+        ];
+
+        registerCardBinding('small-card-overall','big-card-overall', allBigIds.filter(x => x != 'big-card-overall'));
+        registerCardBinding('small-card-car','big-card-car', allBigIds.filter(x => x != 'big-card-car'));
+        registerCardBinding('small-card-bonus','big-card-bonus', allBigIds.filter(x => x != 'big-card-bonus'));
+        registerCardBinding('small-card-showcase','big-card-showcase', allBigIds.filter(x => x != 'big-card-showcase'));
     }
 
 
@@ -310,17 +177,18 @@
         registerBindings();
     }
 
-    function registerCardBinding(smallCardId, bigCardId) {
+    function registerCardBinding(smallCardId, bigCardId, deactivateOther) {
 
         const smallCard = document.getElementById(smallCardId);
         const bigCard = document.getElementById(bigCardId);
 
         smallCard.addEventListener('focusin', () => {
             bigCard.classList.add('is-active');
-        });
-
-        smallCard.addEventListener('focusout', () => {
-            bigCard.classList.remove('is-active');
+            smallCard.classList.add('is-active');
+            deactivateOther.forEach(async (x) => {
+                document.getElementById(x).classList.remove('is-active');
+                document.getElementById(x.replace("big", "small")).classList.remove('is-active');
+            });
         });
     }
 
