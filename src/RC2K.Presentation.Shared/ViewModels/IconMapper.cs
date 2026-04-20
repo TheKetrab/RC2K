@@ -28,7 +28,9 @@ public enum Icon
     Ranking,
     Mail,
     Upload,
-    Hst
+    Hst,
+    Dolar,
+    Like
 }
 
 public static class IconMapper
@@ -123,6 +125,8 @@ public static class IconMapper
             { Icon.Mail, (true, MudBlazor.Icons.Material.Outlined.Mail, MudBlazor.Icons.Material.Filled.Mail) },
             { Icon.Upload, (true, MudBlazor.Icons.Material.Outlined.UploadFile, MudBlazor.Icons.Material.Filled.UploadFile) },
             { Icon.Hst, (true, hst, hst) },
+            { Icon.Dolar, (true, MudBlazor.Icons.Material.Outlined.CurrencyExchange, MudBlazor.Icons.Material.Outlined.CurrencyExchange) },
+            { Icon.Like, (true, MudBlazor.Icons.Material.Outlined.ThumbUp, MudBlazor.Icons.Material.Outlined.ThumbUp) },
         };
     }
 

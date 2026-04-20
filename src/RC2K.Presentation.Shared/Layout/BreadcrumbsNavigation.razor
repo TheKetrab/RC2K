@@ -16,6 +16,11 @@
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
     }
+
+    .mud-breadcrumb-item.mud-disabled:first-child {
+        margin: 0;
+    }
+
 </style>
 
 
@@ -78,6 +83,7 @@
     private string? MapIcon(string pathItem)
     {
         if (pathItem == "stages") return Icons.Material.Filled.Map;
+        if (pathItem == "ranking") return Icons.Material.Filled.Leaderboard;
         return null;
     }
 
