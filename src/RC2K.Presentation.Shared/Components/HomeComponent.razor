@@ -28,8 +28,8 @@
 <div style="@($@"
      background-image: url(_content/RC2K.Presentation.Shared/img/home/home{DayTime}.png);
      background-size: cover;
-     background-position-y: {BackgroundOffset}px;
-     background-size: 100% 110%;
+     background-position-x: center;
+
      min-height: clamp(400px, calc(100vh - var(--header-margin-top) - var(--header-height) - var(--bottom-banner-height)), 1000px);
      padding-top: 80px;
      display: flex;
@@ -38,21 +38,6 @@
      ")">
 
         <Banner />
-
-     @* <div>
-        <MudGrid Class="mb-6" Justify="Justify.FlexEnd">
-            <MudItem xs="12" sm="3">
-                <MudPaper Outlined="true" Class="pa-4" Style="@($"background: {Rc2kColorPallete.gray200}")">
-                    <MudText Class="font-weight-bold" Color="Color.Primary">» Global Standings</MudText>
-                    <MudText>Compete for the fastest overall time on every stage in the game.</MudText>
-                </MudPaper>
-                <MudPaper Outlined="true" Class="pa-4 mt-2" Style="@($"background: {Rc2kColorPallete.gray50}")">
-                    <MudText Class="font-weight-bold" Color="Color.Secondary">» Car-Specific Rankings</MudText>
-                    <MudText>Master individual vehicles and top the charts for every class.</MudText>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </div> *@
 
     <div style="align-self: flex-end; color: rgb(255 255 255 / 75%); font-family: Anta; padding-right: 5px;">
         v1.2.0-static
@@ -171,13 +156,4 @@
             };
         }
     }
-
-    public int BackgroundOffset => DayTime switch
-    {
-        1 => 0,
-        2 => 0,
-        3 => -50,
-        4 => -50,
-        _ => 0
-    };
 }

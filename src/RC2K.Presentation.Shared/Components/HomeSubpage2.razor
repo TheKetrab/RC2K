@@ -38,8 +38,7 @@
 
         --move-x: 7px;
         --move-y: -7px;
-
-        min-height: calc(100vh - var(--header-height));
+        min-height: clamp(400px, calc(100vh - var(--header-height)), 1000px);
         display: flex;
         flex-direction: column;
 
@@ -114,8 +113,7 @@
         display: flex;
         flex-direction: column;
         gap: 1em;
-        background:
-            linear-gradient(transparent, transparent 75%, gray);
+        background: linear-gradient(transparent, transparent 75%, gray);
     }
 
     .page-card-2-bottom-info > h2 {
@@ -164,7 +162,7 @@
     li {
         margin-block: 5px;
     }
-    li::marker {
+    .page-card-2 li::marker {
         content: '>  ';
     }
 
@@ -227,7 +225,6 @@
 
     function observeMid(element, dotNetObjRef) {
 
-        debugger;
         const observer = new IntersectionObserver(
             async ([e]) => {
                 const isVisible = e.isIntersecting;
