@@ -1,0 +1,293 @@
+﻿@using Microsoft.Extensions.Configuration
+@using Microsoft.JSInterop
+@using RC2K.Presentation.Shared.ViewModels
+@inject IJSRuntime JSRuntime;
+@inject IConfiguration Config
+
+<style>
+
+    .page-card-4 > h1 {
+        padding-top: 3rem;
+        margin-top: 0;
+        margin-bottom: 30px;
+        padding-left: 3rem;
+        padding-right: 3rem;
+        font-size: 48px;
+        font-family: "Viga", sans-serif;
+        line-height: 56px;
+        background: linear-gradient(#282828, transparent 5%, transparent);
+    }
+
+    .page-card-4 > h3 {
+        opacity: 0.8;
+        text-wrap: balance;
+        position: relative;
+    }
+
+    h3,
+    h4 {
+        font-family: "Roboto", sans-serif;
+    }
+
+    .page-card-4 {
+
+        display: flex;
+        flex-direction: column;
+        min-height: clamp(400px, calc(100vh - var(--header-height)), 1000px);
+
+        background: 
+            radial-gradient(
+                circle at bottom center
+                ,var(--complementary100) 0%
+                ,var(--complementary200) 10%
+                ,var(--complementary100) 15%
+                , var(--complementary50) 25%
+                , rgba(255, 255, 255, 0) 50%
+                , rgba(255, 255, 255, 0) 100%), 
+                
+            linear-gradient(
+                200deg
+                ,rgba(0, 100, 255, .2) 0%
+                , rgba(0, 100, 255, .1) 5%
+                , transparent 35%
+                , transparent 100%);
+        
+    }
+
+    .page-card-4 > *:not(:first-child) {
+        margin: auto 3rem;
+    }
+    
+
+    .map-original {
+        align-self: flex-start;
+        
+    }
+
+    .map-gmaps {
+        align-self: center;
+        position: relative;
+    }
+
+    .map-digital {
+        align-self: flex-end;
+        position: relative;
+    }
+    #maps-container {
+        display: flex;
+        justify-content: space-around;
+        flex-grow: 1;
+        position: relative;
+        padding: 50px 30px 30px 30px;
+    }
+    .info-box {
+        position: absolute;
+        width: 350px;
+    }
+
+    #line-svg path {
+        stroke: #222222;
+        stroke-width: 3px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+    } 
+
+    #arrowhead path {
+        opacity: .8;
+        stroke-width: 1px !important;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+         fill: #222222;
+    }
+
+     #line-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    } 
+
+    .img-wrapper {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 5px 1px 10px gray;
+    }
+
+</style>
+
+
+
+
+
+<div class="page-card-4">
+
+    <h1>
+        Interactive Stage Maps
+    </h1>
+    <h3>
+        Experience the realism of Rally Championship 2000 like never before. Those stages aren't just pixels — they are real-world locations preserved in history.
+    </h3>
+    <div id="maps-container">
+
+        <div class="map-original">
+            <div class="img-wrapper">
+                <img id="img1" style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/SC_004.PNG" />
+            </div>
+        </div>
+        <div class="map-gmaps">
+            <div class="img-wrapper">
+                <img id="img2" style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/gmap.jpg" />
+            </div>
+        </div>
+        <div class="map-digital">            
+            <div class="img-wrapper">
+                <img id="img3" style="max-height: 300px;" src="_content/RC2K.Presentation.Shared/img/home/stage-map/osm.jpg" />
+            </div>
+        </div>
+        <svg id="line-svg">
+            <path id="arrow-line-A" d="M0 0" stroke-width="2" marker-end="url(#arrowhead)" fill="none">
+                
+            </path>
+            <path id="arrow-line-B" d="M0 0" stroke-width="2" marker-end="url(#arrowhead)" fill="none">
+
+            </path>
+             <defs>
+                <marker id="arrowhead" markerWidth="14" markerHeight="14" refX="5" refY="8" orient="auto" >
+
+                    <path d="M4 12 12 8 4 4 6 8Z" />
+                </marker>
+            </defs>
+        </svg>
+        <div id="info-box-a" class="d-flex info-box">
+            <MudIcon Icon="@Icons.Material.Filled.Search" Color="Color.Primary" Class="me-3" />
+            <div>
+                <MudText Typo="Typo.body1" Color="Color.Primary"><strong>Real-World Discovery:</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    In 2018 <span style="color: var(--primary600);">anonimowy1121</span> identified the original rally stages within Google Maps coordinates and presented them <a style="color: var(--primary600);" href="https://rc2000.forumotion.com/t27-localisations-maps-of-the-stages-on-google-maps-lokalizacje-mapy-etapow-na-google-maps">on the forum</a>.
+                </MudText>
+            </div>
+        </div>
+        <div id="info-box-b" class="d-flex info-box">
+            <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" Class="me-3" />
+            <div>
+                <MudText Typo="Typo.body1" Color="Color.Primary"><strong>Digital Reconstruction:</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    In 2025 <span style="color: var(--primary600);">TheKetrab</span> moved coords to interactive maps that trace the routes through terrain where standard roads don't even exist on Google Maps.
+                </MudText>
+            </div>
+        </div>
+    </div>
+    <div style="margin: auto auto 30px auto;">
+        <MudButton Variant="Variant.Filled"
+                   
+                   Href="@($"{Config["AppBaseUrl"]}/stages")"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   EndIcon="@Icons.Material.Filled.Explore"
+                   Size="Size.Large">
+            Explore Maps
+        </MudButton>
+    </div>
+</div>
+
+
+
+<script>
+    function updateLines() {
+
+        const container = document.getElementById('maps-container').getBoundingClientRect();
+        const img1 = document.getElementById('img1').getBoundingClientRect();
+        const img2 = document.getElementById('img2').getBoundingClientRect();
+        const img3 = document.getElementById('img3').getBoundingClientRect();
+        const infoBoxA = document.getElementById('info-box-a');
+        const infoBoxB = document.getElementById('info-box-b');
+
+        const lineA = document.getElementById('arrow-line-A');
+        const lineB = document.getElementById('arrow-line-B');
+
+        updateLineA(container, lineA, img1, img2, infoBoxA);
+        updateLineB(container, lineB, img2, img3, infoBoxB);
+
+    }
+
+    function updateLineA(container, line, imgSrc, imgDst, infoBox) {
+
+        const margin = 15;
+        const x0 = imgSrc.right - container.left + margin;
+        const y0 = imgSrc.top + imgSrc.height / 8 - container.top;
+
+        const arrowMargin = 20;
+        const x3 = imgDst.left + imgDst.width / 2 - container.left;
+        const y3 = imgDst.top - container.top - margin - arrowMargin;
+
+        const w = x3-x0;
+        const h = y3-y0;
+
+        const x1 = x0 + w/2;
+        const y1 = y0;
+        const x2 = x3;
+        const y2 = y3 - h/2;
+
+        const path = `M${x0} ${y0} C${x1} ${y1} ${x2} ${y2} ${x3} ${y3}`;
+
+        if (y0 < y3) 
+        {
+            line.style.opacity = "1";
+            line.setAttribute('d', path);
+            infoBox.style.left = `${x3}px`;
+            infoBox.style.top = "auto";
+
+            var containerPaddingBottom = 30;
+            infoBox.style.bottom = `${container.height - y3 - containerPaddingBottom + 10}px`;
+        }
+        else
+        {
+            line.style.opacity = "0";
+            infoBox.style.left = `${imgSrc.left - container.left}px`;
+            infoBox.style.top = `${imgSrc.top + imgSrc.height - container.top}px`;
+        }
+    }
+
+    function updateLineB(container, line, imgSrc, imgDst, infoBox) {
+
+        const margin = 15;
+        const x0 = imgSrc.left + imgSrc.width / 2 - container.left;
+        const y0 = imgSrc.bottom - container.top + margin;
+
+        const arrowMargin = 20;
+        const x3 = imgDst.left - container.left - arrowMargin - margin;
+        const y3 = imgDst.bottom - imgDst.height / 5 - container.top;
+
+        const w = x3-x0;
+        const h = y3-y0;
+
+        const x1 = x0;
+        const y1 = y0 + h/2;
+        const x2 = x3 - w/2;
+        const y2 = y3;
+
+        const path = `M${x0} ${y0} C${x1} ${y1} ${x2} ${y2} ${x3} ${y3}`;
+
+        if (y0 < y3)
+        {
+            line.style.opacity = "1";
+            line.setAttribute('d', path);
+            infoBox.style.left = `${x0-350}px`;
+            infoBox.style.top = `${y0}px`;
+        }
+        else
+        {
+            line.style.opacity = "0";
+            infoBox.style.left = `${imgDst.left - container.left}px`;
+            infoBox.style.top = `${imgDst.top + imgDst.height - container.top}px`;
+        }
+
+    }
+
+    window.addEventListener('resize', updateLines);
+    updateLines(); // init
+</script>
