@@ -1,0 +1,16 @@
+# Terraform providers and modules
+.terraform/
+
+# State files (use remote backend instead)
+*.tfstate
+*.tfstate.backup
+
+# Secret variable files
+*.tfvars
+
+# aztfexport artifacts
+aztfexportResourceMapping.json
+aztfexportSkippedResources.txt
+
+# Crash log
+crash.log
