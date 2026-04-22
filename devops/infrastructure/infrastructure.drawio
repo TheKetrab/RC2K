@@ -1,0 +1,138 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" version="29.4.0">
+  <diagram name="Infrastructure" id="0">
+    <mxGraphModel dx="1303" dy="1879" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="github" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666;fontSize=10;" value="&lt;b&gt;GitHub&lt;/b&gt;&lt;br&gt;TheKetrab/RC2K (main)" vertex="1">
+          <mxGeometry height="40" width="125" x="352.5" y="-50" as="geometry" />
+        </mxCell>
+        <mxCell id="rg" parent="1" style="swimlane;startSize=30;fillColor=#f0f0f0;strokeColor=#666;fontStyle=1;fontSize=12;html=1;" value="Resource Group: rc2k (Poland Central)" vertex="1">
+          <mxGeometry height="440" width="920" x="320" as="geometry" />
+        </mxCell>
+        <mxCell id="7YTdENLwkg_4zrXQpxOl-6" edge="1" parent="rg" source="swa" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;" target="ca">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="swa" parent="rg" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=10;image=img/lib/azure2/preview/Static_Apps.svg;verticalLabelPosition=bottom;verticalAlign=top;" value="rc2k-hub-static&lt;br&gt;Static Web App: HomePage" vertex="1">
+          <mxGeometry height="56" width="70" x="60" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cae" parent="rg" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;fontSize=10;" value="Azure Container Aps" vertex="1">
+          <mxGeometry height="160" width="280" x="200" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ca" parent="cae" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="&lt;b&gt;Blazor: rc2k-hub&lt;/b&gt; — Container App&lt;br&gt;Image: theketrab/rc2k-hub-prod-image:latest&lt;br&gt;0.25 vCPU / 0.5 Gi RAM&lt;br&gt;Port 23040 | External Ingress | Max 1 replica" vertex="1">
+          <mxGeometry height="70" width="220" x="30" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="law" parent="rg" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=10;image=img/lib/azure2/analytics/Log_Analytics_Workspaces.svg;verticalLabelPosition=bottom;verticalAlign=top;" value="workspacerc2ka4b6&#xa;Log Analytics Workspace" vertex="1">
+          <mxGeometry height="64" width="64" x="386" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="ai" parent="rg" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=10;image=img/lib/azure2/devops/Application_Insights.svg;verticalLabelPosition=bottom;verticalAlign=top;" value="rc2k-hub-insights&#xa;Application Insights" vertex="1">
+          <mxGeometry height="63" width="44" x="260" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ai-ag" edge="1" parent="rg" source="ca" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;fontSize=10;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.156;entryY=0.469;entryDx=0;entryDy=0;entryPerimeter=0;" target="law" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="355.47368421052624" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7YTdENLwkg_4zrXQpxOl-8" connectable="0" parent="e-ai-ag" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Logs" vertex="1">
+          <mxGeometry relative="1" x="-0.0427" y="2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sqldb" parent="rg" style="swimlane;startSize=24;fillColor=#e8f5e9;strokeColor=#4caf50;html=1;fontSize=10;" value="CosmosDB Database" vertex="1">
+          <mxGeometry height="320" width="320" x="560" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="devgrp" parent="sqldb" style="swimlane;startSize=24;fillColor=#fff9e6;strokeColor=#f9a825;html=1;fontSize=10;" value="Dev Containers" vertex="1">
+          <mxGeometry height="250" width="120" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dc1" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="BonusPoints" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="dc2" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Drivers" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="dc3" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Notifications" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="dc4" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Statistics" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="dc5" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="TimeEntries" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="dc6" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;aspect=fixed;" value="Users" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="dc7" parent="devgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="VerifyInfos" vertex="1">
+          <mxGeometry height="20" width="80" x="20" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="prodgrp" parent="sqldb" style="swimlane;startSize=24;fillColor=#fce4ec;strokeColor=#c62828;html=1;fontSize=10;" value="Prod Containers" vertex="1">
+          <mxGeometry height="250" width="160" x="150" y="40" as="geometry">
+            <mxRectangle height="30" width="110" x="150" y="75" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pc1" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="BonusPoints-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="pc2" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Drivers-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="pc3" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Notifications-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="pc4" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Statistics-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="pc5" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="TimeEntries-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="pc6" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="Users-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="pc7" parent="prodgrp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff;fontSize=11;" value="VerifyInfos-prod" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="cosmosicon" parent="sqldb" style="image;aspect=fixed;html=1;points=[];align=center;image=img/lib/azure2/databases/Azure_Cosmos_DB.svg;" value="" vertex="1">
+          <mxGeometry height="48" width="48" x="282" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ca-cosmos" edge="1" parent="rg" source="ca" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#82b366;fontSize=10;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="175" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-ca-ai" edge="1" parent="1" source="ca" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;dashed=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" target="ai" value="Telemetry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gh-swa" edge="1" parent="1" source="github" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;" target="swa" value="CI/CD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dockerhub" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666;fontSize=10;" value="&lt;b&gt;Docker Hub&lt;/b&gt;&lt;br&gt;theketrab/rc2k-hub-prod-image:latest" vertex="1">
+          <mxGeometry height="40" width="180" x="570" y="-50" as="geometry" />
+        </mxCell>
+        <mxCell id="e-dh-ca" edge="1" parent="1" source="dockerhub" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;" target="ca" value="Pull image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dom1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="rc2khub.com" vertex="1">
+          <mxGeometry height="20" width="100" x="180" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e-swa-dom1" edge="1" parent="1" source="swa" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=none;html=1;" target="dom1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dom2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="www.rc2khub.com" vertex="1">
+          <mxGeometry height="20" width="100" x="180" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="e-swa-dom2" edge="1" parent="1" source="swa" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=none;html=1;" target="dom2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7YTdENLwkg_4zrXQpxOl-5" edge="1" parent="1" source="7YTdENLwkg_4zrXQpxOl-4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;" target="ca">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7YTdENLwkg_4zrXQpxOl-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="app.rc2khub.com" vertex="1">
+          <mxGeometry height="20" width="100" x="180" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="7YTdENLwkg_4zrXQpxOl-7" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/DNS_Zones.svg;" value="" vertex="1">
+          <mxGeometry height="64" width="64" x="90" y="108" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
