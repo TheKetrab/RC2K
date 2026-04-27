@@ -19,6 +19,7 @@ resource "azurerm_container_app" "res-1" {
   }
   template {
     cooldown_period_in_seconds = 150
+    min_replicas               = 0
     max_replicas               = 1
     container {
       cpu    = 0.25
@@ -85,7 +86,7 @@ resource "azurerm_container_app" "res-1" {
       }
     }
     http_scale_rule {
-      concurrent_requests = "1"
+      concurrent_requests = "10"
       name                = "http-scaler-aggressive"
     }
   }
