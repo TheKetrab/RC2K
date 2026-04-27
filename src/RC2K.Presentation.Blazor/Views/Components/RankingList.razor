@@ -105,8 +105,6 @@
             return;
         }
 
-        OpenLoadingOverlay();
-
         var snapshot = await RankingService.GetLatest();
         foreach (var entry in snapshot.Entries.OrderBy(x => x.Place))
         {

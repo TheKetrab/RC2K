@@ -7,9 +7,9 @@ namespace RC2K.Presentation.Blazor;
 public class AuthService
 {
     private readonly IUserService _userService;
-    public AuthService(IUserService userSerivce)
+    public AuthService(IUserService userService)
     {
-        _userService = userSerivce;
+        _userService = userService;
     }
 
     public async Task<ClaimsPrincipal> Login(string username, string password)
