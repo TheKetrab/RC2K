@@ -1,10 +1,4 @@
-﻿@using RC2K.DomainModel
-@using RC2K.Logic
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.ViewModels
-@using RC2K.Presentation.Shared
-@using SerilogTimings;
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @inject IRankingService RankingService
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
@@ -104,8 +98,6 @@
         {
             return;
         }
-
-        OpenLoadingOverlay();
 
         var snapshot = await RankingService.GetLatest();
         foreach (var entry in snapshot.Entries.OrderBy(x => x.Place))

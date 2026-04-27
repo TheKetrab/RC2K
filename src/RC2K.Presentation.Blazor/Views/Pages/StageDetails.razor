@@ -1,14 +1,6 @@
 @rendermode InteractiveServer
 @page "/stages/{raceName}/{id:int}"
 
-@using Microsoft.AspNetCore.Authorization
-@using RC2K.DataAccess.Interfaces
-@using RC2K.DataAccess.Interfaces.Repositories
-@using RC2K.DomainModel
-@using RC2K.Extensions
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.Views.Components
-@using RC2K.Presentation.Blazor.ViewModels
 @inject IStageService StageService
 @inject ITimeEntryService TimeEntryService
 @inject IDriverService DriverService
@@ -20,9 +12,6 @@
 
 @page "/map"
 @using System.Collections.Generic
-@using RC2K.Presentation.Blazor.Views.Dialogs
-@using RC2K.Presentation.Blazor.Views.Layout
-@using RC2K.Presentation.Shared
 
 @*
   Mobile (1 col)

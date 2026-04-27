@@ -35,7 +35,9 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
     {
-        builder.Services.AddGoogleAnalytics("G-TBW7LHNXJF");
+        string analyticsId = builder.Configuration["Analytics:GoogleAnalyticsId"]
+            ?? throw new InvalidOperationException("Analytics:GoogleAnalyticsId is not configured.");
+        builder.Services.AddGoogleAnalytics(analyticsId);
 
         builder.Host.UseSerilog((ctx, lc) => lc
             .ReadFrom.Configuration(builder.Configuration)
@@ -172,14 +174,16 @@ public static class BuilderConfiguration
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
+        builder.Services.AddHttpClient();
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {
             var captchaSection = builder.Configuration.GetSection("Captcha");
             string secretKey = captchaSection.GetValue<string>("SecretKey")
                 ?? throw new InvalidOperationException("Captcha:SecretKey is not configured.");
+            var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
             var logger = provider.GetRequiredService<ILogger<ReCaptchaV3Verifier>>();
 
-            return new ReCaptchaV3Verifier(secretKey, logger);
+            return new ReCaptchaV3Verifier(secretKey, httpClientFactory, logger);
         });
 
         builder.Services.AddScoped<ICarService, CarService>();
@@ -230,11 +234,9 @@ public static class BuilderConfiguration
                 name: MyAllowSpecificOrigins,
                 policy =>
                 {
-                    policy.WithOrigins(
-                        "https://mango-sky-047fada03-featrc2k67static.westeurope.4.azurestaticapps.net", // feature branch featrc2k67
-                        "https://mango-sky-047fada03.4.azurestaticapps.net", // prod/main
-                        "https://rc2khub.com",
-                        "https://www.rc2khub.com");
+                    string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                        ?? throw new InvalidOperationException("Cors:AllowedOrigins is not configured.");
+                    policy.WithOrigins(allowedOrigins);
                 });
         });
 

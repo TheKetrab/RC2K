@@ -2,12 +2,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using RC2K.DomainModel;
+using RC2K.Presentation.Blazor.ViewModels;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 
 namespace RC2K.Presentation.Blazor.Views.Components;
 
 public partial class UploadTime
 {
+    private record ProofItem(ProofType Type, string Url);
+
     private ErrorBoundary? _errorBoundaryRef;
     private CarSelector _carSelectorRef = default!;
 
@@ -22,20 +25,20 @@ public partial class UploadTime
         _errorBoundaryRef?.Recover();
     }
 
-    private List<Tuple<ProofType, string>> _proofItems = new() { Tuple.Create<ProofType, string>(ProofType.Unknown, "") };
+    private List<ProofItem> _proofItems = new() { new(ProofType.Unknown, "") };
     private List<Proof> Proofs =>
-      _proofItems.Where(x => !string.IsNullOrEmpty(x.Item2))
-                 .Select(x => new Proof() { Type = x.Item1, Url = x.Item2 })
+      _proofItems.Where(x => !string.IsNullOrEmpty(x.Url))
+                 .Select(x => new Proof() { Type = x.Type, Url = x.Url })
                  .ToList();
 
     private void OnValueChanged(int index, string newValue)
     {
-        ProofType currentProofType = _proofItems[index].Item1;
-        _proofItems[index] = Tuple.Create<ProofType, string>(currentProofType, newValue);
+        ProofType currentProofType = _proofItems[index].Type;
+        _proofItems[index] = new ProofItem(currentProofType, newValue);
 
         if (index == _proofItems.Count - 1 && !string.IsNullOrWhiteSpace(newValue))
         {
-            _proofItems.Add(Tuple.Create(ProofType.Unknown, ""));
+            _proofItems.Add(new ProofItem(ProofType.Unknown, ""));
         }
     }
 
@@ -64,18 +67,8 @@ public partial class UploadTime
         UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
     }
 
-    UploadTimeModelType UploadTimeModel = new();
+    UploadTimeDto UploadTimeModel = new();
 
-    public class UploadTimeModelType
-    {
-        public int Min { get; set; }
-        public int Sec { get; set; }
-        public int Cc { get; set; }
-        public Car? Car { get; set; }
-
-        public string DriverName { get; set; } = string.Empty;
-        public string Label { get; set; } = "TA";
-    }
 
     private async Task<bool> IsRobot()
     {

@@ -1,10 +1,4 @@
-﻿@using RC2K.DomainModel
-@using RC2K.Logic
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.ViewModels
-@using RC2K.Presentation.Blazor.Views.Dialogs
-@using RC2K.Presentation.Blazor.Views.Layout
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @inject IStageService StageService
 @inject ITimeEntryService TimeEntryService
 @inject IDriverService DriverService
@@ -63,7 +57,7 @@
                                 </MudSelect>
                                 <MudTextField T="string"
                                               Label="@($"Link {index + 1}")"
-                                              Value="_proofItems[index].Item2"
+                                              Value="_proofItems[index].Url"
                                               ValueChanged="@(value => OnValueChanged(index, value))"
                                               Variant="Variant.Outlined"
                                               Margin="Margin.Dense" />

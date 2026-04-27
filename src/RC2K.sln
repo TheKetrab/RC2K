@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34525.116
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC2K.DomainModel", "RC2K.DomainModel\RC2K.DomainModel.csproj", "{E87191FE-3DEB-4313-916D-16CDC4227AB8}"
 EndProject
@@ -49,6 +49,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Presentation.Shared", "RC2K.Presentation.Shared\RC2K.Presentation.Shared.csproj", "{784AE438-23B9-4BEA-8A90-3F3DF868C04F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Parser", "RC2K.Parser\RC2K.Parser.csproj", "{F13E575C-9106-4A2E-AB3C-41DBACA4DF6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90A36884-A8A2-48FB-AFD9-CC0D9E15D587}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		..\tests\Directory.Packages.props = ..\tests\Directory.Packages.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,7 +7,8 @@ namespace RC2K.Presentation.Blazor.Views.Pages;
 
 public partial class Stages
 {
-    [Parameter] public string? Name { get; set; }
+    [Parameter] 
+    public string? Name { get; set; }
 
     private List<Stage> _stages = new();
     private RallyCode? _rallyCode;

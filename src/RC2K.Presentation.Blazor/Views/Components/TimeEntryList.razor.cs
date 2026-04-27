@@ -144,7 +144,7 @@ public partial class TimeEntryList
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
 
-        await Task.Delay(250);
+        await Task.Delay(250); // intentional delay to handle multiple clicking at once
         _cts.Token.ThrowIfCancellationRequested();
 
         var info = await TimeEntryService.CalculateTimeEntriesWithPoints(StageId, ct: _cts.Token);
@@ -254,7 +254,7 @@ public partial class TimeEntryList
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to copy to clipboard: {ex.Message}");
+            Logger.LogError($"Failed to copy to clipboard: {ex.Message}");
         }
     }
 
@@ -324,7 +324,7 @@ public partial class TimeEntryList
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to delete time entry: {ex.Message}");
+            Logger.LogError($"Failed to delete time entry: {ex.Message}");
         }
     }
 

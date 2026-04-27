@@ -1,10 +1,4 @@
-﻿@using RC2K.Presentation.Blazor.ViewModels
-@using RC2K.Presentation.Blazor.Views.Components;
-@using RC2K.Presentation.Shared.ViewModels
-@using RC2K.Presentation.Shared.Layout
-@using RC2K.Logic.Interfaces
-@using RC2K.DomainModel
-@inject NavigationManager NavigationManager
+﻿@inject NavigationManager NavigationManager
 @inject IUserService UserService
 @inject INotificationService NotificationService
 @implements IDisposable
@@ -86,7 +80,7 @@
         NotificationService.NotificationsUpdated -= OnNotificationsUpdates;
     }
 
-    public async void OnNotificationsUpdates(object sender, Guid userId)
+    public async void OnNotificationsUpdates(object? sender, Guid userId)
     {
         string me = await UserService.GetCurrentUserName();
         User? currentUser = await UserService.GetUserByName(me);
@@ -99,6 +93,13 @@
     private async Task ReloadNotificationsCount()
     {
         string me = await UserService.GetCurrentUserName();
+        if (me == string.Empty)
+        {
+            _notificationsCount = 0;
+            StateHasChanged();
+            return;
+        }
+
         _notificationsCount = await NotificationService.GetUserNotificationsCount(me);
         StateHasChanged();
     }

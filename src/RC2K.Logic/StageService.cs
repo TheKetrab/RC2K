@@ -1,5 +1,4 @@
-﻿using RC2K.DataAccess.Interfaces;
-using RC2K.DataAccess.Interfaces.Repositories;
+﻿using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Extensions;
 using RC2K.Logic.Interfaces;
@@ -8,7 +7,7 @@ namespace RC2K.Logic;
 
 public class StageService : IStageService
 {
-    public readonly IStageRepository _stageRepository;
+    private readonly IStageRepository _stageRepository;
 
     public StageService(IStageRepository stageRepository)
     {
@@ -31,7 +30,7 @@ public class StageService : IStageService
             RallyCode.Scottish => (31, 36),
             RallyCode.Seat => (71, 76),
             RallyCode.Stena => (51, 56),
-            _ => throw new Exception()
+            _ => throw new ArgumentOutOfRangeException(nameof(rallyCode), rallyCode, null)
         };
 
         return _stageRepository.GetAllByStageCodeBetween(from, to);

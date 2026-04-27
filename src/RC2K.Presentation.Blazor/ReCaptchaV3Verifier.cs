@@ -1,19 +1,22 @@
-using RC2K.Logic.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RC2K.Presentation.Blazor;
 
-public class ReCaptchaV3Verifier : ICaptchaVerifier
+public class ReCaptchaV3Verifier : ICaptchaVerifier, IDisposable
 {
     private readonly string _captchaSecret;
+    private readonly HttpClient _httpClient;
     private readonly ILogger<ReCaptchaV3Verifier> _logger;
 
-    public ReCaptchaV3Verifier(string captchaSecret, ILogger<ReCaptchaV3Verifier> logger)
+    public ReCaptchaV3Verifier(string captchaSecret, IHttpClientFactory httpClientFactory, ILogger<ReCaptchaV3Verifier> logger)
     {
         _captchaSecret = captchaSecret;
+        _httpClient = httpClientFactory.CreateClient();
         _logger = logger;
     }
+
+    public void Dispose() => _httpClient.Dispose();
 
     public async Task<int> IsRobot(string token)
     {
@@ -46,26 +49,20 @@ public class ReCaptchaV3Verifier : ICaptchaVerifier
 
     private async Task<GooglereCAPTCHAv3Response?> Verify(string token)
     {
-        GooglereCAPTCHAv3Response? reCaptchaResponse;
-        using (var httpClient = new HttpClient())
+        var content = new FormUrlEncodedContent(new[] {
+            new KeyValuePair<string, string>("secret", _captchaSecret),
+            new KeyValuePair<string, string>("response", token)
+        });
+        try
         {
-            var content = new FormUrlEncodedContent(new[] {
-                new KeyValuePair<string, string>("secret", _captchaSecret),
-                new KeyValuePair<string, string>("response", token)
-            });
-            try
-            {
-                var response = await httpClient.PostAsync($"https://www.google.com/recaptcha/api/siteverify", content);
-                var jsonString = await response.Content.ReadAsStringAsync();
-                reCaptchaResponse = JsonSerializer.Deserialize<GooglereCAPTCHAv3Response>(jsonString);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while trying to verify reCAPTCHA token.");
-                return null;
-            }
-
-            return reCaptchaResponse;
+            var response = await _httpClient.PostAsync($"https://www.google.com/recaptcha/api/siteverify", content);
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<GooglereCAPTCHAv3Response>(jsonString);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception while trying to verify reCAPTCHA token.");
+            return null;
         }
     }
 

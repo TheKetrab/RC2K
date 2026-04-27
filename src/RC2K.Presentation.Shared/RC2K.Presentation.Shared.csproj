@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.5" />
-    <PackageReference Include="MudBlazor" Version="9.2.0" />
+    <PackageReference Include="Extensions.MudBlazor.StaticInput" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="MudBlazor" />
   </ItemGroup>
 
   <ItemGroup>

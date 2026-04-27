@@ -22,6 +22,7 @@ public static class AppConfiguration
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
+        app.UseBotBlocking();
         app.UseAuthentication();
         app.UseCors(BuilderConfiguration.MyAllowSpecificOrigins);
         app.UseAuthorization();
