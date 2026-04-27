@@ -172,14 +172,16 @@ public static class BuilderConfiguration
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
+        builder.Services.AddHttpClient();
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {
             var captchaSection = builder.Configuration.GetSection("Captcha");
             string secretKey = captchaSection.GetValue<string>("SecretKey")
                 ?? throw new InvalidOperationException("Captcha:SecretKey is not configured.");
+            var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
             var logger = provider.GetRequiredService<ILogger<ReCaptchaV3Verifier>>();
 
-            return new ReCaptchaV3Verifier(secretKey, logger);
+            return new ReCaptchaV3Verifier(secretKey, httpClientFactory, logger);
         });
 
         builder.Services.AddScoped<ICarService, CarService>();
