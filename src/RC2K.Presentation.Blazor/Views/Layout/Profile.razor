@@ -86,7 +86,7 @@
         NotificationService.NotificationsUpdated -= OnNotificationsUpdates;
     }
 
-    public async void OnNotificationsUpdates(object sender, Guid userId)
+    public async void OnNotificationsUpdates(object? sender, Guid userId)
     {
         string me = await UserService.GetCurrentUserName();
         User? currentUser = await UserService.GetUserByName(me);
@@ -99,6 +99,13 @@
     private async Task ReloadNotificationsCount()
     {
         string me = await UserService.GetCurrentUserName();
+        if (me == string.Empty)
+        {
+            _notificationsCount = 0;
+            StateHasChanged();
+            return;
+        }
+
         _notificationsCount = await NotificationService.GetUserNotificationsCount(me);
         StateHasChanged();
     }
