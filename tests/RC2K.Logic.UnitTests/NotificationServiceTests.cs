@@ -143,7 +143,7 @@ public class NotificationServiceTests
         _notificationRepositoryMock.Setup(x => x.Delete(id.ToString())).Returns(Task.CompletedTask);
 
         //Act
-        await _sut.Delete(id);
+        await _sut.Delete(Guid.NewGuid(), id);
 
         //Assert
         _notificationRepositoryMock.Verify(x => x.Delete(id.ToString()), Times.Once());
