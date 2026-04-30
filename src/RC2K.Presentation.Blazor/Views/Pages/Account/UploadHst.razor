@@ -2,18 +2,12 @@
 
 @page "/user/uploadHst"
 
-@using RC2K.DataAccess.Interfaces
-@using RC2K.DataAccess.Interfaces.Repositories
-@using RC2K.DomainModel
-@using RC2K.Logic.Interfaces
 @using RC2K.Parser
-@using RC2K.Presentation.Blazor.ViewModels;
-@using RC2K.Presentation.Blazor.Views.Components
 @using System.Collections.Generic
 
 @inject INotificationService NotificationService
 @inject IUserService UserService
-@inject ISnackbar Snackbar
+@inject MessageHelper MessageHelper
 @inject IHstUploadManager HstUploadManager
 @inject IHstReader HstReader
 
@@ -102,7 +96,7 @@
         }
         catch (Exception)
         {
-            Snackbar.Add("Upload Failed.", Severity.Error);
+            MessageHelper.ShowError("Upload Failed.");
         }
         finally
         {
@@ -131,16 +125,16 @@
         var res = await HstUploadManager.UploadMany(hstData, progress);
         if (!res.Success)
         {
-            Snackbar.Add("Upload Failed.", Severity.Error);
+            MessageHelper.ShowError("Upload Failed.");
         }
         else if (res.Payload!.Any())
         {
-            Snackbar.Add("Some errors", Severity.Warning);
+            MessageHelper.ShowWarning("Some errors");
             _errors = res.Payload!;
         }
         else
         {
-            Snackbar.Add("Upload Successful!", Severity.Success);
+            MessageHelper.ShowSuccess("Upload Successful!");
         }
     }
 

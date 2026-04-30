@@ -2,17 +2,11 @@
 
 @page "/admin/verification"
 
-@using RC2K.DataAccess.Interfaces
-@using RC2K.DataAccess.Interfaces.Repositories
-@using RC2K.DomainModel
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.ViewModels;
-@using RC2K.Presentation.Blazor.Views.Components
 @using System.ComponentModel.DataAnnotations
 @inject ITimeEntryService TimeEntryService
 @inject INotificationService NotificationService
 @inject IUserService UserService
-@inject ISnackbar Snackbar
+@inject MessageHelper MessageHelper
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -70,11 +64,11 @@
         {
             await TimeEntryService.Delete(selectedItems);
             await Notify(selectedItems, false, model.Comment);
-            Snackbar.Add("Rejected successfully", Severity.Success);
+            MessageHelper.ShowSuccess("Rejected successfully");
         }
         catch (Exception)
         {
-            Snackbar.Add("Service failed to reject", Severity.Error);
+            MessageHelper.ShowError("Service failed to reject");
         }
     }
 
@@ -96,11 +90,11 @@
         {
             await TimeEntryService.Verify(selectedItems, model.Comment);
             await Notify(selectedItems, true, model.Comment);
-            Snackbar.Add("Verified successfully", Severity.Success);
+            MessageHelper.ShowSuccess("Verified successfully");
         }
         catch (Exception)
         {
-            Snackbar.Add("Service failed to verify", Severity.Error);
+            MessageHelper.ShowError("Service failed to verify");
         }
     }
 

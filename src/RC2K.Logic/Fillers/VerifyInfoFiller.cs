@@ -7,28 +7,18 @@ namespace RC2K.Logic.Fillers;
 public class VerifyInfoFiller(IUserRepository userRepository)
     : IVerifyInfoFiller
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public async Task FillRecursive(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers)
+    public async Task FillRecursive(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
-        await _semaphore.WaitAsync();
-        try
+        if (context.VerifyInfos.ContainsKey(verifyInfo.Id))
         {
-            if (context.VerifyInfos.ContainsKey(verifyInfo.Id))
-            {
-                return;
-            }
-            context.VerifyInfos.Add(verifyInfo.Id, verifyInfo);
+            return;
+        }
+        context.VerifyInfos.Add(verifyInfo.Id, verifyInfo);
 
-            await FillVerifier(verifyInfo, context, fillers);
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+        await FillVerifier(verifyInfo, context, fillers, ct);
     }
 
-    private async Task FillVerifier(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers)
+    private async Task FillVerifier(VerifyInfo verifyInfo, FillingContext context, IFillersBag fillers, CancellationToken ct)
     {
         if (context.Users.TryGetValue(verifyInfo.VerifierId, out User? user))
         {
@@ -36,8 +26,8 @@ public class VerifyInfoFiller(IUserRepository userRepository)
         }
         else
         {
-            verifyInfo.Verifier = (await userRepository.GetById(verifyInfo.VerifierId)) ?? throw new KeyNotFoundException();
-            await fillers.UserFiller.FillRecursive(verifyInfo.Verifier, context, fillers);
+            verifyInfo.Verifier = (await userRepository.GetById(verifyInfo.VerifierId, ct)) ?? throw new KeyNotFoundException();
+            await fillers.UserFiller.FillRecursive(verifyInfo.Verifier, context, fillers, ct);
         }
     }
 }

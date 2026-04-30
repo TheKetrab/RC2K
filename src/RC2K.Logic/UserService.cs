@@ -113,9 +113,9 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<User?> GetById(Guid id)
+    public async Task<User?> GetById(Guid id, CancellationToken ct = default)
     {
-        return await _userRepository.GetById(id);
+        return await _userRepository.GetById(id, ct);
     }
     
     private async Task<Result> UpgradeDriverToUserInternal(Driver driver, string? passwordHash, string email)
@@ -164,5 +164,10 @@ public class UserService : IUserService
     public void SetEmailConfirmationCode(string email, string code)
     {
         _emailConfirmationKeys[email] = code;
+    }
+
+    public Task<User?> GetUserByName(string name)
+    {
+        return _userRepository.GetByName(name);
     }
 }

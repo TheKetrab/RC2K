@@ -3,12 +3,78 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+footer {
+    background: transparent;
+    position: relative;
+}
+
+footer:before {
+    content: '';
+    position: absolute;
+    inset: 0 -5em;
+    background: linear-gradient(90deg, #ffffff00, #ffffff 5em, #ffffff calc(100% - 5em), #ffffff00);
+    z-index: -1;
+}
+
+body {
+
+    --yellow-gradient-size: 1000px;
+    --blue-gradient-size: 1000px;
+
+    background-image:
+        radial-gradient(
+            circle at left top,
+            rgba(189, 201, 241, 0.15) 0%,
+            rgb(255 255 255 / 0%) 25%,
+            rgb(255 255 255 / 0) 0%)
+        ,radial-gradient(
+            circle at right bottom,
+            rgba(247, 238, 162, 0.15) 0%,
+            rgb(255 255 255 / 0%) 25%,
+            rgb(255 255 255 / 0%) 100%)
+        ,radial-gradient(#00697c15 1px, transparent 1px)
+        ,radial-gradient(#006a7c15 1px, #ffffff 1px);
+    background-size: 
+        var(--blue-gradient-size) var(--blue-gradient-size)
+        ,var(--yellow-gradient-size) var(--yellow-gradient-size)
+        ,40px 40px
+        ,40px 40px;
+    background-position:
+        0px 0px
+        ,calc(100vw - var(--yellow-gradient-size)) 0px
+        ,0 0
+        ,20px 20px;
+    background-repeat: 
+        no-repeat
+        ,no-repeat
+        ,repeat
+        ,repeat;
+
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+
+}
+
+.page main
+{
+    background-color: #ffffff;
+    min-height: fit-content;
+}
+
 
 .page {
-    /*position: relative;*/
+
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    height: 100vh;
+    width: 100%;
+    overflow-y: auto;
+    
+    background: transparent;
 }
 
 main {
@@ -57,9 +123,11 @@ main {
     --gray800: #424242;
     --gray900: #212121;
     
-    
+    --mud-palette-background: none !important;
+
     --header-height: 3em;
     --header-margin-top: .5em;
+    --bottom-banner-height: 100px;
 }
 
 .pane {
@@ -137,6 +205,58 @@ h1:focus {
         font-size: .75rem !important;
     }
 
-#time-entry-list-table .mud-table-cell {
+#time-entry-list-table .mud-table-cell,
+#points-list-table .mud-table-cell {
     padding: 0 3px;
+}
+
+/*::deep .mud-chip.mud-chip-size-xs {
+    border-radius: 12px;
+    font-size: 10px;
+    height: 16px;
+    padding: 0 8px;
+}*/
+
+#points-list-table .gp {
+    color: var(--mud-palette-primary) !important;
+}
+
+#points-list-table .cp {
+    color: var(--mud-palette-secondary) !important;
+}
+
+#points-list-table .mud-table-container {
+    max-height: 200px !important;
+}
+
+#time-entry-list-table .mud-table-container {
+    min-height: 150px !important;
+}
+
+.my-flag {
+    align-items: center;
+}
+.my-flag .fi {
+    box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 50%);
+}
+
+
+.big-card {
+    display: none;
+    opacity: 0;
+    transition-property: display opacity transform;
+    transition-duration: 1s;
+    transition-behavior: allow-discrete;
+    transform: rotate(3deg);
+    transform-origin: bottom;
+}
+
+.big-card.is-active {
+    display: block;
+    opacity: 1;
+    transform: rotate(0);
+    @starting-style {
+        opacity: 0;
+        transform: rotate(-3deg);
+    }
 }

@@ -1,7 +1,7 @@
-﻿@using RC2K.Presentation.Blazor.ViewModels
-@using RC2K.Presentation.Blazor.Views.Components;
-@using RC2K.Presentation.Shared.ViewModels
-@using RC2K.Presentation.Shared.Layout
+﻿@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject INotificationService NotificationService
+@implements IDisposable
 @rendermode InteractiveServer
 
 <div class="profile">
@@ -19,9 +19,15 @@
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Score)"
                                    Href="score"
                                    Style="padding: 0; margin: auto 10px;" />
-                    <MudIconButton Icon="@IconMapper.Thin(Icon.Mail)"
-                                   Href="user/notifications"
-                                   Style="padding: 0; margin: auto 10px;" />
+                    <MudBadge Content="@_notificationsCount" 
+                              Visible="@(_notificationsCount > 0)"
+                              Color="@Color.Error"
+                              Overlap="true"
+                              Class="notification-badge" Style="margin: auto 10px;">
+                        <MudIconButton Icon="@IconMapper.Thin(Icon.Mail)"
+                                       Href="user/notifications"
+                                       Style="padding: 0; margin: 0" />
+                    </MudBadge>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Upload)"
                                    Href="user/uploadHst"
                                    Style="padding: 0; margin: auto 10px;" />
@@ -34,13 +40,21 @@
                     </div>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Logout)"
                                    Color="Color.Error"
-                                   Href="logout"
+                                   OnClick="ToLogout"
                                    Style="padding: 0; margin: auto 10px;" />
                 </div>
             </div>
-            <button class="profile-btn" @onclick="ToggleProfileVisible">
-                <ion-icon name="person-circle-outline" class="btn-svg" />
-            </button>
+            <div style="position: relative;">
+                <MudBadge Content="@_notificationsCount" 
+                          Visible="@(_notificationsCount > 0)"
+                          Color="@Color.Error"
+                          Overlap="true"
+                          Class="notification-badge-profile">
+                    <button class="profile-btn" @onclick="ToggleProfileVisible">
+                        <ion-icon name="person-circle-outline" class="btn-svg" />
+                    </button>
+                </MudBadge>
+            </div>
 
 
         </Authorized>
@@ -53,6 +67,42 @@
     bool profileContentIsVisible = false;
     bool allowOverflowVisibleBool = false;
     string mode = "Light/Auto/Dark";
+    int _notificationsCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadNotificationsCount();
+        NotificationService.NotificationsUpdated += OnNotificationsUpdates;
+    }
+
+    public void Dispose()
+    {
+        NotificationService.NotificationsUpdated -= OnNotificationsUpdates;
+    }
+
+    public async void OnNotificationsUpdates(object? sender, Guid userId)
+    {
+        string me = await UserService.GetCurrentUserName();
+        User? currentUser = await UserService.GetUserByName(me);
+        if (currentUser?.Id == userId)
+        {
+            await ReloadNotificationsCount();
+        }
+    }
+
+    private async Task ReloadNotificationsCount()
+    {
+        string me = await UserService.GetCurrentUserName();
+        if (me == string.Empty)
+        {
+            _notificationsCount = 0;
+            StateHasChanged();
+            return;
+        }
+
+        _notificationsCount = await NotificationService.GetUserNotificationsCount(me);
+        StateHasChanged();
+    }
 
     private async Task ToggleProfileVisible()
     {
@@ -71,4 +121,11 @@
 
     string allowOverflowVisible => allowOverflowVisibleBool ? "allow-overflow-visible" : "";
     string visible => profileContentIsVisible ? "visible" : "";
+
+    private void ToLogout()
+    {
+        // logout is statically rendered - so forceReload = true
+        NavigationManager.NavigateTo("/logout", forceLoad: true);
+    }
+
 }

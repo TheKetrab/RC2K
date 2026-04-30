@@ -3,14 +3,10 @@
 @page "/ranking"
 @page "/ranking/{action}"
 
-@using RC2K.DataAccess.Interfaces
-@using RC2K.DataAccess.Interfaces.Repositories
-@using RC2K.DomainModel
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.ViewModels;
-@using RC2K.Presentation.Blazor.Views.Components
 
 @inject IRankingService RankingService;
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager NavigationManager
 
 
 <RankingList />
@@ -24,6 +20,13 @@
     {
         if (Action == "snapshot")
         {
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            if (!authState.User.IsInRole("admin"))
+            {
+                NavigationManager.NavigateTo("/ranking");
+                return;
+            }
+
             await RankingService.DoRankingSnapshot();
             return;
         }

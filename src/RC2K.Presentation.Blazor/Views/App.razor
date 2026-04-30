@@ -1,5 +1,5 @@
 @using RC2K.DomainModel.Exceptions
-@using RC2K.Presentation.Shared
+@using Microsoft.AspNetCore.Components.Routing
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="car-sprite.css" />
     <link rel="stylesheet" href="RC2K.Presentation.Blazor.styles.css" />
     <link rel="icon" type="image/png" href="_content/RC2K.Presentation.Shared/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Viga&family=Anta&display=swap" rel="stylesheet">
 
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -34,9 +38,7 @@
 </head>
 
 <body onload="(() => setRecaptchaVisibility(false))()">
-    <Routes />
-    <NavigationTracker />
-    <MatPortalHost></MatPortalHost>
+    <Routes @rendermode="GetRenderMode(HttpContext)" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
     <script src="_content/Blazor-Analytics/blazor-analytics.js"></script>
@@ -69,7 +71,6 @@
     setRecaptchaVisibility = function (visible) {
       const badge = document.querySelector('.grecaptcha-badge');
       if (badge) {
-          debugger;
           badge.style.display = visible ? 'block' : 'none';
       }
     };
@@ -80,7 +81,23 @@
 </html>
 
 
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
 
+    private IComponentRenderMode? GetRenderMode(HttpContext context)
+    {
+        var path = context.Request.Path.Value ?? "";
+
+        if (path.StartsWith("/login", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/logout", StringComparison.OrdinalIgnoreCase))
+        {
+            return null; // trigger Static SSR
+        }
+
+        return InteractiveServer;
+    }
+}
 
 @code
 {

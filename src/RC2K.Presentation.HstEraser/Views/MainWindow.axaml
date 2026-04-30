@@ -1,0 +1,197 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RC2K.Presentation.HstEraser.ViewModels"
+        x:Class="RC2K.Presentation.HstEraser.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="RC2K HST Eraser"
+        Width="800" Height="600"
+        MinWidth="700" MinHeight="500"
+        Background="#808080">
+
+    <Window.Styles>
+        <Style Selector="ToggleButton">
+            <Setter Property="Background" Value="#999999"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="ToggleButton:checked">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="#C0C0C0"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="MinWidth" Value="28"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="Button.action">
+            <Setter Property="Background" Value="#C0C0C0"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+		<Style Selector="ComboBox:pointerover /template/ Border#Background">
+			<Setter Property="Background" Value="#E8E8E8"/>
+		</Style>
+		<Style Selector="ComboBox">
+			<Style.Resources>
+				<SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground" Color="Black"/>
+				<SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundPointerOver" Color="Black"/>
+				<SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundPressed" Color="Black"/>
+				<SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundDisabled" Color="Gray"/>
+			</Style.Resources>
+		</Style>
+		<Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="#E8E8E8"/>
+		</Style>
+		<Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="#E8E8E8"/>
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="CaretBrush" Value="Black"/>
+			<Style.Resources>
+				<SolidColorBrush x:Key="TextBoxBackgroundPointerOver" Color="#E8E8E8"/>
+				<SolidColorBrush x:Key="TextBoxBackgroundFocused" Color="#E8E8E8"/>
+				<SolidColorBrush x:Key="TextBoxBorderBrushPointerOver" Color="#CCCCCC"/>
+				<SolidColorBrush x:Key="TextBoxBorderBrushFocused" Color="#AAAAAA"/>
+				<SolidColorBrush x:Key="TextBoxForegroundPointerOver" Color="Black"/>
+				<SolidColorBrush x:Key="TextBoxForegroundFocused" Color="Black"/>
+			</Style.Resources>
+		</Style>
+
+		<Style Selector="DataGridRow.deleted">
+			<Setter Property="Foreground" Value="Red" />
+		</Style>
+		<Style Selector="DataGridRow.deleted TextBlock">
+			<Setter Property="TextDecorations" Value="Strikethrough" />
+		</Style>
+    </Window.Styles>
+
+    <Border Margin="10" Padding="16" Background="#333333" CornerRadius="6">
+        <DockPanel>
+
+            <!-- TOP CONTROLS -->
+            <DockPanel DockPanel.Dock="Top" HorizontalSpacing="8" Margin="0,0,0,12">
+                <ComboBox ItemsSource="{Binding Rallies}"
+                          SelectedIndex="{Binding SelectedRallyIndex}"
+                          Width="250" FontSize="13"
+                          Background="White" Foreground="Black" />
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="0">
+					<ToggleButton IsChecked="{Binding !IsArcade}"
+								  Command="{Binding SetSimulationCommand}"
+                                  Content="Simulation"
+								  CornerRadius="5,0,0,5"/>
+					<ToggleButton IsChecked="{Binding IsArcade}"
+								  Command="{Binding SetArcadeCommand}"
+								  Content="Arcade"
+								  CornerRadius="0,5,5,0"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="0">
+					<ToggleButton IsChecked="{Binding IsTimeTrial}"
+								  Command="{Binding SetTimeTrialCommand}"
+                                  Content="Time Trial"
+								  CornerRadius="5,0,0,5"/>
+					<ToggleButton IsChecked="{Binding !IsTimeTrial}"
+								  Command="{Binding SetNormalCommand}"
+								  Content="Normal"
+								  CornerRadius="0,5,5,0"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4" DockPanel.Dock="Right">
+					<Button HorizontalAlignment="Right" Classes="nav" Command="{Binding PrevStageCommand}" Content="&lt;"/>
+					<Button Classes="nav" Command="{Binding NextStageCommand}" Content="&gt;"/>
+				</StackPanel>
+			</DockPanel>
+
+            <!-- STAGE TITLE -->
+            <TextBlock DockPanel.Dock="Top" Text="{Binding StageName}"
+                       FontSize="20" FontWeight="Bold" Foreground="White"
+                       Margin="0,0,0,12"/>
+
+            <!-- BOTTOM BAR -->
+            <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,12,0,0">
+                <TextBlock Grid.Column="0" Text="HST file:" Foreground="White"
+                           VerticalAlignment="Center" Margin="0,0,8,0" FontSize="13"/>
+                <TextBox Grid.Column="1" Text="{Binding HstFilePath, Mode=TwoWay}"
+                         Background="White" Foreground="Black" FontSize="13"
+                         Margin="0,0,8,0"/>
+                <Button Grid.Column="2" Classes="action" Content="Browse"
+                        Click="BrowseButton_Click" Margin="0,0,8,0"/>
+                <Button Grid.Column="3" Classes="action" Content="Load"
+                        Command="{Binding LoadCommand}" Margin="0,0,8,0"/>
+                <Button Grid.Column="4" Classes="action" Content="UPDATE"
+                        Command="{Binding UpdateCommand}" FontWeight="Bold"/>
+            </Grid>
+
+            <!-- STATUS BAR -->
+			<DockPanel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" LastChildFill="True">
+				<TextBlock DockPanel.Dock="Left" Text="{Binding StatusText}"
+						   Foreground="#AAAAAA" FontSize="11" Margin="0,6,0,0"/>
+				<TextBlock DockPanel.Dock="Right" Text="{Binding SelectionText}"
+						   Foreground="#AAAAAA" FontSize="11" Margin="0,6,0,0" TextAlignment="Right"/>
+			</DockPanel>
+
+			<!-- DATA GRID -->
+            <Border Background="Black" CornerRadius="2" Padding="0">
+                <DataGrid ItemsSource="{Binding Entries}"
+                          AutoGenerateColumns="False"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="1" BorderBrush="#444444"
+                          Background="Black" Foreground="White"
+                          RowBackground="Black"
+                          FontSize="13">
+					<DataGrid.Styles>
+						<Style Selector="DataGridRow" x:DataType="vm:ScoreEntryViewModel">
+							<Setter Property="Classes.deleted" Value="{Binding IsDeleted}" />
+						</Style>
+					</DataGrid.Styles>
+                    <DataGrid.Columns>
+						
+                        <DataGridTextColumn Header="#" Binding="{Binding Position}" Width="Auto"/>
+                        <DataGridTextColumn Header="NAT" Binding="{Binding Nat}" Width="Auto"/>
+						<DataGridTextColumn Header="DRIVER" Binding="{Binding DriverName}" Width="*"/>
+						<DataGridTextColumn Header="CAR" Binding="{Binding Car}" Width="Auto"/>
+						<DataGridTextColumn Header="TIME" Binding="{Binding Time}" Width="*"/>
+						<DataGridTemplateColumn Header="DELETE" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="vm:ScoreEntryViewModel">
+									<Panel Margin="4,2" HorizontalAlignment="Right" >
+                                    <Button Content="🗑️" FontSize="14"
+                                            Background="Transparent" Foreground="White"
+                                            BorderThickness="0" Padding="4,2"
+                                            HorizontalAlignment="Right"
+											IsVisible="{Binding !IsDeleted}"
+                                            Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).DeleteEntryCommand}"
+                                            CommandParameter="{Binding}"/>
+									<Button Content="Restore"
+                                            FontSize="11"
+                                            Padding="8,2"
+											HorizontalAlignment="Right"
+                                            Background="#555555"
+                                            Foreground="Yellow"
+                                            IsVisible="{Binding IsDeleted}"
+                                            Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).RestoreEntryCommand}"
+                                            CommandParameter="{Binding}"/>
+									</Panel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+        </DockPanel>
+    </Border>
+</Window>

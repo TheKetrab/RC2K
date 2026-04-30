@@ -4,8 +4,9 @@ namespace RC2K.DataAccess.Interfaces.Repositories;
 
 public interface INotificationRepository
 {
-    Task<Notification?> GetById(Guid id);
+    Task<Notification?> GetById(Guid id, CancellationToken ct);
     Task<List<Notification>> GetNotifications(Guid userId);
+    Task<int> GetNotificationsCount(Guid userId);
     Task Create(Notification notification);
     Task Delete(string id);
 }

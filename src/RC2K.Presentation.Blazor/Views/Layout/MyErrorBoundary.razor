@@ -1,7 +1,7 @@
 ﻿@using MudBlazor
 @inherits ErrorBoundary
 @inject ILogger<MyErrorBoundary> Logger
-@inject ISnackbar Snackbar
+@inject MessageHelper MessageHelper
 
 @if (CurrentException is null)
 {
@@ -22,11 +22,6 @@ else if (ErrorContent is not null)
     public void HandleException(Exception ex)
     {
         Logger.LogError(ex, $"Handled exception: {ex.Message}");
-
-        Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error, config =>
-        {
-            config.ShowCloseIcon = true;
-            config.VisibleStateDuration = 10000;
-        });
+        MessageHelper.ShowError($"An error occurred: {ex.Message}");
     }
 }

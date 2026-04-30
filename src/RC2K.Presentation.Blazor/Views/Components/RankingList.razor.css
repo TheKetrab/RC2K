@@ -1,28 +1,27 @@
-﻿
-
-ol {
-    margin-left: 12rem;
-    display: flex;
-    list-style: none;
-
+﻿::deep .mud-table-row:nth-child(odd):not(.ranking-list-table-user-row) .mud-table-cell.sticky-left {
+    background-color: white !important;
 }
 
-ol li {
-    position: relative;
-    margin-left: calc(.5em * 1.41 + 1em);
+::deep .mud-table-row.ranking-list-table-user-row:nth-child(odd) .mud-table-cell.sticky-left {
+    background-color: inherit !important;
 }
 
-ol li:before {
-    position: absolute;
-    left: -1em;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    content: '';
-    width: .5em;
-    height: .5em;
-    border-right: .15em solid black;
-    border-top: .15em solid black;
-    display: block;
-    transform: rotate(45deg);
+::deep .mud-table-row:nth-child(even) .mud-table-cell.sticky-left {
+    background-color: inherit;
+}
+
+::deep .ranking-list-table-user-row {
+    background-color: var(--complementary200);
+}
+
+::deep .ranking-list-table-even-row {
+    background-color: var(--primary50);
+}
+
+::deep .mud-table-cell {
+    padding: 8px 12px !important;
+}
+
+::deep .mud-table-container {
+    min-width: 100%;
 }

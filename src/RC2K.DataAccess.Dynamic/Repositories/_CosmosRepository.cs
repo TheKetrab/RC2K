@@ -18,7 +18,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public event EventHandler<(string,double)>? RequestUnitsHandler;
 
-    private ItemQueryIteratorHelper _iterator = new();
+    protected ItemQueryIteratorHelper _iterator = new();
 
     protected CosmosRepository(
         Database database,
@@ -32,24 +32,23 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         Container = Database.GetContainer(containerName);
     }
 
-    public virtual async Task<TEntity?> GetById(Guid id)
+    public virtual async Task<TEntity?> GetById(Guid id, CancellationToken ct)
     {
         string key = id.ToString();
-        var response = await Container.ReadItemAsync<TModel>(key, new PartitionKey(EntityName));
+        var response = await Container.ReadItemAsync<TModel>(
+            key, new PartitionKey(EntityName), cancellationToken: ct);
         
         var model = response.Resource;
 
         return Mapper.ToDomainModel(model);
     }
 
-    protected async Task<List<TEntity>> FetchAll(QueryDefinition query)
+    protected async Task<List<TEntity>> FetchAll(QueryDefinition query, CancellationToken ct)
     {
         using var it = Container.GetItemQueryIterator<TModel>(query);
-        var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel);
-        
-        string queryText = query.QueryText.Linearize();
-        string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
-        RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
+        var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel, ct);
+
+        RequestUnitsHandlerInvoke(query, ru);
         
         return result;
     }
@@ -59,7 +58,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         var query = new QueryDefinition(@"
             SELECT * FROM c");
 
-        return await FetchAll(query);
+        return await FetchAll(query, CancellationToken.None);
     }
 
     public virtual async Task Create(TEntity entity)
@@ -78,4 +77,12 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     {
         await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(EntityName));
     }
+
+    protected void RequestUnitsHandlerInvoke(QueryDefinition query, double ru)
+    {
+        string queryText = query.QueryText.Linearize();
+        string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
+        RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
+    }
+        
 }

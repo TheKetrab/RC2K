@@ -2,12 +2,6 @@
 
 @page "/user/notifications"
 
-@using RC2K.DataAccess.Interfaces
-@using RC2K.DataAccess.Interfaces.Repositories
-@using RC2K.DomainModel
-@using RC2K.Logic.Interfaces
-@using RC2K.Presentation.Blazor.ViewModels;
-@using RC2K.Presentation.Blazor.Views.Components
 @inject INotificationService NotificationService
 @inject IUserService UserService
 
@@ -53,10 +47,14 @@
 
     private async Task DeleteSelected()
     {
+        List<Guid> usersIds = _selectedItems.Select(x => x.UserId).ToList();
+        List<Guid> ids = _selectedItems.Select(x => x.Id).ToList();
+
+        await NotificationService.DeleteMany(usersIds, ids);
+
         foreach (var item in _selectedItems)
         {
             _notifications.Remove(item);
-            await NotificationService.Delete(item.Id);
         }
 
         _selectedItems.Clear();
