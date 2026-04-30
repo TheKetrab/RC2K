@@ -1,0 +1,1 @@
+aztfexport resource-group --exclude-terraform-resource "azurerm_log_analytics_workspace_table_custom_log" --exclude-terraform-resource "azurerm_log_analytics_saved_search" rc2k

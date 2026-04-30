@@ -21,6 +21,8 @@ COPY ["src/RC2K.Extensions/RC2K.Utils.csproj", "src/RC2K.Extensions/"]
 COPY ["src/RC2K.DataAccess.Dynamic/RC2K.DataAccess.Dynamic.csproj", "src/RC2K.DataAccess.Dynamic/"]
 COPY ["src/RC2K.Logic.Interfaces/RC2K.Logic.Interfaces.csproj", "src/RC2K.Logic.Interfaces/"]
 COPY ["src/RC2K.Logic/RC2K.Logic.csproj", "src/RC2K.Logic/"]
+COPY ["src/Directory.Build.props", "src/Directory.Build.props"]
+COPY ["src/Directory.Packages.props", "src/Directory.Packages.props"]
 RUN dotnet restore "./src/RC2K.Presentation.Blazor/RC2K.Presentation.Blazor.csproj"
 COPY . .
 WORKDIR "/app/src/RC2K.Presentation.Blazor"
