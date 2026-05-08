@@ -10,12 +10,21 @@ resource "azurerm_container_app" "res-1" {
   revision_mode                = "Single"
   workload_profile_name        = "Consumption"
   ingress {
-    external_enabled = true
-    target_port      = 0
+    client_certificate_mode = "ignore"
+    external_enabled        = true
+    target_port             = 0
     traffic_weight {
       latest_revision = true
       percentage      = 100
     }
+  }
+  secret {
+    name  = "client-id"
+    value = var.keda_client_id
+  }
+  secret {
+    name  = "client-password"
+    value = var.keda_client_password
   }
   template {
     cooldown_period_in_seconds = 150
@@ -47,7 +56,7 @@ resource "azurerm_container_app" "res-1" {
         value = "Production"
       }
       env {
-        name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        name  = "ApplicationInsights__ConnectionString"
         value = var.application_insights_connection_string
       }
       env {
@@ -55,12 +64,20 @@ resource "azurerm_container_app" "res-1" {
         value = var.mailing_sftp_app_password
       }
       env {
-        name  = "Mailing__SenderEmai"
+        name  = "Mailing__SenderEmail"
         value = "kettydun@gmail.com"
       }
       env {
         name  = "CAPTCHA__SecretKey"
         value = var.captcha_secret_key
+      }
+      env {
+        name        = "MY_CLIENT_ID"
+        secret_name = "client-id"
+      }
+      env {
+        name        = "MY_CLIENT_PASSWORD"
+        secret_name = "client-password"
       }
       liveness_probe {
         initial_delay = 0
@@ -85,9 +102,21 @@ resource "azurerm_container_app" "res-1" {
         transport               = "TCP"
       }
     }
-    http_scale_rule {
-      concurrent_requests = "10"
-      name                = "http-scaler-aggressive"
+    custom_scale_rule {
+      custom_rule_type = "azure-app-insights"
+      metadata = {
+        activationTargetValue                = "0"
+        activeDirectoryClientIdFromEnv       = "MY_CLIENT_ID"
+        activeDirectoryClientPasswordFromEnv = "MY_CLIENT_PASSWORD"
+        applicationInsightsId                = "12825ae2-7d67-440e-9f08-54b6d20cf868"
+        ignoreNullValues                     = "True"
+        metricAggregationTimespan            = "0:1"
+        metricAggregationType                = "max"
+        metricId                             = "customMetrics/ActiveCircuits"
+        targetValue                          = "1"
+        tenantId                             = "ecc03a36-fd60-44d9-a470-c14c4304bfcd"
+      }
+      name = "app-insights-scale-rule"
     }
   }
 }

@@ -27,3 +27,15 @@ variable "application_insights_connection_string" {
   type        = string
   sensitive   = true
 }
+
+variable "keda_client_id" {
+  description = "Client id of KEDA app querying Application Insights"
+  type        = string
+  sensitive   = true
+}
+
+variable "keda_client_password" {
+  description = "Client password of KEDA app querying Application Insights"
+  type        = string
+  sensitive   = true
+}
