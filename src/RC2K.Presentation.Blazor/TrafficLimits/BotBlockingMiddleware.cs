@@ -1,4 +1,4 @@
-namespace RC2K.Presentation.Blazor;
+namespace RC2K.Presentation.Blazor.TrafficLimits;
 
 public static class BotBlockingMiddlewareExtensions
 {

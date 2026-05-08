@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" version="29.4.0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36">
   <diagram name="Infrastructure" id="0">
-    <mxGraphModel dx="1303" dy="1879" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+    <mxGraphModel dx="1356" dy="1811" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -98,6 +98,22 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="560" y="175" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="rikhsXb2l1tQJBJ6Xy2O-2" edge="1" parent="rg" source="rikhsXb2l1tQJBJ6Xy2O-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240.00000000000023" y="364" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rikhsXb2l1tQJBJ6Xy2O-3" edge="1" parent="rg" source="rikhsXb2l1tQJBJ6Xy2O-1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.9;exitY=0.2;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" target="cae">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rikhsXb2l1tQJBJ6Xy2O-4" connectable="0" parent="rikhsXb2l1tQJBJ6Xy2O-3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="KEDA scaller based on &lt;br&gt;ActiveCircuits from Application Insights" vertex="1">
+          <mxGeometry relative="1" x="-0.2057" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rikhsXb2l1tQJBJ6Xy2O-1" parent="rg" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=hpa" value="" vertex="1">
+          <mxGeometry height="48" width="50" x="40" y="340" as="geometry" />
         </mxCell>
         <mxCell id="e-ca-ai" edge="1" parent="1" source="ca" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;dashed=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" target="ai" value="Telemetry">
           <mxGeometry relative="1" as="geometry" />

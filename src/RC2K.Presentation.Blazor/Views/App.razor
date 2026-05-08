@@ -76,6 +76,40 @@
     };
   </script>
 
+    <script>
+        window.initializeInactivityTimer = () => {
+            let timeoutDuration = 5 * 60 * 1000; // 5 Minutes in milliseconds (5 * 60 * 1000)
+            let timeoutTimer;
+
+            function resetTimer() {
+                clearTimeout(timeoutTimer);
+                timeoutTimer = setTimeout(() => {
+                    if (window.Blazor) {
+                        console.log("User inactive for 5 minutes. Disconnecting circuit...");
+                        window.Blazor.disconnect();
+                    }
+                }, timeoutDuration);
+            }
+
+            // DOM events that indicate the user is active
+            window.onload = resetTimer;
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+            document.onclick = resetTimer;
+            document.onscroll = resetTimer;
+
+            // Start the timer
+            resetTimer();
+        };
+
+        // Initialize after the Blazor script is loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.Blazor) {
+                window.initializeInactivityTimer();
+            }
+        });
+    </script>
+
 </body>
 
 </html>

@@ -16,9 +16,9 @@ var app = builder.Build()
 
 app.MapHealthChecks("/ping");
 
-if (builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"] is null)
+if (builder.Configuration["ApplicationInsights:ConnectionString"] is null)
 {
-    app.Logger.LogWarning("APPLICATIONINSIGHTS_CONNECTION_STRING env variable not defined so AppInsights will not be working");
+    app.Logger.LogWarning("ApplicationInsights:ConnectionString env variable not defined so AppInsights will not be working");
 }
 
 

@@ -24,5 +24,5 @@ docker run --name rc2k-hub-prod -d \
   -e "Captcha__SecretKey=SECRET" \
   -e "Cosmos__ApiKey=SECRET" \
   -e "ASPNETCORE_ENVIRONMENT=Production" \
-  -e "APPLICATIONINSIGHTS_CONNECTION_STRING=SECRET" \
+  -e "ApplicationInsights__ConnectionString=SECRET" \
   -p 5005:8080 rc2k-hub-prod-image

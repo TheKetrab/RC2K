@@ -1,6 +1,7 @@
 
 using Blazor.Analytics;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using RC2K.Parser;
 using RC2K.Presentation.Blazor.AuthProxy;
+using RC2K.Presentation.Blazor.TrafficLimits;
 using RC2K.Presentation.Blazor.Views;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 using Serilog;
@@ -50,11 +52,33 @@ public static class BuilderConfiguration
     public static WebApplicationBuilder ConfigureRazor(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents(options =>
+            .AddInteractiveServerComponents();
+
+        if (builder.Configuration["ApplicationInsights:ConnectionString"] is not null)
+        {
+            builder.Services.AddSingleton<ITelemetryClientWrapper, TelemetryClientWrapper>();
+            builder.Services.AddApplicationInsightsTelemetry(options =>
             {
-                options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(15);
-                options.MaxBufferedUnacknowledgedRenderBatches = 5;
+                var conn = builder.Configuration["ApplicationInsights:ConnectionString"];
+                if (!string.IsNullOrEmpty(conn))
+                {
+                    options.ConnectionString = conn;
+                }
             });
+        }
+        else
+        {
+            builder.Services.AddSingleton<ITelemetryClientWrapper, TelemetryClientNullObjectWrapper>();
+        }
+
+        builder.Services.AddSingleton<ActiveSessionTracker>();
+        builder.Services.AddScoped<CircuitHandler, TrackingCircuitHandler>();
+        builder.Services.AddIdleCircuitHandler(options => 
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(3);
+            options.ForceInvalidateCircuitTimeout = TimeSpan.FromSeconds(10);
+        });
+        builder.Services.AddHostedService<SessionLoggingService>();
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<DialogHelper>();
