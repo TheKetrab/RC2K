@@ -51,18 +51,24 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # The begin block now dynamically includes Pull Request context parameters for SonarQube
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TheKetrab_RC2K" /o:"theketrab" `
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.exclusions="**/Migrations/*.cs" `
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
-            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" `
-            /d:sonar.pullrequest.branch="${{ github.head_ref }}" `
-            /d:sonar.pullrequest.base="${{ github.base_ref }}"
+          # Start building the base scanner command
+          $sonarCmd = "${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:""TheKetrab_RC2K"" /o:""theketrab"" /d:sonar.token=""${{ secrets.SONAR_TOKEN }}"" /d:sonar.exclusions=""**/Migrations/*.cs"" /d:sonar.cs.opencover.reportsPaths=""**/coverage.opencover.xml"""
 
+          # Dynamically append PR parameters ONLY if this run is an actual Pull Request
+          if ("${{ github.event_name }}" -eq "pull_request") {
+              $sonarCmd += " /d:sonar.pullrequest.key=""${{ github.event.pull_request.number }}"""
+              $sonarCmd += " /d:sonar.pullrequest.branch=""${{ github.head_ref }}"""
+              $sonarCmd += " /d:sonar.pullrequest.base=""${{ github.base_ref }}"""
+          }
+
+          # Invoke the dynamically built Sonar command
+          Invoke-Expression $sonarCmd
+
+          # Build the solution
           dotnet build "src/RC2K.sln"
           
-          # Run tests and collect coverage in OpenCover format using coverlet.msbuild
+          # Run tests and collect coverage
           dotnet test "src/RC2K.sln" --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="TestResults/coverage.opencover.xml" /p:Exclude="[RC2K.DomainModel]*,[RC2K.Extensions]*,[RC2K.Parser]*,[RC2K.Presentation]*"
           
+          # End Sonar analysis
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
