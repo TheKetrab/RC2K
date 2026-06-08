@@ -2,4 +2,9 @@
   <PropertyGroup>
     <VersionPrefix>1.2.0</VersionPrefix>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 </Project>
