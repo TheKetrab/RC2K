@@ -1,10 +1,14 @@
 name: SonarQube
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - main # Triggers only on PRs targeting main
+
 jobs:
   build:
     name: Build and analyze
@@ -14,16 +18,19 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
+
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones disabled for better relevancy of analysis
+
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
@@ -31,19 +38,31 @@ jobs:
           path: ${{ runner.temp }}\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
+
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TheKetrab_RC2K" /o:"theketrab" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.exclusions="**/Migrations/*.cs" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          # The begin block now dynamically includes Pull Request context parameters for SonarQube
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TheKetrab_RC2K" /o:"theketrab" `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
+            /d:sonar.exclusions="**/Migrations/*.cs" `
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" `
+            /d:sonar.pullrequest.branch="${{ github.head_ref }}" `
+            /d:sonar.pullrequest.base="${{ github.base_ref }}"
+
           dotnet build "src/RC2K.sln"
+          
           # Run tests and collect coverage in OpenCover format using coverlet.msbuild
           dotnet test "src/RC2K.sln" --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="TestResults/coverage.opencover.xml" /p:Exclude="[RC2K.DomainModel]*,[RC2K.Extensions]*,[RC2K.Parser]*,[RC2K.Presentation]*"
+          
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
