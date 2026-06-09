@@ -82,7 +82,7 @@ public class TimeEntryService : ITimeEntryService
             string ids = string.Join(",",
                 timeEntries.Where(x => x.VerifyInfoId is not null)
                            .Select(x => x.Id));
-            throw new ArgumentException($"TimeEntries with ids [{ids}] are already verified.");
+            throw new ArgumentException($"TimeEntries with ids [{ids}] are already verified.", nameof(ids));
         }
 
         VerifyInfo verifyInfo = new()

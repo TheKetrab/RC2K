@@ -37,7 +37,7 @@ public class HstWriter(Func<int> zeroCar, Func<int> zeroNat, Func<string> zeroNa
         string name = zeroName();
         if (name.Length >= 32)
         {
-            throw new ArgumentException($"Name must be shorter than 32 chars, but was: {name}");
+            throw new ArgumentException($"Name must be shorter than 32 chars, but was: {name}", nameof(name));
         }
 
         byte[] stringBytes = Encoding.ASCII.GetBytes(name);

@@ -10,6 +10,7 @@ public enum RallyCode
     Stena
 }
 
+[Flags]
 public enum Mood
 {
     Sunrise     = 1 << 0,

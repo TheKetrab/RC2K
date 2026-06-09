@@ -33,14 +33,14 @@ window.mapInterop = {
         L.marker(waypoints[waypoints.length - 1], { icon: this.endMarker }).addTo(map)
 
         // Path
-        var routeCoordinates;
-        var result;
+        let routeCoordinates;
+        let result;
         if (!path) {
             const coordinates = waypoints.map(p => `${p.lng},${p.lat}`).join(';');
             if (coordinates.indexOf("-1,-1") > 0) {
                 // multi-road
                 result = "";
-                var parts = coordinates.split(';-1,-1;');
+                const parts = coordinates.split(';-1,-1;');
                 for (let i = 0; i < parts.length; i++) {
 
                     if (i % 2 == 0) { // waypoints
@@ -126,7 +126,7 @@ window.mapInterop = {
      */
     async function (coordinates, api) {
 
-        var osrmUrl;
+        let osrmUrl;
         const osrmApiQueryParams = 'overview=full&geometries=geojson&generate_hints=false&alternatives=true'; 
         if (api == 'bike') {
             osrmUrl = `https://routing.openstreetmap.de/routed-bike/route/v1/bike/${coordinates}?${osrmApiQueryParams}`;

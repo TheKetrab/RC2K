@@ -7,6 +7,9 @@ spelling_exclusion_path = exclusion.dic
 # C# files
 [*.cs]
 
+# Disable the expensive logging evaluation warning project/solution-wide
+dotnet_diagnostic.S2629.severity = none
+
 #### Core EditorConfig Options ####
 
 # Indentation and spacing

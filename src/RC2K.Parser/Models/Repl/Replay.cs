@@ -1,5 +1,9 @@
-﻿namespace RC2K.Parser.Models.Repl;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace RC2K.Parser.Models.Repl;
+
+[SuppressMessage("CodeQuality", "S1144:Unused private types or members should be removed")]
+[SuppressMessage("Removal", "CS0169:Field is never used")]
 public class Repl
 {
     int F1 { get; set; } // "REPL"

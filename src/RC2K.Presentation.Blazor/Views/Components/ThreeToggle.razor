@@ -21,7 +21,7 @@
         0 => IconMapper.Thin(Icon.ModeLight),
         1 => IconMapper.Thin(Icon.ModeAuto),
         2 => IconMapper.Thin(Icon.ModeDark),
-        _ => throw new ArgumentException(nameof(_state))
+        _ => throw new ArgumentException($"Invalid value of state {_state}", nameof(_state))
     };
 
     public string className => _state switch
@@ -29,7 +29,7 @@
         0 => "",
         1 => "mid",
         2 => "full",
-        _ => throw new ArgumentException(nameof(_state))
+        _ => throw new ArgumentException("Invalid value of state {_state}", nameof(_state))
     };
 
 }

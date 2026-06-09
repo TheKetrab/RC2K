@@ -62,7 +62,7 @@ public class AuthTimeEntryServiceProxy(
         List<Proof> proofs, string? labels)
     {
         Driver driver = await driverRepository.GetById(driverId, CancellationToken.None)
-            ?? throw new ArgumentException();
+            ?? throw new ArgumentException($"Driver with id {driverId} was not found", nameof(driverId));
 
         FillingContext context = new();
         await fillers.DriverFiller.FillRecursive(driver, context, fillers, CancellationToken.None);
@@ -87,11 +87,11 @@ public class AuthTimeEntryServiceProxy(
     public async Task<Result> Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels, string driverKey)
     {
         Driver driver = await driverRepository.GetById(driverId, CancellationToken.None)
-            ?? throw new ArgumentException(nameof(driverId));
+            ?? throw new ArgumentException($"Driver with id {driverId} was not found. ", nameof(driverId));
 
         if (driver.Known)
         {
-            throw new ArgumentException("For registered users use method without driver key");
+            throw new ArgumentException("For registered users use method without driver key", nameof(driver));
         }
 
         if (driver.Key != driverKey)

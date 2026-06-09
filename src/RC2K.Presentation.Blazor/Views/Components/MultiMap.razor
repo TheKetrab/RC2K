@@ -35,7 +35,7 @@
         {
             if (MultiMapPaths is null)
             {
-                throw new ArgumentNullException(nameof(MultiMapPaths));
+                throw new ArgumentNullException(nameof(MultiMapPaths), "MultiMapPaths is null");
             }
             await JSRuntime.InvokeVoidAsync("mapInterop.initMultiMap", mapElementId, waypoints, StartsEnds, MultiMapPaths);
         }

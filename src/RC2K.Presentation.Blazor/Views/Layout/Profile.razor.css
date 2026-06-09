@@ -28,7 +28,6 @@
 .profile-content-wrapper {
     border-bottom-left-radius: 1em;
     border-top-left-radius: 1em;
-    /*border: solid 3px black;*/
     box-shadow: rgb(255, 255, 255) 10px 10px inset;
     overflow: hidden;
     display: flex;
@@ -91,7 +90,6 @@
 }
 
 .login-btn:hover {
-    /*transform: scale(1.02);*/
     transform: scale(0.5);
 }
 

@@ -21,14 +21,14 @@ public static class Utils
     {
         Direction.Simulation => 's',
         Direction.Arcade => 'a',
-        _ => throw new ArgumentException(nameof(direction))
+        _ => throw new ArgumentException($"Invalid direction value {direction}", nameof(direction))
     };
 
     public static Direction CharToDirection(char c) => c switch
     {
         's' => Direction.Simulation,
         'a' => Direction.Arcade,
-        _ => throw new ArgumentException(nameof(c))
+        _ => throw new ArgumentException($"Invalid c value {c}", nameof(c))
     };
 
     public static Proof DeserializeProof(string str)

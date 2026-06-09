@@ -43,6 +43,8 @@ public static class RandomExtensions
     private static void EnsureKIsLowerThanN(int k, int n)
     {
         if (k > n)
+        {
             throw new ArgumentException($"k ({k}) cannot be greater than n ({n})");
+        }
     }
 }
