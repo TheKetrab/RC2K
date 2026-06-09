@@ -36,10 +36,8 @@ public sealed class IdleCircuitHandler : CircuitHandler, IDisposable
         _tracker = tracker;
     }
 
-    private void CircuitIdle(object? sender, System.Timers.ElapsedEventArgs e)
-    {
+    private void CircuitIdle(object? sender, System.Timers.ElapsedEventArgs e) =>
         _logger.LogWarning("Circuit {CircuitId} is idle", _currentCircuit?.Id);
-    }
 
     private void ForceInvalidateCircuit(object? sender, System.Timers.ElapsedEventArgs e)
     {

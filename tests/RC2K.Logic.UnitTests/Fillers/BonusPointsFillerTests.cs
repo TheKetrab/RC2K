@@ -1,9 +1,10 @@
 using Moq;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces.Fillers;
 
-namespace RC2K.Logic.Fillers.UnitTests;
+namespace RC2K.Logic.UnitTests.Fillers;
 
 public class BonusPointsFillerTests
 {
@@ -64,7 +65,7 @@ public class BonusPointsFillerTests
         FillingContext context = new();
         _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -89,15 +90,15 @@ public class BonusPointsFillerTests
             _sut.FillRecursive(bonusPoints, context, _fillersBagMock.Object, ct));
     }
 
-    private static BonusPoints AnyBonusPoints(Guid? driverId = null) => new BonusPoints()
+    private static BonusPoints AnyBonusPoints(Guid? driverId = null) => new()
     {
         Id = Guid.NewGuid(),
-        DriverId = driverId.HasValue ? driverId.Value : Guid.NewGuid(),
+        DriverId = driverId ?? Guid.NewGuid(),
         Comment = "",
         Points = 10
     };
 
-    private static Driver AnyDriver() => new Driver()
+    private static Driver AnyDriver() => new()
     {
         Id = Guid.NewGuid(),
         Known = false

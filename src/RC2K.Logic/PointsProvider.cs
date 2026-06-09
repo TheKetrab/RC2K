@@ -153,9 +153,9 @@ public class PointsProvider : IPointsProvider
 
             var ranked = CalculateRanked(standings);
 
-            foreach (var r in ranked)
+            foreach (var (timeEntry, rank) in ranked)
             {
-                res.Add(r.timeEntry.Id, r.rank + 1);
+                res.Add(timeEntry.Id, rank + 1);
             }
         }
 
@@ -176,9 +176,9 @@ public class PointsProvider : IPointsProvider
 
             var ranked = CalculateRanked(standings);
 
-            foreach (var r in ranked)
+            foreach (var (timeEntry, rank) in ranked)
             {
-                res.Add(r.timeEntry.Id, r.rank + 1);
+                res.Add(timeEntry.Id, rank + 1);
             }
         }
 

@@ -24,7 +24,6 @@ public static class Utils
         _ => throw new ArgumentException(nameof(direction))
     };
 
-
     public static Direction CharToDirection(char c) => c switch
     {
         's' => Direction.Simulation,
@@ -52,9 +51,7 @@ public static class Utils
         return new Proof() { Url = str.Substring(2), Type = type };
     }
 
-    public static string SerializeProof(Proof proof)
-    {
-        return $"{(char)proof.Type}|{proof.Url}";
-    }
+    public static string SerializeProof(Proof proof) =>
+        $"{(char)proof.Type}|{proof.Url}";
 
 }

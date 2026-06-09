@@ -18,7 +18,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public event EventHandler<(string,double)>? RequestUnitsHandler;
 
-
     protected CosmosRepository(
         Database database,
         TMapper mapper,
@@ -45,7 +44,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     protected async Task<List<TEntity>> FetchAll(QueryDefinition query, CancellationToken ct)
     {
         using var it = Container.GetItemQueryIterator<TModel>(query);
-        var (result, ru) = await ItemQueryIteratorHelper.FetchAll(query, it, Mapper.ToDomainModel, ct);
+        var (result, ru) = await ItemQueryIteratorHelper.FetchAll(it, Mapper.ToDomainModel, ct);
 
         RequestUnitsHandlerInvoke(query, ru);
         
@@ -72,10 +71,8 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         await Container.UpsertItemAsync(model);
     }
 
-    public virtual async Task Delete(string id)
-    {
-        await Container.DeleteItemAsync<TEntity>(id, new PartitionKey(EntityName));
-    }
+    public virtual Task Delete(string id) =>
+        Container.DeleteItemAsync<TEntity>(id, new PartitionKey(EntityName));
 
     protected void RequestUnitsHandlerInvoke(QueryDefinition query, double ru)
     {
@@ -83,5 +80,4 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         string parameters = string.Join(" ; ", query.GetQueryParameters().Select(x => $"{x.Name}:{x.Value}"));
         RequestUnitsHandler?.Invoke(this, (queryText + " | " + parameters, ru));
     }
-        
 }

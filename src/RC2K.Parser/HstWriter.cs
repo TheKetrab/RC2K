@@ -3,19 +3,8 @@ using System.Text;
 
 namespace RC2K.Parser;
 
-public class HstWriter
+public class HstWriter(Func<int> zeroCar, Func<int> zeroNat, Func<string> zeroName)
 {
-    private readonly Func<int> _zeroCar;
-    private readonly Func<int> _zeroNat;
-    private readonly Func<string> _zeroName;
-
-    public HstWriter(Func<int> zeroCar, Func<int> zeroNat, Func<string> zeroName)
-    {
-        _zeroCar = zeroCar;
-        _zeroNat = zeroNat;
-        _zeroName = zeroName;
-    }
-
     public void ShredTimeEntries(Stream stream, IEnumerable<TimeEntry> entries)
     {
         using BinaryWriter writer = new(stream);
@@ -34,18 +23,18 @@ public class HstWriter
         writer.Write(0); // F1
         writer.Write(0); // F2
 
-        writer.Write(_zeroNat()); // Nat
+        writer.Write(zeroNat()); // Nat
 
         writer.Write(0); // F4
 
-        writer.Write(_zeroCar()); // Car
+        writer.Write(zeroCar()); // Car
 
         writer.Write(twentyMin); // Centiseconds
         writer.Write(0); // F7
         writer.Write(0); // F8
 
         // Name - 32 bytes
-        string name = _zeroName();
+        string name = zeroName();
         if (name.Length >= 32)
         {
             throw new ArgumentException($"Name must be shorter than 32 chars, but was: {name}");

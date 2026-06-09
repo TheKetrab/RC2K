@@ -42,7 +42,7 @@ public class UserServiceTests
         string passwordHash = "hashedPassword";
         Guid userId = Guid.NewGuid();
         Guid driverId = Guid.NewGuid();
-        User user = new User 
+        User user = new() 
         { 
             Id = userId,
             Name = name, 
@@ -77,7 +77,7 @@ public class UserServiceTests
         string wrongHash = "wrongHash";
         Guid userId = Guid.NewGuid();
         Guid driverId = Guid.NewGuid();
-        User user = new User 
+        User user = new() 
         { 
             Id = userId,
             Name = name, 
@@ -124,7 +124,7 @@ public class UserServiceTests
         string email = "test@example.com";
         string passwordHash = "hashedPassword";
         
-        Driver driver = new Driver { Id = Guid.NewGuid(), Name = name, Key = driverKey, Known = false };
+        Driver driver = new() { Id = Guid.NewGuid(), Name = name, Key = driverKey, Known = false };
         
         _driverRepositoryMock.Setup(x => x.GetByName(name)).Returns(Task.FromResult<Driver?>(driver));
         _passwordProviderMock.Setup(x => x.CalculatePasswordHash(password)).Returns(passwordHash);
@@ -150,7 +150,7 @@ public class UserServiceTests
         string password = "NewPassword";
         string email = "test@example.com";
         
-        Driver driver = new Driver { Id = Guid.NewGuid(), Name = name, Key = driverKey, Known = false };
+        Driver driver = new() { Id = Guid.NewGuid(), Name = name, Key = driverKey, Known = false };
         
         _driverRepositoryMock.Setup(x => x.GetByName(name)).Returns(Task.FromResult<Driver?>(driver));
 
@@ -283,7 +283,7 @@ public class UserServiceTests
         //Arrange
         Guid userId = Guid.NewGuid();
         Guid driverId = Guid.NewGuid();
-        User user = new User 
+        User user = new() 
         { 
             Id = userId, 
             Name = "TestUser",

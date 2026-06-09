@@ -1,9 +1,10 @@
 using Moq;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces.Fillers;
 
-namespace RC2K.Logic.Fillers.UnitTests;
+namespace RC2K.Logic.UnitTests.Fillers;
 
 public class VerifyInfoFillerTests
 {
@@ -64,7 +65,7 @@ public class VerifyInfoFillerTests
         CancellationToken ct = new();
         _userRepositoryMock.Setup(x => x.GetById(verifier.Id, ct)).ReturnsAsync(verifier);
 
-        Mock<IUserFiller> userFillerMock = new Mock<IUserFiller>();
+        Mock<IUserFiller> userFillerMock = new();
         _fillersBagMock.Setup(x => x.UserFiller).Returns(userFillerMock.Object);
 
         //Act
@@ -89,15 +90,15 @@ public class VerifyInfoFillerTests
             _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct));
     }
 
-    private static VerifyInfo AnyVerifyInfo(Guid? verifierId = null) => new VerifyInfo()
+    private static VerifyInfo AnyVerifyInfo(Guid? verifierId = null) => new()
     {
         Id = Guid.NewGuid(),
-        VerifierId = verifierId.HasValue ? verifierId.Value : Guid.NewGuid(),
+        VerifierId = verifierId ?? Guid.NewGuid(),
         Comment = "",
         VerifyDate = DateTime.Now
     };
 
-    private static User AnyUser() => new User()
+    private static User AnyUser() => new()
     {
         Id = Guid.NewGuid(),
         Name = "",

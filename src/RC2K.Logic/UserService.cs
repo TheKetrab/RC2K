@@ -5,35 +5,25 @@ using RC2K.Logic.Interfaces;
 
 namespace RC2K.Logic;
 
-public class UserService : IUserService
+public class UserService(
+    IUserRepository userRepository,
+    IDriverRepository driverRepository,
+    IPasswordProvider passwordProvider)
+    : IUserService
 {
     internal static readonly Dictionary<string, string> _emailConfirmationKeys = [];
 
-    private readonly IUserRepository _userRepository;
-    private readonly IDriverRepository _driverRepository;
-    private readonly IPasswordProvider _passwordProvider;
-
-    public UserService(IUserRepository userRepository, IDriverRepository driverRepository, IPasswordProvider passwordProvider)
-    {
-        _userRepository = userRepository;
-        _driverRepository = driverRepository;
-        _passwordProvider = passwordProvider;
-    }
-
-    public Task<string> GetCurrentUserName()
-    {
-        return Task.FromResult("");
-    }
+    public Task<string> GetCurrentUserName() => Task.FromResult("");
 
     public async Task<Result> Authenticate(string name, string password)
     {
-        User? user = await _userRepository.GetByName(name);
+        User? user = await userRepository.GetByName(name);
         if (user is null)
         {
             return new Result() { Success = false };
         }
 
-        string passwordHash = _passwordProvider.CalculatePasswordHash(password);
+        string passwordHash = passwordProvider.CalculatePasswordHash(password);
 
         if (user.PasswordHash == passwordHash)
         {
@@ -45,7 +35,7 @@ public class UserService : IUserService
 
     public async Task<Result> UpgradeDriverToUser(string name, string driverPassCode, string password, string email)
     {
-        Driver? driver = await _driverRepository.GetByName(name);
+        Driver? driver = await driverRepository.GetByName(name);
         if (driver is null)
         {
             return new Result() { Success = false, Message = $"Driver with name {name} not found" };
@@ -56,14 +46,14 @@ public class UserService : IUserService
             return new Result() { Success = false, Message = $"Driver pass code is not valid" };
         }
 
-        string passwordHash = _passwordProvider.CalculatePasswordHash(password);
+        string passwordHash = passwordProvider.CalculatePasswordHash(password);
         return await UpgradeDriverToUserInternal(driver, passwordHash, email);
     }
 
     public async Task<Result> CreateUserWithPassword(string name, string? password, string? nationality, string email)
     {
-        password ??= _passwordProvider.GenerateTemporaryPassword();
-        string passwordHash = _passwordProvider.CalculatePasswordHash(password);
+        password ??= passwordProvider.GenerateTemporaryPassword();
+        string passwordHash = passwordProvider.CalculatePasswordHash(password);
         return await CreateUserInternal(name, nationality, passwordHash, email);
     }
 
@@ -74,7 +64,7 @@ public class UserService : IUserService
     {
         Guid driverId = Guid.NewGuid();
         Guid userId = Guid.NewGuid();
-        Driver driver = new Driver()
+        Driver driver = new()
         {
             Id = driverId,
             Known = true,
@@ -82,7 +72,7 @@ public class UserService : IUserService
             UserId = userId
         };
 
-        User user = new User()
+        User user = new()
         {
             DriverId = driverId,
             Id = userId,
@@ -94,8 +84,8 @@ public class UserService : IUserService
 
         try
         {
-            await _userRepository.Create(user);
-            await _driverRepository.Create(driver);
+            await userRepository.Create(user);
+            await driverRepository.Create(driver);
 
             return new Result()
             {
@@ -113,16 +103,14 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<User?> GetById(Guid id, CancellationToken ct = default)
-    {
-        return await _userRepository.GetById(id, ct);
-    }
+    public Task<User?> GetById(Guid id, CancellationToken ct = default) =>
+        userRepository.GetById(id, ct);
     
     private async Task<Result> UpgradeDriverToUserInternal(Driver driver, string? passwordHash, string email)
     {
         Guid userId = Guid.NewGuid();
 
-        Driver updatedDriver = new Driver()
+        Driver updatedDriver = new()
         {
             Id = driver.Id,
             Known = true,
@@ -130,7 +118,7 @@ public class UserService : IUserService
             UserId = userId
         };
 
-        User user = new User()
+        User user = new()
         {
             DriverId = driver.Id,
             Id = userId,
@@ -142,8 +130,8 @@ public class UserService : IUserService
 
         try
         {
-            await _userRepository.Create(user);
-            await _driverRepository.Update(updatedDriver);
+            await userRepository.Create(user);
+            await driverRepository.Update(updatedDriver);
 
             return new Result()
             {
@@ -161,13 +149,10 @@ public class UserService : IUserService
         }
     }
 
-    public void SetEmailConfirmationCode(string email, string code)
-    {
-        _emailConfirmationKeys[email] = code;
-    }
+    public void SetEmailConfirmationCode(string email, string code) => _emailConfirmationKeys[email] = code;
 
     public Task<User?> GetUserByName(string name)
     {
-        return _userRepository.GetByName(name);
+        return userRepository.GetByName(name);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using RC2K.DomainModel;
-using RC2K.Extensions;
+using RC2K.Utils;
 
 namespace RC2K.Presentation.Blazor.Views.Components;
 
@@ -16,7 +16,7 @@ public class TimeEntryListItem
         Data.Stage!.StageData is null
             ? Data.Stage.ToString()
             : Data.Stage.StageData.Name + " " + (Data.Stage.Direction == Direction.Simulation ? "(S)" : "(A)");
-    public string StageLink => $"stages/{LevelHelper.StageCodeToRallyShortName(Data.Stage.Code)}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
+    public string StageLink => $"stages/{LevelHelper.StageCodeToRallyShortName(Data.Stage!.Code)}/{Data.Stage.Code}?direction={Data.Stage.Direction}";
     public bool Checked { get; set; }
     public int PlaceByCar { get; set; }
     public int PlaceByClass { get; set; }
@@ -48,10 +48,7 @@ public class TimeEntryListItem
             }
             return _gp;
         }
-        set
-        {
-            _gp = value;
-        }
+        set => _gp = value;
     }
     private int _cp = -1;
     public int CarPoints
@@ -64,12 +61,6 @@ public class TimeEntryListItem
             }
             return _cp;
         }
-        set
-        {
-            _cp = value;
-        }
+        set => _cp = value;
     }
-
 }
-
-

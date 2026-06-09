@@ -88,7 +88,11 @@ public partial class StageDetails
     private async Task HandleNewPathCachedEvent(string path)
     {
         var stage = await StageService.GetByCode(Id, IsArcade ? DomainModel.Direction.Arcade : DomainModel.Direction.Simulation);
-        if (stage == null) return;
+        if (stage == null)
+        {
+            return;
+        }
+
         int stageCode = stage.Code;
         await StageService.SetPath(stageCode, path);
     }
@@ -109,7 +113,10 @@ public partial class StageDetails
 
     private void GoToPrevious()
     {
-        if (Id % 10 == 1) return;
+        if (Id % 10 == 1)
+        {
+            return;
+        }
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;
@@ -118,7 +125,10 @@ public partial class StageDetails
     }
     private void GoToNext()
     {
-        if (Id % 10 == 6) return;
+        if (Id % 10 == 6)
+        {
+            return;
+        }
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = uri.Query;

@@ -166,7 +166,7 @@ public class RankingsMapperTests
     public void ToCosmosModel_WithEmptyEntries_MapsCorrectly()
     {
         //Arrange
-        RankingSnapshot rankingSnapshot = new RankingSnapshot()
+        RankingSnapshot rankingSnapshot = new()
         {
             Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
             Date = new DateTime(2024, 6, 15, 10, 30, 0)
@@ -194,13 +194,13 @@ public class RankingsMapperTests
             Date = "15/06/2024",
             Entries = new List<RankingEntryModel>
             {
-                new RankingEntryModel
+                new()
                 {
                     Place = 1,
                     DriverId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3"),
                     Data = entryData1
                 },
-                new RankingEntryModel
+                new()
                 {
                     Place = 2,
                     DriverId = Guid.Parse("2b91f15a-62ea-539c-9c16-1b948c6dd5d4"),

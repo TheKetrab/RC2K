@@ -96,7 +96,6 @@ public static class IconMapper
     </svg>
     ";
 
-
     static IconMapper()
     {
         _icon2classMap = new Dictionary<Icon, (bool, string, string)>

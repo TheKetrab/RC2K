@@ -1,9 +1,10 @@
 using Moq;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces.Fillers;
 
-namespace RC2K.Logic.Fillers.UnitTests;
+namespace RC2K.Logic.UnitTests.Fillers;
 
 public class RankingFillerTests
 {
@@ -50,7 +51,7 @@ public class RankingFillerTests
         _driverRepositoryMock.Setup(x => x.GetById(driver1.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver1);
         _driverRepositoryMock.Setup(x => x.GetById(driver2.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver2);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -82,7 +83,7 @@ public class RankingFillerTests
 
         _driverRepositoryMock.Setup(x => x.GetById(driver.Id, It.IsAny<CancellationToken>())).ReturnsAsync(driver);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -122,10 +123,10 @@ public class RankingFillerTests
         return ranking;
     }
 
-    private static RankingEntry AnyRankingEntry(Guid? driverId = null) => new RankingEntry()
+    private static RankingEntry AnyRankingEntry(Guid? driverId = null) => new()
     {
         Place = 1,
-        DriverId = driverId.HasValue ? driverId.Value : Guid.NewGuid(),
+        DriverId = driverId ?? Guid.NewGuid(),
         GeneralPoints = 10,
         GeneralTop30Count = 1,
         GeneralTop10Count = 1,
@@ -149,7 +150,7 @@ public class RankingFillerTests
         BonusPoints = 0
     };
 
-    private static Driver AnyDriver() => new Driver()
+    private static Driver AnyDriver() => new()
     {
         Id = Guid.NewGuid(),
         Known = false

@@ -3,7 +3,7 @@ namespace RC2K.Parser.Models.Hst;
 
 public class TimeEntriesCollection
 {
-    private static Dictionary<long, int> _offsets = new Dictionary<long, int> {
+    private readonly static Dictionary<long, int> _offsets = new() {
 
         // note: -8, because offsets were counted missly, two integers were missed
 

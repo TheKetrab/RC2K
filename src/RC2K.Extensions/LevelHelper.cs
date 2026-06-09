@@ -2,7 +2,7 @@
 using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 
-namespace RC2K.Extensions;
+namespace RC2K.Utils;
 
 public static class LevelHelper
 {

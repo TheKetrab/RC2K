@@ -30,6 +30,6 @@ public static class Countries
         }
         var obj = JsonSerializer.Deserialize<List<CountryDao>>(countriesJson)
             ?? throw new InvalidDataException("Cannot read countries");
-        _countries.AddRange(obj.Select(x => (code: x.code, name: x.name)));
+        _countries.AddRange(obj.Select(x => (x.code, x.name)));
     }
 }

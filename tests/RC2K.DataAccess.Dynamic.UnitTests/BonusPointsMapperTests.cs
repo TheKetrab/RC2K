@@ -56,7 +56,7 @@ public class BonusPointsMapperTests
     public void ToDomainModel_WithNullComment_MapsProperly()
     {
         //Arrange
-        BonusPointsModel model = new BonusPointsModel()
+        BonusPointsModel model = new()
         {
             Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
             DriverId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3"),
@@ -71,7 +71,7 @@ public class BonusPointsMapperTests
         Assert.That(result.Comment, Is.Null);
     }
 
-    private static BonusPointsModel AnyBonusPointsModel() => new BonusPointsModel()
+    private static BonusPointsModel AnyBonusPointsModel() => new()
     {
         Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
         DriverId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3"),
@@ -79,7 +79,7 @@ public class BonusPointsMapperTests
         Points = 50
     };
 
-    private static BonusPoints AnyBonusPoints() => new BonusPoints()
+    private static BonusPoints AnyBonusPoints() => new()
     {
         Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
         DriverId = Guid.Parse("1a80e049-51d9-428b-ad32-08a037ecc4c3"),

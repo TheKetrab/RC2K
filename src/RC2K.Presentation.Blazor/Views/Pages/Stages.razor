@@ -49,7 +49,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Name">
                         @{
-                            string routeName = Name ?? RC2K.Extensions.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
+                            string routeName = Name ?? RC2K.Utils.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
                         }
                             <MudLink href="@($"/stages/{routeName}/{context.Code}?direction={context.Direction}")" Color="Color.Primary">
                             <b>@(context.StageData?.Name ?? "Unknown")</b> @(context.Direction == DomainModel.Direction.Arcade ? "(A)" : "")

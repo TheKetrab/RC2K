@@ -3,23 +3,15 @@
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Http;
 
-public class TrackingCircuitHandler : CircuitHandler
+public class TrackingCircuitHandler(
+    ActiveSessionTracker tracker,
+    IHttpContextAccessor httpContextAccessor)
+    : CircuitHandler
 {
-    private readonly ActiveSessionTracker _tracker;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public TrackingCircuitHandler(
-        ActiveSessionTracker tracker,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        _tracker = tracker;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public override Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
     {
         string msg = "";
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor.HttpContext;
         if (httpContext != null)
         {
             var remoteIp = httpContext.Connection.RemoteIpAddress?.ToString();
@@ -41,7 +33,7 @@ public class TrackingCircuitHandler : CircuitHandler
             msg = $"M={method},P={protocol},R={host}{path},U={{{user}}},IP={remoteIp}";
         }
 
-        _tracker.RegisterCircuit(circuit.Id, msg);
+        tracker.RegisterCircuit(circuit.Id, msg);
         return base.OnCircuitOpenedAsync(circuit, cancellationToken);
     }
 
@@ -53,7 +45,7 @@ public class TrackingCircuitHandler : CircuitHandler
 
     private Task UnregisterCircuit(Circuit circuit)
     {
-        _tracker.UnregisterCircuit(circuit.Id);
+        tracker.UnregisterCircuit(circuit.Id);
         return Task.CompletedTask;
     }
 }

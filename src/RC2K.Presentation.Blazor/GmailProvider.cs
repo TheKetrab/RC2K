@@ -3,24 +3,16 @@ using MimeKit;
 using RC2K.Logic.Interfaces;
 using MailKit.Net.Smtp;
 
-namespace RC2K.Logic;
+namespace RC2K.Presentation.Blazor;
 
-public class GmailProvider : IMailProvider
+public class GmailProvider(string senderEmail, string sftpAppPassword) : IMailProvider
 {
     private const string SenderName = "RC2K Hub admin";
-    private readonly string _senderEmail;
-    private readonly string _sftpAppPassword;
-
-    public GmailProvider(string senderEmail, string sftpAppPassword)
-    {
-        _senderEmail = senderEmail;
-        _sftpAppPassword = sftpAppPassword;
-    }
 
     public void SendMail(string recipientName, string recipientEmail, string subject, string content)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(SenderName, _senderEmail));
+        message.From.Add(new MailboxAddress(SenderName, senderEmail));
         message.To.Add(new MailboxAddress(recipientName, recipientEmail));
         message.Subject = subject;
 
@@ -36,7 +28,7 @@ public class GmailProvider : IMailProvider
     {
         using var client = new SmtpClient();
         client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-        client.Authenticate(_senderEmail, _sftpAppPassword);
+        client.Authenticate(senderEmail, sftpAppPassword);
 
         client.Send(message);
         client.Disconnect(true);

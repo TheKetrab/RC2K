@@ -6,81 +6,71 @@ using RC2K.Logic.Interfaces;
 
 namespace RC2K.Presentation.Blazor.AuthProxy;
 
-public class AuthNotificationServiceProxy : INotificationService
+public class AuthNotificationServiceProxy(
+    AuthenticationStateProvider asp,
+    NotificationService service,
+    INotificationRepository notificationRepository,
+    IUserService userService)
+    : INotificationService
 {
-    private readonly AuthenticationStateProvider _asp;
-    private readonly NotificationService _service;
-    private readonly INotificationRepository _notificationRepository;
-    private readonly IUserService _userService;
-
     public event EventHandler<Guid>? NotificationsUpdated
     {
-        add => _service.NotificationsUpdated += value;
-        remove => _service.NotificationsUpdated -= value;
+        add => service.NotificationsUpdated += value;
+        remove => service.NotificationsUpdated -= value;
     }
-    public AuthNotificationServiceProxy(
-        AuthenticationStateProvider asp,
-        NotificationService service,
-        INotificationRepository notificationRepository,
-        IUserService userService)
-    {
-        _asp = asp;
-        _service = service;
-        _notificationRepository = notificationRepository;
-        _userService = userService;
-    }
-
+    
     public Task Create(Guid userId, string message) =>
-        _service.Create(userId, message);
+        service.Create(userId, message);
 
     public async Task Delete(Guid userId, Guid id)
     {
         await AuthorizeSelf(id);
-
-        await _service.Delete(userId, id);
+        await service.Delete(userId, id);
     }
 
     public async Task DeleteMany(List<Guid> userIds, List<Guid> ids)
     {
         foreach (var id in ids)
+        {
             await AuthorizeSelf(id);
+        }
 
-        await _service.DeleteMany(userIds, ids);
+        await service.DeleteMany(userIds, ids);
     }
 
     public async Task<List<Notification>> GetUserNotifications(string userName)
     {
-        var auth = await _asp.GetAuthenticationStateAsync();
+        var auth = await asp.GetAuthenticationStateAsync();
         Auth.AuthorizeSelf(auth, userName);
 
-        return await _service.GetUserNotifications(userName);
+        return await service.GetUserNotifications(userName);
     }
 
     public async Task<int> GetUserNotificationsCount(string userName)
     {
-        var auth = await _asp.GetAuthenticationStateAsync();
+        var auth = await asp.GetAuthenticationStateAsync();
         Auth.AuthorizeSelf(auth, userName);
 
-        return await _service.GetUserNotificationsCount(userName);
+        return await service.GetUserNotificationsCount(userName);
     }
 
     public Task NotifyMasterAdmin(string message) =>
-        _service.NotifyMasterAdmin(message);
+        service.NotifyMasterAdmin(message);
 
     private async Task AuthorizeSelf(Guid notificationId)
     {
-        Notification? notification = await _notificationRepository.GetById(notificationId, CancellationToken.None);
+        Notification? notification = await notificationRepository.GetById(notificationId, CancellationToken.None);
         if (notification == null) 
         {
             return;
         }
-        User? user = await _userService.GetById(notification.UserId);
+        User? user = await userService.GetById(notification.UserId);
         if (user == null)
         {
             return;
         }
 
-        var auth = await _asp.GetAuthenticationStateAsync();
+        var auth = await asp.GetAuthenticationStateAsync();
         Auth.AuthorizeSelf(auth, user.Name);
     }
 }

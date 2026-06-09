@@ -1,9 +1,10 @@
 using Moq;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces.Fillers;
 
-namespace RC2K.Logic.Fillers.UnitTests;
+namespace RC2K.Logic.UnitTests.Fillers;
 
 public class DriverFillerTests
 {
@@ -80,7 +81,7 @@ public class DriverFillerTests
         FillingContext context = new();
         _userRepositoryMock.Setup(x => x.GetById(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
 
-        Mock<IUserFiller> userFillerMock = new Mock<IUserFiller>();
+        Mock<IUserFiller> userFillerMock = new();
         _fillersBagMock.Setup(x => x.UserFiller).Returns(userFillerMock.Object);
 
         //Act
@@ -105,14 +106,14 @@ public class DriverFillerTests
             _sut.FillRecursive(driver, context, _fillersBagMock.Object, ct));
     }
 
-    private static Driver AnyDriver(Guid? userId = null) => new Driver()
+    private static Driver AnyDriver(Guid? userId = null) => new()
     {
         Id = Guid.NewGuid(),
         Known = false,
         UserId = userId
     };
 
-    private static User AnyUser() => new User()
+    private static User AnyUser() => new()
     {
         Id = Guid.NewGuid(),
         Name = "",

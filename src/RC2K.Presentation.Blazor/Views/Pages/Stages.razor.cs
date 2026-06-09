@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using RC2K.DomainModel;
-using RC2K.Extensions;
+using RC2K.Utils;
 
 namespace RC2K.Presentation.Blazor.Views.Pages;
 
@@ -17,7 +17,7 @@ public partial class Stages
     private string[]? _combinedPaths;
 
     // The fix is here: Cast the result to (object)
-    private TableGroupDefinition<Stage> _groupDefinition = new()
+    private readonly TableGroupDefinition<Stage> _groupDefinition = new()
     {
         Selector = (x) => (object)$"{LevelHelper.StageCodeToRallyName(x.Code)} ({x.Direction})",
         IsInitiallyExpanded = true
@@ -66,7 +66,6 @@ public partial class Stages
             {
                 allPaths.Add(path);
             }
-
         }
 
         _allWaypoints = allWaypointsList;

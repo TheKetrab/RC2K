@@ -3,30 +3,20 @@ using RC2K.DomainModel;
 using RC2K.Logic;
 using RC2K.Logic.Interfaces;
 
-namespace RC2K.Presentation.Blazor.AuthProxy
+namespace RC2K.Presentation.Blazor.AuthProxy;
+
+public class AuthRankingServiceProxy(
+    AuthenticationStateProvider asp,
+    RankingService service) 
+    : IRankingService
 {
-    public class AuthRankingServiceProxy : IRankingService
+    public async Task DoRankingSnapshot()
     {
-        private readonly AuthenticationStateProvider _asp;
-        private readonly RankingService _service;
+        var auth = await asp.GetAuthenticationStateAsync();
+        Auth.Authorize(auth, "admin");
 
-        public AuthRankingServiceProxy(
-            AuthenticationStateProvider asp,
-            RankingService service)
-        {
-            _asp = asp;
-            _service = service;
-        }
-
-        public async Task DoRankingSnapshot()
-        {
-            
-            var auth = await _asp.GetAuthenticationStateAsync();
-            Auth.Authorize(auth, "admin");
-
-            await _service.DoRankingSnapshot();
-        }
-
-        public Task<RankingSnapshot> GetLatest() => _service.GetLatest();
+        await service.DoRankingSnapshot();
     }
+
+    public Task<RankingSnapshot> GetLatest() => service.GetLatest();
 }

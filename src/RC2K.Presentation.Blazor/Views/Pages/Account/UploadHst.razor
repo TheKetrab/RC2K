@@ -109,7 +109,7 @@
     {
         if (_file == null) return;
 
-        using var stream = _file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        using var stream = _file.OpenReadStream(maxAllowedSize: 6 * 1024 * 1024); // 6MB
 
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms);

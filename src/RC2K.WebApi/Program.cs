@@ -32,8 +32,6 @@ app.MapPost("/user/create", async (CreateUserDto dto) =>
 
 }).WithOpenApi();
 
-
-
 app.MapGet("car/name2id", async () =>
 {
     var carService = app.Services.GetService<ICarService>()!;
@@ -51,7 +49,7 @@ app.MapGet("driver/driverName2id", async () =>
     var userRepository = app.Services.GetService<IUserRepository>()!;
     var driverRepository = app.Services.GetService<IDriverRepository>()!;
 
-    List<(string, string)> friendlyName2driverId = new();
+    List<(string, string)> friendlyName2driverId = [];
 
     var allUsers = await userRepository.GetAll();
     friendlyName2driverId.AddRange(allUsers.Select(x => (x.Name, x.DriverId.ToString())));
@@ -71,8 +69,7 @@ app.MapGet("stage/code2id", async () =>
     var stageService = app.Services.GetService<IStageService>()!;
     var allStages = await stageService.GetAll();
 
-
-    List<(int code, int[] ids)> map = new();
+    List<(int code, int[] ids)> map = [];
     foreach (var group in allStages.GroupBy(x => x.Code))
     {
         (int code, int[] ids) s;
@@ -90,7 +87,6 @@ app.MapGet("stage/code2id", async () =>
     });
     //return map;
 });
-
 
 app.MapPost("/timeEntry/upload", async (UploadTimeEntryDto dto) =>
 {
@@ -124,9 +120,7 @@ app.MapPost("/timeEntry/upload", async (UploadTimeEntryDto dto) =>
     {
 
     }
-
 }).WithOpenApi();
-
 
 app.MapPost("/bonusPoints/create", async (CreateBonusPointsDto dto) =>
 {
@@ -146,8 +140,6 @@ app.MapPost("/bonusPoints/create", async (CreateBonusPointsDto dto) =>
     {
 
     }
-
 }).WithOpenApi();
-
 
 app.Run();

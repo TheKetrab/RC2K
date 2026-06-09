@@ -28,7 +28,7 @@ public class NotificationServiceTests
         //Arrange
         string userName = "TestUser";
         Guid userId = Guid.NewGuid();
-        User user = new User 
+        User user = new() 
         { 
             Id = userId, 
             Name = userName,
@@ -72,7 +72,7 @@ public class NotificationServiceTests
         //Arrange
         string message = "Test notification";
         Guid adminId = Guid.NewGuid();
-        User admin = new User 
+        User admin = new() 
         { 
             Id = adminId, 
             Name = "TheKetrab",

@@ -156,7 +156,7 @@ public class TimeEntryService : ITimeEntryService
             return new Result()
             {
                 Success = false,
-                Message = $"There already exists better or the same TimeEntry: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={best.Time.ToString("m:ss.ff")}"
+                Message = $"There already exists better or the same TimeEntry: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={best.Time:m:ss.ff}"
             };
         }
 
@@ -176,7 +176,7 @@ public class TimeEntryService : ITimeEntryService
             .ToDictionary(x => x.DriverId, x => x.Points);
     }
 
-    private PointsInfo CalculatePointsInfo(
+    private static PointsInfo CalculatePointsInfo(
         List<TimeEntry> timeEntries,
         Dictionary<Guid, int> generalPoints,
         Dictionary<Guid, int> carPoints)
@@ -269,8 +269,6 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId)
-    {
-        return _timeEntryRepository.GetBestTimesForDriver(driverId);
-    }
+    public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId) =>
+        _timeEntryRepository.GetBestTimesForDriver(driverId);
 }

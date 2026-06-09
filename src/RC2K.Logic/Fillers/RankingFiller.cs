@@ -34,5 +34,4 @@ public class RankingFiller(IDriverRepository driverRepository)
             await fillers.DriverFiller.FillRecursive(entry.Driver, context, fillers, ct);
         }
     }
-
 }

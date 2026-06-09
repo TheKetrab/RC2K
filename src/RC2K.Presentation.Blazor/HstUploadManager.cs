@@ -4,32 +4,19 @@ using HstTimeEntry = RC2K.Parser.Models.Hst.TimeEntry;
 
 namespace RC2K.Presentation.Blazor;
 
-public class HstUploadManager : IHstUploadManager
+public class HstUploadManager(
+    ITimeEntryService timeEntryService,
+    IUserService userService,
+    IDriverService driverService,
+    IStageService stageService,
+    ICarService carService)
+    : IHstUploadManager
 {
-    private readonly ITimeEntryService _timeEntryService;
-    private readonly IUserService _userService;
-    private readonly IDriverService _driverService;
-    private readonly IStageService _stageService;
-    private readonly ICarService _carService;
-
-    public HstUploadManager(
-        ITimeEntryService timeEntryService,
-        IUserService userService, 
-        IDriverService driverService,
-        IStageService stageService,
-        ICarService carService)
+    public async Task<Result<List<(int,string,string)>>> UploadMany(
+        IEnumerable<HstTimeEntry> hstTimeEntries, IProgress<int>? progress = null)
     {
-        _timeEntryService = timeEntryService;
-        _userService = userService;
-        _driverService = driverService;
-        _stageService = stageService;
-        _carService = carService;
-    }
-
-    public async Task<Result<List<(int,string,string)>>> UploadMany(IEnumerable<HstTimeEntry> hstTimeEntries, IProgress<int>? progress = null)
-    {
-        string userName = await _userService.GetCurrentUserName();
-        var driver = await _driverService.GetByName(userName);
+        string userName = await userService.GetCurrentUserName();
+        var driver = await driverService.GetByName(userName);
         if (driver is null)
         {
             return new Result<List<(int, string, string)>> { Success = false, Message = "No access" };
@@ -38,12 +25,11 @@ public class HstUploadManager : IHstUploadManager
         int errorNo = 0;
         List<(int, string, string)> errors = [];
 
-
-        var bests = await _timeEntryService.GetBestTimesForDriver(driver.Id);
+        var bests = await timeEntryService.GetBestTimesForDriver(driver.Id);
 
         bool anyUploaded = false;
         int total = hstTimeEntries.Count();
-        foreach (var x in hstTimeEntries.Select((x,i) => new { hstTimeEntry = x, i = i }))
+        foreach (var x in hstTimeEntries.Select((x,i) => new { hstTimeEntry = x, i }))
         {
             int percent = (int)Math.Ceiling((float)x.i * 100 / (float)total);
             progress?.Report(percent);
@@ -51,7 +37,7 @@ public class HstUploadManager : IHstUploadManager
             int stageCode = x.hstTimeEntry.Parent.StageCode;
             Direction direction = x.hstTimeEntry.Parent.IsArcade ? Direction.Arcade : Direction.Simulation;
 
-            Stage stage = (await _stageService.GetByCode(stageCode, direction))!;
+            Stage stage = (await stageService.GetByCode(stageCode, direction))!;
             int stageId = stage.Id;
 
             int carId = x.hstTimeEntry.Car + 1; // in RC2K Hub cars ids starts from 1
@@ -62,7 +48,7 @@ public class HstUploadManager : IHstUploadManager
                 continue;
             }
 
-            TimeEntry te = new TimeEntry()
+            TimeEntry te = new()
             {
                 Id = Guid.NewGuid(),
                 CarId = carId, 
@@ -76,7 +62,7 @@ public class HstUploadManager : IHstUploadManager
 
             try
             {
-                var res = await _timeEntryService.Upload(te);
+                var res = await timeEntryService.Upload(te);
                 if (!res.Success)
                 {
                     errors.Add((++errorNo, $"{stage.StageData!.Name} | {stage.Direction} | car={te.CarId} | time={te.Time.ToString("m:ss.ff")}", res.Message!));
@@ -115,7 +101,7 @@ public class HstUploadManager : IHstUploadManager
             }
             else
             {
-                labels += _carService.IsA8InternalCarId(hstTimeEntry.Car) ? ",A8" : ",BRC";
+                labels += carService.IsA8InternalCarId(hstTimeEntry.Car) ? ",A8" : ",BRC";
             }
         }
         else

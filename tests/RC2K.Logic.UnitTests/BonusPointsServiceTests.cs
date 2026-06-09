@@ -44,7 +44,7 @@ public class BonusPointsServiceTests
     public async Task GetAll_CallsFillFullData()
     {
         //Arrange
-        BonusPoints bp = new BonusPoints { Id = Guid.NewGuid(), DriverId = Guid.NewGuid() };
+        BonusPoints bp = new() { Id = Guid.NewGuid(), DriverId = Guid.NewGuid() };
         List<BonusPoints> bonusPoints = [bp];
         _bonusPointsRepositoryMock.Setup(x => x.GetAll()).Returns(Task.FromResult(bonusPoints));
         _bonusPointsFillerMock.Setup(x => x.FillRecursive(It.IsAny<BonusPoints>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
@@ -61,7 +61,7 @@ public class BonusPointsServiceTests
     public async Task Create_CallsBonusPointsRepositoryCreate()
     {
         //Arrange
-        BonusPoints bonusPoints = new BonusPoints { Id = Guid.NewGuid(), DriverId = Guid.NewGuid() };
+        BonusPoints bonusPoints = new() { Id = Guid.NewGuid(), DriverId = Guid.NewGuid() };
 
         //Act
         await _sut.Create(bonusPoints);

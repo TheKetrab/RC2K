@@ -25,7 +25,7 @@ public partial class UploadTime
         _errorBoundaryRef?.Recover();
     }
 
-    private List<ProofItem> _proofItems = new() { new(ProofType.Unknown, "") };
+    private readonly List<ProofItem> _proofItems = new() { new(ProofType.Unknown, "") };
     private List<Proof> GetProofs() =>
       _proofItems.Where(x => !string.IsNullOrEmpty(x.Url))
                  .Select(x => new Proof() { Type = x.Type, Url = x.Url })
@@ -62,18 +62,13 @@ public partial class UploadTime
         };
     }
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() =>
         UploadTimeModel.DriverName = await UserService.GetCurrentUserName();
-    }
 
-    UploadTimeDto UploadTimeModel = new();
+    private readonly UploadTimeDto UploadTimeModel = new();
 
-
-    private async Task<bool> IsRobot()
-    {
-        return await IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => MessageHelper.ShowError(msg));
-    }
+    private Task<bool> IsRobot() =>
+        IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => MessageHelper.ShowError(msg));
 
     private async Task UploadClick()
     {
@@ -233,13 +228,9 @@ public partial class UploadTime
         }
     }
 
-    private void ShowUploadedMessage()
-    {
+    private void ShowUploadedMessage() =>
         MessageHelper.ShowSuccess("Uploaded.");
-    }
-
-    private void ShowUploadedFailureMessage(string? msg)
-    {
+    
+    private void ShowUploadedFailureMessage(string? msg) =>
         MessageHelper.ShowError($"Upload failed. {msg}");
-    }
 }

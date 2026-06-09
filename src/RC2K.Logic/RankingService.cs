@@ -7,39 +7,21 @@ using SerilogTimings;
 
 namespace RC2K.Logic;
 
-public class RankingService : IRankingService
+public class RankingService(
+    IRankingsRepository rankingRepository,
+    IStageService stageService,
+    ITimeEntryService timeEntryService,
+    IPointsProvider pointsProvider,
+    IBonusPointsService bonusPointsService,
+    IFillersBag fillers,
+    ILogger<RankingService> logger)
+    : IRankingService
 {
-    private readonly IRankingsRepository _rankingRepository;
-    private readonly IStageService _stageService;
-    private readonly ITimeEntryService _timeEntryService;
-    private readonly IPointsProvider _pointsProvider;
-    private readonly IBonusPointsService _bonusPointsService;
-    private readonly IFillersBag _fillers;
-    private readonly ILogger<RankingService> _logger;
-
-    public RankingService(IRankingsRepository rankingRepository,
-        IStageService stageService,
-        ITimeEntryService timeEntryService,
-        IPointsProvider pointsProvider,
-        IBonusPointsService bonusPointsService,
-        IFillersBag fillers,
-        ILogger<RankingService> logger)
-    {
-        _rankingRepository = rankingRepository;
-        _stageService = stageService;
-        _timeEntryService = timeEntryService;
-        _pointsProvider = pointsProvider;
-        _bonusPointsService = bonusPointsService;
-
-        _fillers = fillers;
-        _logger = logger;
-    }
-
     public async Task<RankingSnapshot> GetLatest()
     {
-        var ranking = await _rankingRepository.GetCurrent();
+        var ranking = await rankingRepository.GetCurrent();
 
-        await ranking.FillFullData(_fillers.RankingFiller, _fillers);
+        await ranking.FillFullData(fillers.RankingFiller, fillers);
 
         return ranking;
     }
@@ -74,22 +56,21 @@ public class RankingService : IRankingService
 
         Dictionary<Guid, int> _driver2BonusPoints= [];
 
-
-        var stages = await _stageService.GetAll();
+        var stages = await stageService.GetAll();
 
         foreach (var stage in stages)
         {
-            var timeEntries = await _timeEntryService.Get(stage.Id);
+            var timeEntries = await timeEntryService.Get(stage.Id);
             Dictionary<Guid, Guid> _te2driver = timeEntries.ToDictionary(x => x.Id, x => x.DriverId);
             Dictionary<Guid, int> _te2carClass = timeEntries.ToDictionary(x => x.Id, x => x.Car!.Class);
 
             // ----- ----- ----- GENERAL POINTS
-            var totalPoints = _pointsProvider.CalculateGeneralStagePoints(timeEntries);
+            var totalPoints = pointsProvider.CalculateGeneralStagePoints(timeEntries);
             foreach (var (te, p) in totalPoints)
             {
                 Guid driverId = _te2driver[te];
 
-                int place = _pointsProvider.GetPlaceFromGeneralPoints(p);
+                int place = pointsProvider.GetPlaceFromGeneralPoints(p);
 
                 _driver2generalPoints.Inc(driverId, p);
 
@@ -112,7 +93,7 @@ public class RankingService : IRankingService
             }
 
             // ----- ----- ----- CAR POINTS
-            var carPoints = _pointsProvider.CalculateCarStagePoints(timeEntries);
+            var carPoints = pointsProvider.CalculateCarStagePoints(timeEntries);
             foreach (var (te, p) in carPoints)
             {
                 Guid driverId = _te2driver[te];
@@ -122,7 +103,7 @@ public class RankingService : IRankingService
                 if (carClass == 5)
                 {
                     _driver2carA5Points.Inc(driverId, p);
-                    int place = _pointsProvider.GetPlaceFromA5CarPoints(p);
+                    int place = pointsProvider.GetPlaceFromA5CarPoints(p);
                     if (place <= 5)
                     {
                         _driver2carA5PointsTop5Count.Inc(driverId, 1);
@@ -136,7 +117,7 @@ public class RankingService : IRankingService
                 if (carClass == 6)
                 {
                     _driver2carA6Points.Inc(driverId, p);
-                    int place = _pointsProvider.GetPlaceFromA6CarPoints(p);
+                    int place = pointsProvider.GetPlaceFromA6CarPoints(p);
                     if (place <= 5)
                     {
                         _driver2carA6PointsTop5Count.Inc(driverId, 1);
@@ -150,7 +131,7 @@ public class RankingService : IRankingService
                 if (carClass == 7)
                 {
                     _driver2carA7Points.Inc(driverId, p);
-                    int place = _pointsProvider.GetPlaceFromA7CarPoints(p);
+                    int place = pointsProvider.GetPlaceFromA7CarPoints(p);
                     if (place <= 5)
                     {
                         _driver2carA7PointsTop5Count.Inc(driverId, 1);
@@ -164,7 +145,7 @@ public class RankingService : IRankingService
                 if (carClass == 8)
                 {
                     _driver2carA8Points.Inc(driverId, p);
-                    int place = _pointsProvider.GetPlaceFromA8CarPoints(p);
+                    int place = pointsProvider.GetPlaceFromA8CarPoints(p);
                     if (place <= 5)
                     {
                         _driver2carA8PointsTop5Count.Inc(driverId, 1);
@@ -178,7 +159,7 @@ public class RankingService : IRankingService
                 if (carClass == Car.BonusClass)
                 {
                     _driver2bonusCarPoints.Inc(driverId, p);
-                    int place = _pointsProvider.GetPlaceFromBonusCarPoints(p);
+                    int place = pointsProvider.GetPlaceFromBonusCarPoints(p);
                     if (place <= 5)
                     {
                         _driver2bonusCarPointsTop5Count.Inc(driverId, 1);
@@ -192,7 +173,7 @@ public class RankingService : IRankingService
         }
 
         // ----- ----- ----- BONUS POINTS
-        var bonusPoints = await _bonusPointsService.GetAll();
+        var bonusPoints = await bonusPointsService.GetAll();
         foreach (var bp in bonusPoints)
         {
             _driver2BonusPoints.Inc(bp.DriverId, bp.Points);
@@ -284,11 +265,11 @@ public class RankingService : IRankingService
             {
                 current = await CalculateCurrentRankingSnapshot();
             }
-            await _rankingRepository.Create(current);
+            await rankingRepository.Create(current);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while calculating ranking snapshot");
+            logger.LogError(ex, "Error while calculating ranking snapshot");
         }
     }
 }

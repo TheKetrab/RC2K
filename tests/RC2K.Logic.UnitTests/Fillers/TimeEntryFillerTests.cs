@@ -1,9 +1,10 @@
 using Moq;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
+using RC2K.Logic.Fillers;
 using RC2K.Logic.Interfaces.Fillers;
 
-namespace RC2K.Logic.Fillers.UnitTests;
+namespace RC2K.Logic.UnitTests.Fillers;
 
 public class TimeEntryFillerTests
 {
@@ -62,7 +63,7 @@ public class TimeEntryFillerTests
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -89,7 +90,7 @@ public class TimeEntryFillerTests
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -116,7 +117,7 @@ public class TimeEntryFillerTests
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -144,7 +145,7 @@ public class TimeEntryFillerTests
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act
@@ -172,8 +173,8 @@ public class TimeEntryFillerTests
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
         _verifyInfoRepositoryMock.Setup(x => x.GetById(verifyInfo.Id, It.IsAny<CancellationToken>())).ReturnsAsync(verifyInfo);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
-        Mock<IVerifyInfoFiller> verifyInfoFillerMock = new Mock<IVerifyInfoFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
+        Mock<IVerifyInfoFiller> verifyInfoFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
         _fillersBagMock.Setup(x => x.VerifyInfoFiller).Returns(verifyInfoFillerMock.Object);
 
@@ -219,7 +220,7 @@ public class TimeEntryFillerTests
         _stageRepositoryMock.Setup(x => x.GetById(stage.Id)).ReturnsAsync(stage);
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
-        Mock<IDriverFiller> driverFillerMock = new Mock<IDriverFiller>();
+        Mock<IDriverFiller> driverFillerMock = new();
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act-Assert
@@ -227,39 +228,39 @@ public class TimeEntryFillerTests
             _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct));
     }
 
-    private static TimeEntry AnyTimeEntry(Guid? driverId = null, int? stageId = null, int? carId = null, Guid? verifyInfoId = null) => new TimeEntry()
+    private static TimeEntry AnyTimeEntry(Guid? driverId = null, int? stageId = null, int? carId = null, Guid? verifyInfoId = null) => new()
     {
         Id = Guid.NewGuid(),
-        StageId = stageId.HasValue ? stageId.Value : 1,
-        CarId = carId.HasValue ? carId.Value : 1,
-        DriverId = driverId.HasValue ? driverId.Value : Guid.NewGuid(),
+        StageId = stageId ?? 1,
+        CarId = carId ?? 1,
+        DriverId = driverId ?? Guid.NewGuid(),
         Time = TimeOnly.FromTimeSpan(new TimeSpan(1, 2, 3)),
         UploadTime = DateTime.Now,
         VerifyInfoId = verifyInfoId,
         Labels = ""
     };
 
-    private static Driver AnyDriver() => new Driver()
+    private static Driver AnyDriver() => new()
     {
         Id = Guid.NewGuid(),
         Known = false
     };
 
-    private static Stage AnyStage() => new Stage()
+    private static Stage AnyStage() => new()
     {
         Id = 1,
         Code = 1,
         Direction = Direction.Arcade
     };
 
-    private static Car AnyCar() => new Car()
+    private static Car AnyCar() => new()
     {
         Id = 1,
         Name = "Car 1",
         Class = 8
     };
 
-    private static VerifyInfo AnyVerifyInfo() => new VerifyInfo()
+    private static VerifyInfo AnyVerifyInfo() => new()
     {
         Id = Guid.NewGuid(),
         VerifierId = Guid.NewGuid(),

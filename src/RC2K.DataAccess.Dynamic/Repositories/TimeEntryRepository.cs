@@ -15,7 +15,6 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
 {
     public override string EntityName => "TimeEntries";
 
-
     public override Task<List<TimeEntry>> GetAll()
     {
         // to reduce RU in cloud
@@ -42,7 +41,7 @@ public class TimeEntryRepository(Database database, TimeEntryMapper mapper, IEnv
             .WithParameter("@driverId", driverId);
 
         using var it = Container.GetItemQueryIterator<JsonElement>(query);
-        var (result, ru) = await ItemQueryIteratorHelper.FetchAll(query, it, (element) => new
+        var (result, ru) = await ItemQueryIteratorHelper.FetchAll(it, (element) => new
         {
             StageId = element.TryGetProperty("stageId", out var s) && s.TryGetInt32(out var sVal) ? (int?)sVal : null,
             CarId = element.TryGetProperty("carId", out var c) && c.TryGetInt32(out var cVal) ? (int?)cVal : null,
