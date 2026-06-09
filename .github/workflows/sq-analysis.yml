@@ -55,6 +55,8 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
         shell: powershell
         run: |
+          dotnet tool install --global dotnet-coverage
+
           # 1. Define the report path clearly so both tools agree on it
           $coveragePath = "${{ runner.temp }}\coverage\coverage.opencover.xml"
 
