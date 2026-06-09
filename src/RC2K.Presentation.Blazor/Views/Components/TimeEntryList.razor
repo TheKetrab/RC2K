@@ -49,8 +49,8 @@ else
                     id="time-entry-list-table"
                     ShowColumnOptions="false"
                     RowsPerPage="20"
-                    QuickFilter="_quickFilter"
-                    RowStyleFunc="_rowStyleFunc">
+                    QuickFilter="QuickFilter"
+                    RowStyleFunc="RowStyleFunc">
         <Columns>
 
             @if (VerificationMode)
@@ -168,20 +168,20 @@ else
                             {
                                 string color = label switch
                                 {
-                                    "TA" => "#8df5fc",
-                                    "A8" => "#f0baff",
-                                    "Arcade" => "#ff809b",
-                                    "BRC" => "#f1ffb0",
-                                    "BRC20" => "#e0c444ff",
-                                    "MFMI18" => "#c71a99ff",
-                                    "MFMI19" => "#d18fd9",
-                                    "MFMI20" => "#83ba73ff",
-                                    "MFMI21" => "#bfb84eff",
-                                    "MFMI22" => "#99e63cff",
-                                    "MFMI23" => "#4d69f7ff",
-                                    "MFMI24" => "#6eb3db",
-                                    "MFMI25" => "#f25a46ff",
-                                    _ => "#cbf092ff"
+                                    "TA" => "#8DF5FC",
+                                    "A8" => "#F0BAFF",
+                                    "Arcade" => "#FF809B",
+                                    "BRC" => "#F1FFB0",
+                                    "BRC20" => "#E0C444FF",
+                                    "MFMI18" => "#C71A99FF",
+                                    "MFMI19" => "#D18FD9",
+                                    "MFMI20" => "#83BA73FF",
+                                    "MFMI21" => "#BFB84EFF",
+                                    "MFMI22" => "#99E63CFF",
+                                    "MFMI23" => "#4D69F7FF",
+                                    "MFMI24" => "#6EB3DB",
+                                    "MFMI25" => "#F25A46FF",
+                                    _ => "#CBF092FF"
                                 };
 
                                 <MudChip T="string" Class="mud-chip-size-xs" Style=@($"background-color: {color}") Size="Size.Small">@label</MudChip>

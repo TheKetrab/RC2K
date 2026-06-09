@@ -57,7 +57,7 @@ public class TimeEntryServiceTests
     {
         //Arrange
         int stageId = 1;
-        TimeEntry timeEntry = new TimeEntry 
+        TimeEntry timeEntry = new()
         { 
             Id = Guid.NewGuid(), 
             StageId = stageId,
@@ -105,7 +105,7 @@ public class TimeEntryServiceTests
     {
         //Arrange
         int stageId = 1;
-        TimeEntry timeEntry = new TimeEntry 
+        TimeEntry timeEntry = new()
         { 
             Id = Guid.NewGuid(), 
             StageId = stageId,
@@ -148,10 +148,9 @@ public class TimeEntryServiceTests
     public async Task Delete_DeletesAllTimeEntries()
     {
         //Arrange
-        CancellationToken ct = new();
         Guid id1 = Guid.NewGuid();
         Guid id2 = Guid.NewGuid();
-        TimeEntry te1 = new TimeEntry 
+        TimeEntry te1 = new()
         { 
             Id = id1,
             StageId = 1,
@@ -160,7 +159,7 @@ public class TimeEntryServiceTests
             Time = new TimeOnly(0, 5, 30),
             UploadTime = DateTime.UtcNow
         };
-        TimeEntry te2 = new TimeEntry 
+        TimeEntry te2 = new()
         { 
             Id = id2,
             StageId = 1,
@@ -188,7 +187,7 @@ public class TimeEntryServiceTests
         //Arrange
         Guid id1 = Guid.NewGuid();
         Guid id2 = Guid.NewGuid();
-        TimeEntry te1 = new TimeEntry 
+        TimeEntry te1 = new()
         { 
             Id = id1,
             StageId = 1,
@@ -197,7 +196,7 @@ public class TimeEntryServiceTests
             Time = new TimeOnly(0, 5, 30),
             UploadTime = DateTime.UtcNow
         };
-        TimeEntry te2 = new TimeEntry 
+        TimeEntry te2 = new()
         { 
             Id = id2,
             StageId = 1,
@@ -227,7 +226,7 @@ public class TimeEntryServiceTests
         string comment = "Test comment";
         Guid id1 = Guid.NewGuid();
         Guid id2 = Guid.NewGuid();
-        TimeEntry te1 = new TimeEntry 
+        TimeEntry te1 = new()
         { 
             Id = id1,
             StageId = 1,
@@ -236,7 +235,7 @@ public class TimeEntryServiceTests
             Time = new TimeOnly(0, 5, 30),
             UploadTime = DateTime.UtcNow
         };
-        TimeEntry te2 = new TimeEntry 
+        TimeEntry te2 = new()
         { 
             Id = id2,
             StageId = 1,
@@ -270,7 +269,7 @@ public class TimeEntryServiceTests
         Guid verifierId = Guid.NewGuid();
         string comment = "Test comment";
         Guid existingVerifyInfoId = Guid.NewGuid();
-        TimeEntry te1 = new TimeEntry 
+        TimeEntry te1 = new()
         { 
             Id = Guid.NewGuid(),
             StageId = 1,

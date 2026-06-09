@@ -13,7 +13,7 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public class TimeEntryListItemsCollection : INotifyCollectionChanged, IEnumerable<TimeEntryListItem>
 {
-    private List<TimeEntryListItem> _list = [];
+    private readonly List<TimeEntryListItem> _list = [];
 
     public void Set(IEnumerable<TimeEntryListItem> items)
     {
@@ -24,10 +24,7 @@ public class TimeEntryListItemsCollection : INotifyCollectionChanged, IEnumerabl
 
     public IEnumerator<TimeEntryListItem> GetEnumerator() => _list.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 }
@@ -66,7 +63,6 @@ public partial class TimeEntryList
     private bool overlayVisible;
     private bool dataLoaded;
 
-
     // filters
     public bool filterDriverCheckBox;
     public string? filterDriverText;
@@ -79,12 +75,12 @@ public partial class TimeEntryList
 
     private TimeEntryListItem? _currentContextMenuItem;
 
-    private HashSet<TimeEntryListItem> _selectedItems = new();
+    private HashSet<TimeEntryListItem> _selectedItems = [];
 
     public List<TimeEntry> GetSelectedTimeEntries()
     {
         var selectedTimeEntries =
-            _gridRef?.SelectedItems.Select(x => x.Data).ToList() ?? [];
+            _selectedItems.Select(x => x.Data).ToList();
 
         return selectedTimeEntries;
     }
@@ -112,8 +108,6 @@ public partial class TimeEntryList
                 await GetTableHeight();
             }
 
-
-
             if (prevStageId != StageId)
             {
                 prevStageId = StageId;
@@ -139,7 +133,9 @@ public partial class TimeEntryList
     {
         OpenLoadingOverlay();
         if (OnReloadRequested != null)
+        {
             await OnReloadRequested();
+        }
         
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
@@ -167,7 +163,9 @@ public partial class TimeEntryList
         CloseLoadingOverlay();
 
         if (OnLoaded != null)
+        {
             await OnLoaded();
+        }
     }
 
     public async Task ReloadTimeEntriesForVerification()
@@ -183,48 +181,57 @@ public partial class TimeEntryList
         OnLoaded?.Invoke();
     }
 
-    private Func<TimeEntryListItem, bool> _quickFilter => x =>
-    {
-        return IsOkForDriverFilter(x) &&
-               IsOkForCarFilter(x) &&
-               IsOkForLabelsFilter(x) &&
-               IsOkForMfmiFilter(x) &&
-               IsOkForClassFilter(x);
-    };
+    private Func<TimeEntryListItem, bool> QuickFilter => 
+        x => IsOkForDriverFilter(x) &&
+             IsOkForCarFilter(x) &&
+             IsOkForLabelsFilter(x) &&
+             IsOkForMfmiFilter(x) &&
+             IsOkForClassFilter(x);
 
     private bool IsOkForDriverFilter(TimeEntryListItem item)
     {
-        if (!filterDriverCheckBox) return true;
-        if (string.IsNullOrEmpty(filterDriverText)) return true;
+        if (!filterDriverCheckBox || string.IsNullOrEmpty(filterDriverText))
+        {
+            return true;
+        }
 
         return item.DisplayName.StartsWith(filterDriverText, StringComparison.InvariantCultureIgnoreCase);
     }
 
     private bool IsOkForCarFilter(TimeEntryListItem item)
     {
-        if (!filterCarCheckBox) return true;
-        if (filterCar == null) return true;
+        if (!filterCarCheckBox || filterCar == null)
+        {
+            return true;
+        }
 
         return item.Data.CarId == filterCar.Id;
     }
 
     private bool IsOkForLabelsFilter(TimeEntryListItem item)
     {
-        if (!filterLabelsCheckBox) return true;
-        if (string.IsNullOrEmpty(filterLabelsText)) return true;
+        if (!filterLabelsCheckBox || string.IsNullOrEmpty(filterLabelsText))
+        {
+            return true;
+        }
 
         var split = filterLabelsText.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var s in split)
         {
             if (item.Labels.Any(l => string.Equals(l, s, StringComparison.InvariantCultureIgnoreCase)))
+            {
                 return true;
+            }
         }
         return false;
     }
 
     private bool IsOkForMfmiFilter(TimeEntryListItem item)
     {
-        if (!filterMfmiCheckBox) return true;
+        if (!filterMfmiCheckBox)
+        {
+            return true;
+        }
 
         if (item.Labels.Any(x => x.StartsWith("MFMI")))
         {
@@ -254,7 +261,7 @@ public partial class TimeEntryList
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Failed to copy to clipboard: {ex.Message}");
+            Logger.LogError(ex, "Failed to copy to clipboard");
         }
     }
 
@@ -268,10 +275,7 @@ public partial class TimeEntryList
         _currentContextMenuItem = item;
     }
 
-    private void CloseContextMenu()
-    {
-        _currentContextMenuItem = null;
-    }
+    private void CloseContextMenu() => _currentContextMenuItem = null;
 
     private bool CanShowContextMenu(TimeEntryListItem item)
     {
@@ -292,14 +296,11 @@ public partial class TimeEntryList
         return false;
     }
 
-    private bool CanDeleteTimeEntry(TimeEntryListItem item)
-    {
-        return CanShowContextMenu(item);
-    }
+    private bool CanDeleteTimeEntry(TimeEntryListItem item) => CanShowContextMenu(item);
 
     private async Task OpenDeleteConfirmation(TimeEntryListItem item)
     {
-        DialogParameters parameters = new();
+        DialogParameters parameters = [];
         parameters.Add("DynamicMsg", $"If you are sure you want to delete this time entry, type its time: {item.TimeDisplay}");
         string? typedTime = await DialogHelper.ShowDialogAndGetResult<DeleteTimeEntryDialog, string>("Delete time entry", parameters);
 
@@ -319,16 +320,16 @@ public partial class TimeEntryList
     {
         try
         {
-            await TimeEntryService.Delete(new List<TimeEntry> { item.Data });
+            await TimeEntryService.Delete([item.Data]);
             await ReloadTimeEntries();
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Failed to delete time entry: {ex.Message}");
+            Logger.LogError(ex, "Failed to delete time entry");
         }
     }
 
-    private string _rowStyleFunc(TimeEntryListItem item, int index)
+    private string RowStyleFunc(TimeEntryListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
         if (name is not null)

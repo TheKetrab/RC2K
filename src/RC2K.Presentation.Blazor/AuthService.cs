@@ -4,17 +4,11 @@ using System.Security.Claims;
 
 namespace RC2K.Presentation.Blazor;
 
-public class AuthService
+public class AuthService(IUserService userService)
 {
-    private readonly IUserService _userService;
-    public AuthService(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     public async Task<ClaimsPrincipal> Login(string username, string password)
     {
-        var res = await _userService.Authenticate(username, password);
+        var res = await userService.Authenticate(username, password);
         if (!res.Success)
         {
             throw new Exception("Incorrect user or password");

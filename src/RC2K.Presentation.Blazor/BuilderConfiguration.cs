@@ -29,7 +29,6 @@ using RC2K.Presentation.Blazor.Views.Dialogs;
 using Serilog;
 using Serilog.Exceptions;
 
-
 namespace RC2K.Presentation.Blazor;
 
 public static class BuilderConfiguration
@@ -241,10 +240,8 @@ public static class BuilderConfiguration
 
     public static WebApplicationBuilder ConfigureDatabase(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<RallyDbContext>(opt =>
-        {
-            opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-        });
+        builder.Services.AddDbContext<RallyDbContext>(
+            opt => opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         return builder;
     }
@@ -252,8 +249,7 @@ public static class BuilderConfiguration
     public const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     public static WebApplicationBuilder AddAuthorization(this WebApplicationBuilder builder)
     {
-        builder.Services.AddCors(options =>
-        {
+        builder.Services.AddCors(options =>   
             options.AddPolicy(
                 name: MyAllowSpecificOrigins,
                 policy =>
@@ -261,8 +257,8 @@ public static class BuilderConfiguration
                     string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
                         ?? throw new InvalidOperationException("Cors:AllowedOrigins is not configured.");
                     policy.WithOrigins(allowedOrigins);
-                });
-        });
+                })
+        );
 
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();

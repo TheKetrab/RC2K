@@ -76,7 +76,7 @@ public class DriverServiceTests
     public async Task GetAllNames_CallsRepositoryAndFillsDrivers()
     {
         //Arrange
-        Driver driver = new Driver { Id = Guid.NewGuid(), Known = false, Name = "TestDriver" };
+        Driver driver = new() { Id = Guid.NewGuid(), Known = false, Name = "TestDriver" };
         List<Driver> drivers = [driver];
         _driverRepositoryMock.Setup(x => x.GetAll()).Returns(Task.FromResult(drivers));
         _driverFillerMock.Setup(x => x.FillRecursive(It.IsAny<Driver>(), It.IsAny<FillingContext>(), _fillersBagMock.Object, It.IsAny<CancellationToken>()))
@@ -97,8 +97,8 @@ public class DriverServiceTests
         //Arrange
         Guid userId = Guid.NewGuid();
         Guid driverId = Guid.NewGuid();
-        Driver driver = new Driver { Id = driverId, Known = true, UserId = userId };
-        User user = new User 
+        Driver driver = new() { Id = driverId, Known = true, UserId = userId };
+        User user = new()
         { 
             Id = userId,
             Name = "KnownUser",
@@ -128,7 +128,7 @@ public class DriverServiceTests
         string userName = "TestUser";
         Guid driverId = Guid.NewGuid();
         Guid userId = Guid.NewGuid();
-        User user = new User 
+        User user = new()
         { 
             Id = userId,
             Name = userName,
@@ -136,7 +136,7 @@ public class DriverServiceTests
             Roles = ["user"],
             Email = "test@example.com"
         };
-        Driver driver = new Driver { Id = driverId, Known = true, User = user, UserId = userId };
+        Driver driver = new() { Id = driverId, Known = true, User = user, UserId = userId };
         user.Driver = driver;
         
         _userRepositoryMock.Setup(x => x.GetByName(userName)).Returns(Task.FromResult<User?>(user));
@@ -155,9 +155,8 @@ public class DriverServiceTests
     public async Task GetByName_ReturnsAnonymousDriverByName()
     {
         //Arrange
-        CancellationToken ct = new();
         string driverName = "AnonymousDriver";
-        Driver driver = new Driver { Id = Guid.NewGuid(), Known = false, Name = driverName };
+        Driver driver = new() { Id = Guid.NewGuid(), Known = false, Name = driverName };
         
         _userRepositoryMock.Setup(x => x.GetByName(driverName)).Returns(Task.FromResult<User?>(null));
         _driverRepositoryMock.Setup(x => x.GetByName(driverName)).Returns(Task.FromResult<Driver?>(driver));

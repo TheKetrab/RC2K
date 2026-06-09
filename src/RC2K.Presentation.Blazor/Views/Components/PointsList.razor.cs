@@ -98,7 +98,7 @@ public partial class PointsList
         OpenLoadingOverlay();
     }
 
-    private string _rowStyleFunc(PointsListItem item, int index)
+    private string RowStyleFunc(PointsListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
         if (name is not null)
