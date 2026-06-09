@@ -285,7 +285,7 @@ public class TimeEntryServiceTests
         List<TimeEntry> timeEntries = [te1];
 
         //Act & Assert
-        Assert.ThrowsAsync<Exception>(async () => await _sut.Verify(timeEntries, verifierId, comment));
+        Assert.ThrowsAsync<ArgumentException>(async () => await _sut.Verify(timeEntries, verifierId, comment));
     }
 
     [Test]
