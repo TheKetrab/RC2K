@@ -120,7 +120,7 @@
 
     bool _isProcessing;
     RegisterAccountDto Model { get; set; } = new();
-    IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
+    readonly IEnumerable<CodeName> allCountries = Resources.Countries.GetCountries();
     bool registerSuccessOpen;
     bool registerSuccess;
     string[] errors = { };
@@ -137,8 +137,6 @@
 
     private void OpenPopup() => registerSuccessOpen = true;
     private void ClosePopup() => registerSuccessOpen = false;
-    private void ToLoginView() => NavigationManager.NavigateTo("/login");
-
 
     private IEnumerable<string> PasswordStrength(string pw)
     {
@@ -185,7 +183,7 @@
         if (driver is not null && !driver.Known)
         {
             var driverCodeFromUser = await GetDriverCodeFromUser();
-            if (driverCodeFromUser.Item1 == false)
+            if (!driverCodeFromUser.Item1)
             {
                 return;
             }
@@ -219,7 +217,7 @@
         }
         else
         {
-            errors = [result?.Message ?? "Unknown error"];
+            errors = [result.Message ?? "Unknown error"];
         }
     }
 

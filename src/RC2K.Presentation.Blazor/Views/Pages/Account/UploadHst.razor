@@ -36,11 +36,11 @@
         <MudTextField T="string" Label="Name to filter HST" Required="true" @bind-Value="_uploadModel.Name" />
 
         <MudFileUpload T="IBrowserFile" FilesChanged="UploadFile" Required="true" Class="mt-4">
-            <ActivatorContent>
+            <CustomContent>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" Disabled="@_isUploading">
                     @(_file == null ? "Select HST File" : _file.Name)
                 </MudButton>
-            </ActivatorContent>
+            </CustomContent>
         </MudFileUpload>
 
         <div class="d-flex align-center justify-space-between mt-6">

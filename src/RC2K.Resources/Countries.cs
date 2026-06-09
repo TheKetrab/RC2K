@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace RC2K.Resources;
 
-public class Countries
+public static class Countries
 {
 
     private readonly static List<(string code, string name)> _countries = [];

@@ -18,7 +18,6 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
 
     public event EventHandler<(string,double)>? RequestUnitsHandler;
 
-    protected ItemQueryIteratorHelper _iterator = new();
 
     protected CosmosRepository(
         Database database,
@@ -32,7 +31,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
         Container = Database.GetContainer(containerName);
     }
 
-    public virtual async Task<TEntity?> GetById(Guid id, CancellationToken ct)
+    public virtual async Task<TEntity?> GetById(Guid id, CancellationToken ct = default)
     {
         string key = id.ToString();
         var response = await Container.ReadItemAsync<TModel>(
@@ -46,7 +45,7 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     protected async Task<List<TEntity>> FetchAll(QueryDefinition query, CancellationToken ct)
     {
         using var it = Container.GetItemQueryIterator<TModel>(query);
-        var (result, ru) = await _iterator.FetchAll(query, it, Mapper.ToDomainModel, ct);
+        var (result, ru) = await ItemQueryIteratorHelper.FetchAll(query, it, Mapper.ToDomainModel, ct);
 
         RequestUnitsHandlerInvoke(query, ru);
         

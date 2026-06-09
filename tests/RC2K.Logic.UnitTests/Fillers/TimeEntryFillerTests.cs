@@ -38,10 +38,13 @@ public class TimeEntryFillerTests
         await _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct);
 
         //Assert
-        Assert.That(timeEntry.Driver, Is.Null);
-        Assert.That(timeEntry.VerifyInfo, Is.Null);
-        _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
-        _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(timeEntry.Driver, Is.Null);
+            Assert.That(timeEntry.VerifyInfo, Is.Null);
+            _driverRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+            _verifyInfoRepositoryMock.Verify(x => x.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never());
+        }
     }
 
     [Test]

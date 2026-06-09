@@ -7,7 +7,7 @@
 }
 
     .page-card-3 > h1 {
-        font-family: "Viga";
+        font-family: "Viga", sans-serif;
         font-size: 48px;
         text-align: center;
         --webkit-background-clip: text;
@@ -17,7 +17,7 @@
     }
 
     .page-card-3 > h3 {
-        font-family: "Roboto";
+        font-family: "Roboto", sans-serif;
         font-size: 16px;
         text-align: center;
         padding: 0 300px;
@@ -72,7 +72,7 @@
 
 .big-card h2 {
     margin-top: 30px;
-    font-family: "Viga";
+    font-family: "Viga", sans-serif;
     font-size: 28px;
 }
 
@@ -97,7 +97,7 @@
 
 .small-card h2 {
     margin-top: 0px;
-    font-family: "Viga";
+    font-family: "Viga", sans-serif;
     font-size: 16px;
 }
 

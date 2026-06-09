@@ -137,7 +137,11 @@ public partial class TimeEntryList
             await OnReloadRequested();
         }
         
-        _cts?.Cancel();
+        if (_cts is not null)
+        {
+            await _cts.CancelAsync();
+            _cts.Dispose();
+        }
         _cts = new CancellationTokenSource();
 
         await Task.Delay(250); // intentional delay to handle multiple clicking at once
@@ -332,17 +336,14 @@ public partial class TimeEntryList
     private string RowStyleFunc(TimeEntryListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-        if (name is not null)
+        if (name is not null && item.DisplayName == name)
         {
-            if (item.DisplayName == name)
-            {
-                return $"background-color: {Rc2kColorPallete.complementary200};";
-            }
+            return $"background-color: {Rc2kColorPalette.complementary200};";
         }
 
         if (index % 2 != 0)
         {
-            return $"background-color: {Rc2kColorPallete.primary50};";
+            return $"background-color: {Rc2kColorPalette.primary50};";
         }
         return string.Empty;
     }

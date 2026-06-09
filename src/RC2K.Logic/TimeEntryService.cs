@@ -30,7 +30,7 @@ public class TimeEntryService : ITimeEntryService
 
         _timeEntryRepository.RequestUnitsHandler += (s, e) =>
         {
-            _logger.LogInformation($"RU: {e.Item2} for query: {e.Item1}");
+            _logger.LogInformation("RU: {RU} for query: {Query}", e.Item2, e.Item1);
         };
     }
 
@@ -64,7 +64,7 @@ public class TimeEntryService : ITimeEntryService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to delete time entry {timeEntry.Id}");
+                _logger.LogError(ex, "Failed to delete time entry {Id}", timeEntry.Id);
             }
         }
     }
@@ -82,7 +82,7 @@ public class TimeEntryService : ITimeEntryService
             string ids = string.Join(",",
                 timeEntries.Where(x => x.VerifyInfoId is not null)
                            .Select(x => x.Id));
-            throw new Exception($"TimeEntries with ids [{ids}] are already verified.");
+            throw new ArgumentException($"TimeEntries with ids [{ids}] are already verified.");
         }
 
         VerifyInfo verifyInfo = new()
@@ -105,7 +105,7 @@ public class TimeEntryService : ITimeEntryService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to update {timeEntry.Id}");
+                _logger.LogError(ex, "Failed to update {Id}", timeEntry.Id);
             }
         }
     }
@@ -147,29 +147,27 @@ public class TimeEntryService : ITimeEntryService
             timeEntry.StageId, timeEntry.CarId, timeEntry.DriverId, timeEntry.Time);
 
         // user can put identical times ONLY if it has different label (but is not automatic = no HST)
-        if (identicEntries.Any())
+        if (identicEntries.Count > 0 &&
+            (string.IsNullOrWhiteSpace(timeEntry.Labels) || // has no labels
+             identicEntries.Any(x => x.Labels == timeEntry.Labels) || // has the same labels
+             timeEntry.Labels.Contains("HST"))) // is automatic
         {
-            if (string.IsNullOrWhiteSpace(timeEntry.Labels) || // has no labels
-                identicEntries.Any(x => x.Labels == timeEntry.Labels) || // has the same labels
-                timeEntry.Labels.Contains("HST")) // is automatic
+            var best = identicEntries.OrderBy(x => x.Time).First();
+            return new Result()
             {
-                var best = identicEntries.OrderBy(x => x.Time).First();
-                return new Result()
-                {
-                    Success = false,
-                    Message = $"There already exists better or the same TimeEntry: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={best.Time.ToString("m:ss.ff")}"
-                };
-            }
+                Success = false,
+                Message = $"There already exists better or the same TimeEntry: Stage={timeEntry.StageId}; Car={timeEntry.CarId}; Driver={timeEntry.DriverId}, Time={best.Time.ToString("m:ss.ff")}"
+            };
         }
 
         await _timeEntryRepository.Create(timeEntry);
         return new Result() { Success = true };
     }
 
-    private record DriverWithPoints(Guid DriverId, int Points);
-    private record DriverWithClassAndPoints(Guid DriverId, int Class, int Points);
+    private sealed record DriverWithPoints(Guid DriverId, int Points);
+    private sealed record DriverWithClassAndPoints(Guid DriverId, int Class, int Points);
 
-    private Dictionary<Guid, int> GetDriverIdToCarPointsByClass(IEnumerable<DriverWithClassAndPoints> colCp, int @class)
+    private static Dictionary<Guid, int> GetDriverIdToCarPointsByClass(IEnumerable<DriverWithClassAndPoints> colCp, int @class)
     {
         return colCp
             .Where(x => x.Class == @class)

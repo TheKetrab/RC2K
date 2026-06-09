@@ -11,7 +11,7 @@ public class AuthService(IUserService userService)
         var res = await userService.Authenticate(username, password);
         if (!res.Success)
         {
-            throw new Exception("Incorrect user or password");
+            throw new ArgumentException("Incorrect user or password");
         }
 
         List<Claim> claims = [

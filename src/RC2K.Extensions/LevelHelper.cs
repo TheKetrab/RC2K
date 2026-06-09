@@ -1,10 +1,12 @@
 ﻿using RC2K.DomainModel;
+using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 
 namespace RC2K.Extensions;
 
 public static class LevelHelper
 {
-    private readonly static IReadOnlyDictionary<int, int> _arcadeId2CodePrefixMap =
+    private readonly static FrozenDictionary<int, int> _arcadeId2CodePrefixMap =
         new Dictionary<int, int>()
         {
             { 1, 2 },
@@ -13,9 +15,9 @@ public static class LevelHelper
             { 4, 3 },
             { 5, 6 },
             { 6, 4 },
-        };
+        }.ToFrozenDictionary();
 
-    private readonly static IReadOnlyDictionary<RallyCode, int> _rallyCode2CodePrefixMap =
+    private readonly static FrozenDictionary<RallyCode, int> _rallyCode2CodePrefixMap =
         new Dictionary<RallyCode, int>()
         {
             { RallyCode.Sony, 2 },
@@ -24,9 +26,9 @@ public static class LevelHelper
             { RallyCode.Scottish, 3 },
             { RallyCode.Pirelli, 6 },
             { RallyCode.Vauxhall, 4 },
-        };
+        }.ToFrozenDictionary();
 
-    private readonly static IReadOnlyDictionary<RallyCode, string> _rallyCode2RallyNameMap =
+    private readonly static FrozenDictionary<RallyCode, string> _rallyCode2RallyNameMap =
         new Dictionary<RallyCode, string>()
         {
             { RallyCode.Sony, "SONY Manx International Rally" },
@@ -35,9 +37,9 @@ public static class LevelHelper
             { RallyCode.Scottish, "Scottish Rally RSAC" },
             { RallyCode.Pirelli, "Pirelli International Rally" },
             { RallyCode.Vauxhall, "Vauxhall Rally of Wales" }
-        };
+        }.ToFrozenDictionary();
 
-    private readonly static IReadOnlyDictionary<RallyCode, string> _rallyCode2shortName =
+    private readonly static FrozenDictionary<RallyCode, string> _rallyCode2shortName =
         new Dictionary<RallyCode, string>()
         {
             { RallyCode.Sony, "sony" },
@@ -46,9 +48,9 @@ public static class LevelHelper
             { RallyCode.Scottish, "scottish" },
             { RallyCode.Pirelli, "pirelli" },
             { RallyCode.Vauxhall, "vauxhall" }
-        };
+        }.ToFrozenDictionary();
 
-    private readonly static IReadOnlyDictionary<RallyCode, string> _rallyCode2imageName =
+    private readonly static FrozenDictionary<RallyCode, string> _rallyCode2imageName =
         new Dictionary<RallyCode, string>()
         {
                 { RallyCode.Sony, "WELMNX" },
@@ -57,12 +59,12 @@ public static class LevelHelper
                 { RallyCode.Scottish, "WELSCT" },
                 { RallyCode.Pirelli, "WELPIR" },
                 { RallyCode.Vauxhall, "WELVX" }
-        };
+        }.ToFrozenDictionary();
 
-    private readonly static IReadOnlyDictionary<int, RallyCode> _codePrefix2RallyCodeMap =
-        new Dictionary<int, RallyCode>(_rallyCode2CodePrefixMap.ToDictionary(x => x.Value, x => x.Key));
+    private readonly static FrozenDictionary<int, RallyCode> _codePrefix2RallyCodeMap =
+        new Dictionary<int, RallyCode>(_rallyCode2CodePrefixMap.ToDictionary(x => x.Value, x => x.Key)).ToFrozenDictionary();
 
-    public static int GetStageCode(int rally, int stage, bool arcade) =>
+public static int GetStageCode(int rally, int stage, bool arcade) =>
         stage + 10 * (arcade ? _arcadeId2CodePrefixMap[rally] : rally);
 
     public static int GetStageCode(RallyCode rallyCode, int stage) =>

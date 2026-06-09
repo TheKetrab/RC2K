@@ -5,9 +5,9 @@ namespace RC2K.Parser;
 
 public class HstWriter
 {
-    private Func<int> _zeroCar;
-    private Func<int> _zeroNat;
-    private Func<string> _zeroName;
+    private readonly Func<int> _zeroCar;
+    private readonly Func<int> _zeroNat;
+    private readonly Func<string> _zeroName;
 
     public HstWriter(Func<int> zeroCar, Func<int> zeroNat, Func<string> zeroName)
     {
@@ -18,7 +18,7 @@ public class HstWriter
 
     public void ShredTimeEntries(Stream stream, IEnumerable<TimeEntry> entries)
     {
-        using BinaryWriter writer = new BinaryWriter(stream);
+        using BinaryWriter writer = new(stream);
 
         foreach (var entry in entries)
         {

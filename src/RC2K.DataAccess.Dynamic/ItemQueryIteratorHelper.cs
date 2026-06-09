@@ -4,7 +4,7 @@ namespace RC2K.DataAccess.Dynamic;
 
 public class ItemQueryIteratorHelper
 {
-    public async Task<(List<U>, double)> FetchAll<T,U>(QueryDefinition query, FeedIterator<T> it, Func<T,U> map, CancellationToken ct = default)
+    public static async Task<(List<U>, double)> FetchAll<T,U>(QueryDefinition query, FeedIterator<T> it, Func<T,U> map, CancellationToken ct = default)
     {
         double totalRu = 0;
         List<U> result = new();

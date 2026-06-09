@@ -1,12 +1,13 @@
 ﻿namespace RC2K.Parser;
 
-public class Utils
+public static class Utils
 {
-    public static Dictionary<int, string> Nat = new()
+    private static readonly Dictionary<int, string> Nat = new()
     {
         {0x1E, "PL" }
     };
-    public static Dictionary<int, string> Car = new()
+
+    private static readonly Dictionary<int, string> Car = new()
     {
         {0, "Renault" },
         {1, "Vauxhall" },
@@ -33,11 +34,9 @@ public class Utils
         {22, "Evo IV" },
     };
 
-
     public static string GetNat(int id) =>
         Nat.TryGetValue(id, out var nat) ? nat : id.ToString();
 
     public static string GetCar(int id) =>
         Car.TryGetValue(id, out var car) ? car : id.ToString();
-
 }

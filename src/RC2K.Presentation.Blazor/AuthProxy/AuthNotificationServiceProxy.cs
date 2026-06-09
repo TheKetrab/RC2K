@@ -8,10 +8,10 @@ namespace RC2K.Presentation.Blazor.AuthProxy;
 
 public class AuthNotificationServiceProxy : INotificationService
 {
-    private AuthenticationStateProvider _asp;
-    private NotificationService _service;
-    private INotificationRepository _notificationRepository;
-    private IUserService _userService;
+    private readonly AuthenticationStateProvider _asp;
+    private readonly NotificationService _service;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly IUserService _userService;
 
     public event EventHandler<Guid>? NotificationsUpdated
     {

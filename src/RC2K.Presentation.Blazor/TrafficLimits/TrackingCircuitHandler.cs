@@ -45,13 +45,13 @@ public class TrackingCircuitHandler : CircuitHandler
         return base.OnCircuitOpenedAsync(circuit, cancellationToken);
     }
 
-    public override Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken)
-    {
-        _tracker.UnregisterCircuit(circuit.Id);
-        return Task.CompletedTask;
-    }
+    public override Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken) =>
+        UnregisterCircuit(circuit);
 
-    public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken)
+    public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken) =>
+        UnregisterCircuit(circuit);
+
+    private Task UnregisterCircuit(Circuit circuit)
     {
         _tracker.UnregisterCircuit(circuit.Id);
         return Task.CompletedTask;

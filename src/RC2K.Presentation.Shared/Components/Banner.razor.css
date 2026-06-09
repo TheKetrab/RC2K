@@ -24,7 +24,6 @@
     font-family: "Koulen", sans-serif;
     font-weight: 400;
     font-style: normal;
-    filter: drop-shadow(#ee2233 0.5rem 0.5rem 1rem);
 
     background:
         radial-gradient(circle at 20% 30%, #ffffff 0%, transparent 80%),

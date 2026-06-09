@@ -213,12 +213,11 @@ public class TimeEntriesCollection
 
         for (int i = 0; i < 36; i++)
         {
-            if (!_offsets.ContainsKey(reader.BaseStream.Position))
+            if (!_offsets.TryGetValue(reader.BaseStream.Position, out int stageCode))
             {
                 throw new InvalidOperationException();
             }
 
-            int stageCode = _offsets[reader.BaseStream.Position];
             StageEntries[i] = new StageEntry(stageCode, isNormal, isArcade, reader);
         }
     }

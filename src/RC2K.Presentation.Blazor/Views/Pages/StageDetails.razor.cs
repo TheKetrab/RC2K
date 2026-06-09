@@ -79,7 +79,10 @@ public partial class StageDetails
     private async Task HandleOnTimeEntryListLoaded()
     {
         var pointsInfo = _timeEntryListRef.PointsInfo;
-        await _pointsListRef.SetPointsInfo(pointsInfo);
+        if (pointsInfo is not null)
+        {
+            await _pointsListRef.SetPointsInfo(pointsInfo);
+        }
     }
 
     private async Task HandleNewPathCachedEvent(string path)

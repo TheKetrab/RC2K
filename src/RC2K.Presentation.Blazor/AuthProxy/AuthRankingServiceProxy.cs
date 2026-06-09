@@ -7,8 +7,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 {
     public class AuthRankingServiceProxy : IRankingService
     {
-        private AuthenticationStateProvider _asp;
-        private RankingService _service;
+        private readonly AuthenticationStateProvider _asp;
+        private readonly RankingService _service;
 
         public AuthRankingServiceProxy(
             AuthenticationStateProvider asp,

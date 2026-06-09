@@ -47,12 +47,16 @@ public class DriverServiceTests
         var result = await _sut.CreateAnonymous(name, nationality);
 
         //Assert
-        Assert.That(result.Success, Is.True);
-        Assert.That(result.Payload.Name, Is.EqualTo(name));
-        Assert.That(result.Payload.Nationality, Is.EqualTo(nationality));
-        Assert.That(result.Payload.Known, Is.False);
-        Assert.That(result.Payload.Key, Is.EqualTo(tempPassword));
-        _driverRepositoryMock.Verify(x => x.Create(It.IsAny<Driver>()), Times.Once());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Payload, Is.Not.Null);
+            Assert.That(result.Payload!.Name, Is.EqualTo(name));
+            Assert.That(result.Payload.Nationality, Is.EqualTo(nationality));
+            Assert.That(result.Payload.Known, Is.False);
+            Assert.That(result.Payload.Key, Is.EqualTo(tempPassword));
+            _driverRepositoryMock.Verify(x => x.Create(It.IsAny<Driver>()), Times.Once());
+        }
     }
 
     [Test]
@@ -68,8 +72,11 @@ public class DriverServiceTests
         var result = await _sut.CreateAnonymous(name, nationality);
 
         //Assert
-        Assert.That(result.Success, Is.False);
-        Assert.That(result.Message, Is.EqualTo("Driver exists"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Message, Is.EqualTo("Driver exists"));
+        }
     }
 
     [Test]

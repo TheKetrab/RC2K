@@ -8,7 +8,7 @@ namespace RC2K.Logic;
 public class GmailProvider : IMailProvider
 {
     private const string SenderName = "RC2K Hub admin";
-    private readonly string _senderEmail = "kettydun@gmail.com";
+    private readonly string _senderEmail;
     private readonly string _sftpAppPassword;
 
     public GmailProvider(string senderEmail, string sftpAppPassword)

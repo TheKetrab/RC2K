@@ -5,7 +5,7 @@ namespace RC2K.DataAccess.Database;
 
 public class RallyUoW : IRallyUoW
 {
-    private RallyDbContext _dbContext;
+    private readonly RallyDbContext _dbContext;
 
     public RallyUoW(RallyDbContext dbContext,
                     ICarRepository carRepository,

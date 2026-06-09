@@ -107,7 +107,7 @@ app.MapPost("/timeEntry/upload", async (UploadTimeEntryDto dto) =>
             UploadTime = RC2K.Utils.Utils.StringToDateTime(dto.Date),            
         };
 
-        if (dto.Proofs?.Any() ?? false)
+        if (dto.Proofs is not null && dto.Proofs.Count > 0)
         {
             te.Proofs = dto.Proofs.Select(x => RC2K.Utils.Utils.DeserializeProof(x)).ToList();
         }

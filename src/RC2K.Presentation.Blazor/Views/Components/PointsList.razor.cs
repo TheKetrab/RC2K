@@ -101,17 +101,14 @@ public partial class PointsList
     private string RowStyleFunc(PointsListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-        if (name is not null)
+        if (name is not null && item.DisplayName == name)
         {
-            if (item.DisplayName == name)
-            {
-                return $"background-color: {Rc2kColorPallete.complementary200};";
-            }
+            return $"background-color: {Rc2kColorPalette.complementary200};";
         }
 
         if (index % 2 != 0)
         {
-            return $"background-color: {Rc2kColorPallete.primary50};";
+            return $"background-color: {Rc2kColorPalette.primary50};";
         }
         return string.Empty;
     }

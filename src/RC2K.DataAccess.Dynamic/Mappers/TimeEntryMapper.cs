@@ -43,7 +43,7 @@ public class TimeEntryMapper : IModelMapper<TimeEntry, TimeEntryModel>
             Labels = timeEntry.Labels
         };
 
-        if (timeEntry.Proofs.Any())
+        if (timeEntry.Proofs.Count > 0)
         {
             model.Proofs = timeEntry.Proofs.Select(SerializeProof).ToList();
         }

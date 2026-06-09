@@ -62,7 +62,7 @@
 
         for (int i = 0; i < path.Length; i++)
         {
-            BreadcrumbItem last = breadcrumbs.Last();
+            BreadcrumbItem last = breadcrumbs[^1];
             bool disabled = i == path.Length - 1;
             string itemText = MapName(path[i]);
             string link = Path.Combine(last.Href ?? "#", path[i]);
@@ -75,12 +75,10 @@
 
     }
 
-    private string MapName(string pathItem)
-    {
-        return char.ToUpperInvariant(pathItem[0]) + pathItem[1..];
-    }
+    private static string MapName(string pathItem) =>
+        char.ToUpperInvariant(pathItem[0]) + pathItem[1..];
 
-    private string? MapIcon(string pathItem)
+    private static string? MapIcon(string pathItem)
     {
         if (pathItem == "stages") return Icons.Material.Filled.Map;
         if (pathItem == "ranking") return Icons.Material.Filled.Leaderboard;

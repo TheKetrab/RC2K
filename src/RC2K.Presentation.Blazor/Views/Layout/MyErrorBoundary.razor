@@ -19,9 +19,10 @@ else if (ErrorContent is not null)
         HandleException(exception);
         return Task.CompletedTask;
     }
+
     public void HandleException(Exception ex)
     {
-        Logger.LogError(ex, $"Handled exception: {ex.Message}");
+        Logger.LogError(ex, "An error occurred.");
         MessageHelper.ShowError($"An error occurred: {ex.Message}");
     }
 }

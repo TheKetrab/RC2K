@@ -72,13 +72,13 @@ public partial class Stages
         _allWaypoints = allWaypointsList;
 
         // Combine all paths - assuming they are GeoJSON format, merge them into a FeatureCollection
-        if (allPaths.Any())
+        if (allPaths.Count > 0)
         {
             _combinedPaths = allPaths.ToArray();
         }
     }
 
-    private IEnumerable<string> GetMoods(Mood? moodFlags)
+    private static IEnumerable<string> GetMoods(Mood? moodFlags)
     {
         if (moodFlags == null) yield break;
         if (moodFlags.Value.HasFlag(Mood.Sunrise)) yield return "Sunrise";
@@ -87,7 +87,7 @@ public partial class Stages
         if (moodFlags.Value.HasFlag(Mood.Night)) yield return "Night";
     }
 
-    private Color GetMoodColor(string mood) => mood switch
+    private static Color GetMoodColor(string mood) => mood switch
     {
         "Sunrise" => Color.Warning,
         "Day" => Color.Info,

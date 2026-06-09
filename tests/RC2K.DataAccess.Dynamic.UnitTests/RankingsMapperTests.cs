@@ -56,19 +56,19 @@ public class RankingsMapperTests
             Assert.That(firstEntry.GeneralTop1Count, Is.EqualTo(1));
             Assert.That(firstEntry.CarA8Points, Is.EqualTo(50));
             Assert.That(firstEntry.CarA8PointsTop5Count, Is.EqualTo(2));
-            Assert.That(firstEntry.CarA8PointsTop1Count, Is.EqualTo(0));
+            Assert.That(firstEntry.CarA8PointsTop1Count, Is.Zero);
             Assert.That(firstEntry.CarA7Points, Is.EqualTo(40));
             Assert.That(firstEntry.CarA7PointsTop5Count, Is.EqualTo(1));
-            Assert.That(firstEntry.CarA7PointsTop1Count, Is.EqualTo(0));
+            Assert.That(firstEntry.CarA7PointsTop1Count, Is.Zero);
             Assert.That(firstEntry.CarA6Points, Is.EqualTo(30));
             Assert.That(firstEntry.CarA6PointsTop5Count, Is.EqualTo(1));
-            Assert.That(firstEntry.CarA6PointsTop1Count, Is.EqualTo(0));
+            Assert.That(firstEntry.CarA6PointsTop1Count, Is.Zero);
             Assert.That(firstEntry.CarA5Points, Is.EqualTo(20));
             Assert.That(firstEntry.CarA5PointsTop5Count, Is.EqualTo(1));
-            Assert.That(firstEntry.CarA5PointsTop1Count, Is.EqualTo(0));
+            Assert.That(firstEntry.CarA5PointsTop1Count, Is.Zero);
             Assert.That(firstEntry.CarBonusPoints, Is.EqualTo(10));
-            Assert.That(firstEntry.CarBonusPointsTop5Count, Is.EqualTo(0));
-            Assert.That(firstEntry.CarBonusPointsTop1Count, Is.EqualTo(0));
+            Assert.That(firstEntry.CarBonusPointsTop5Count, Is.Zero);
+            Assert.That(firstEntry.CarBonusPointsTop1Count, Is.Zero);
             Assert.That(firstEntry.BonusPoints, Is.EqualTo(5));
         }
     }

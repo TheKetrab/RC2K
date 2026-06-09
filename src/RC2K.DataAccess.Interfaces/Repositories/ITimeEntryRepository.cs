@@ -11,7 +11,7 @@ public interface ITimeEntryRepository
 
     Task<List<TimeEntry>> GetAll();
     Task<List<TimeEntry>> GetAllNotVerified();
-    Task<TimeEntry?> GetById(Guid id, CancellationToken ct);
+    Task<TimeEntry?> GetById(Guid id, CancellationToken ct = default);
     Task<List<TimeEntry>> GetByStageId(int stageId, CancellationToken ct);
     Task<List<TimeEntry>> GetByStageIdAndCarId(int stageId, int carId, CancellationToken ct);
     Task<List<TimeEntry>> GetByStageIdAndCarIdAndDriverIdAndTime(int stageId, int carId, Guid driverId, TimeOnly time);

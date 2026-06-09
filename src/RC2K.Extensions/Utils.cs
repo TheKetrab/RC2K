@@ -15,13 +15,13 @@ public static class Utils
         dt.ToString("dd/MM/yyyy");
 
     public static DateTime StringToDateTime(string str) =>
-        DateTime.ParseExact(str, "dd/MM/yyyy", null);
+        DateTime.ParseExact(str, "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
     public static char DirectionToChar(Direction direction) => direction switch
     {
         Direction.Simulation => 's',
         Direction.Arcade => 'a',
-        _ => throw new ArgumentException()
+        _ => throw new ArgumentException(nameof(direction))
     };
 
 
@@ -29,7 +29,7 @@ public static class Utils
     {
         's' => Direction.Simulation,
         'a' => Direction.Arcade,
-        _ => throw new ArgumentException()
+        _ => throw new ArgumentException(nameof(c))
     };
 
     public static Proof DeserializeProof(string str)

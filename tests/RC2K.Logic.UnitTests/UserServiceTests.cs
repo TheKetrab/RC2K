@@ -59,9 +59,12 @@ public class UserServiceTests
         var result = await _sut.Authenticate(name, password);
 
         //Assert
-        Assert.That(result.Success, Is.True);
-        Assert.That(result.Message, Is.EqualTo("admin,user"));
-        _userRepositoryMock.Verify(x => x.GetByName(name), Times.Once());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Message, Is.EqualTo("admin,user"));
+            _userRepositoryMock.Verify(x => x.GetByName(name), Times.Once());
+        }
     }
 
     [Test]
@@ -155,9 +158,12 @@ public class UserServiceTests
         var result = await _sut.UpgradeDriverToUser(name, wrongKey, password, email);
 
         //Assert
-        Assert.That(result.Success, Is.False);
-        Assert.That(result.Message, Contains.Substring("pass code is not valid"));
-        _userRepositoryMock.Verify(x => x.Create(It.IsAny<User>()), Times.Never());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Message, Contains.Substring("pass code is not valid"));
+            _userRepositoryMock.Verify(x => x.Create(It.IsAny<User>()), Times.Never());
+        }
     }
 
     [Test]
@@ -175,8 +181,11 @@ public class UserServiceTests
         var result = await _sut.UpgradeDriverToUser(name, driverKey, password, email);
 
         //Assert
-        Assert.That(result.Success, Is.False);
-        Assert.That(result.Message, Contains.Substring("not found"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Message, Contains.Substring("not found"));
+        }
     }
 
     [Test]
@@ -241,9 +250,12 @@ public class UserServiceTests
         var result = await _sut.CreateUserWithPassword(name, password, null, email);
 
         //Assert
-        Assert.That(result.Success, Is.False);
-        Assert.That(result.Message, Contains.Substring("already exists"));
-        Assert.That(result.ErrorCode, Is.EqualTo((int)ErrorCodes.UserAlreadyExists));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Message, Contains.Substring("already exists"));
+            Assert.That(result.ErrorCode, Is.EqualTo((int)ErrorCodes.UserAlreadyExists));
+        }
     }
 
     [Test]

@@ -5,11 +5,11 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public class TimeEntryListItem
 {
-    private TimeEntryList list;
+    private readonly TimeEntryList _list;
     public TimeEntryListItem(TimeEntryList list, TimeEntry data)
     {
         Data = data;
-        this.list = list;
+        _list = list;
     }
 
     public string StageName => 
@@ -25,8 +25,8 @@ public class TimeEntryListItem
 
     public bool Verified => this.Data.VerifyInfo is not null;
     public string TimeDisplay => this.Data.Time.ToString("m:ss.ff");
-    public TimeSpan Gap => list.Best is not null
-        ? this.Data.Time - list.Best.Time
+    public TimeSpan Gap => _list.Best is not null
+        ? this.Data.Time - _list.Best.Time
         : TimeSpan.Zero;
     public string GapDisplay => Gap == TimeSpan.Zero ? "" : "-" + Gap.ToString("m\\:ss\\.ff");
     public string UploadTimeDisplay => this.Data.UploadTime == new DateTime(1,1,1) ? "" : this.Data.UploadTime.ToString("yyyy/MM/dd");
@@ -44,7 +44,7 @@ public class TimeEntryListItem
         {
             if (_gp == -1)
             {
-                _gp = list.GeneralPoints.TryGetValue(Data.Id, out int gp) ? gp : 0;
+                _gp = _list.GeneralPoints.TryGetValue(Data.Id, out int gp) ? gp : 0;
             }
             return _gp;
         }
@@ -60,7 +60,7 @@ public class TimeEntryListItem
         {
             if (_cp == -1)
             {
-                _cp = list.CarPoints.TryGetValue(Data.Id, out int cp) ? cp : 0;
+                _cp = _list.CarPoints.TryGetValue(Data.Id, out int cp) ? cp : 0;
             }
             return _cp;
         }

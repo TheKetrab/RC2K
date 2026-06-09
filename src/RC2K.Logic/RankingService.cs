@@ -76,7 +76,6 @@ public class RankingService : IRankingService
 
 
         var stages = await _stageService.GetAll();
-        List<TimeEntry> totalTimeEntries = [];
 
         foreach (var stage in stages)
         {

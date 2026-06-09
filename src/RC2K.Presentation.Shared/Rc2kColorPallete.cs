@@ -3,7 +3,7 @@ using MudBlazor;
 
 namespace RC2K.Presentation.Shared;
 
-public class Rc2kColorPallete
+public static class Rc2kColorPalette
 {
     public const string primary50 = "#e8eaf7";
     public const string primary100 = "#c5c9ea";
@@ -41,17 +41,17 @@ public class Rc2kColorPallete
     public const string primary = primary700;
     public const string complementary = complementary800;
 
-    public static MudTheme MyCustomTheme = new MudTheme()
+    public static readonly MudTheme MyCustomTheme = new()
     {
         PaletteLight = new PaletteLight()
         {
-            Primary = Rc2kColorPallete.primary700,
-            Secondary = Rc2kColorPallete.complementary800,
+            Primary = primary700,
+            Secondary = complementary800,
         },
         PaletteDark = new PaletteDark()
         {
-            Primary = Rc2kColorPallete.primary200,
-            Secondary = Rc2kColorPallete.complementary100
+            Primary = primary200,
+            Secondary = complementary100
         },
     };
 }

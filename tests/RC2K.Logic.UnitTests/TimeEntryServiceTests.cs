@@ -253,13 +253,16 @@ public class TimeEntryServiceTests
         await _sut.Verify(timeEntries, verifierId, comment);
 
         //Assert
-        _verifyInfoRepositoryMock.Verify(x => x.Create(It.Is<VerifyInfo>(v => 
+        using (Assert.EnterMultipleScope())
+        {
+            _verifyInfoRepositoryMock.Verify(x => x.Create(It.Is<VerifyInfo>(v =>
             v.VerifierId == verifierId && v.Comment == comment)), Times.Once());
-        _timeEntryRepositoryMock.Verify(x => x.Update(te1), Times.Once());
-        _timeEntryRepositoryMock.Verify(x => x.Update(te2), Times.Once());
-        Assert.That(te1.VerifyInfoId, Is.Not.Null);
-        Assert.That(te2.VerifyInfoId, Is.Not.Null);
-        Assert.That(te1.VerifyInfoId, Is.EqualTo(te2.VerifyInfoId));
+            _timeEntryRepositoryMock.Verify(x => x.Update(te1), Times.Once());
+            _timeEntryRepositoryMock.Verify(x => x.Update(te2), Times.Once());
+            Assert.That(te1.VerifyInfoId, Is.Not.Null);
+            Assert.That(te2.VerifyInfoId, Is.Not.Null);
+            Assert.That(te1.VerifyInfoId, Is.EqualTo(te2.VerifyInfoId));
+        }
     }
 
     [Test]

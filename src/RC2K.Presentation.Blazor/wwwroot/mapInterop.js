@@ -44,7 +44,7 @@ window.mapInterop = {
                 for (let i = 0; i < parts.length; i++) {
 
                     if (i % 2 == 0) { // waypoints
-                        var coords = await this.getRoute(parts[i], api);
+                        const coords = await this.getRoute(parts[i], api);
                         if (i != 0) {
                             result += ";";
                         }
@@ -99,7 +99,7 @@ window.mapInterop = {
         }).addTo(map);
 
         // Markers
-        for (var se of startsEnds) {
+        for (const se of startsEnds) {
             L.marker(se[0], { icon: this.startMarkerMini }).addTo(map)
             L.marker(se[1], { icon: this.endMarkerMini }).addTo(map)
         }
@@ -107,7 +107,7 @@ window.mapInterop = {
         // Path
         const polylines = [];
         for (const path of paths) {
-            routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
+            const routeCoordinates = path.split(';').map(x => x.split(',').map(y => Number.parseFloat(y)));
             const latLngs = routeCoordinates.map(coord => L.latLng(coord[1], coord[0]));
             const polyline = L.polyline(latLngs, { color: 'blue', weight: 5 });
             polyline.addTo(map);

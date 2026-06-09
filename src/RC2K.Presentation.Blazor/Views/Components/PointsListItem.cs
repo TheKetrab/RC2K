@@ -4,8 +4,9 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public class PointsListItem
 {
-    private PointsList list;
-    public PointsListItem(PointsList list,
+    private readonly PointsList _list;
+    public PointsListItem(
+        PointsList list,
         Driver driver,
         int place,
         int totalPoints,
@@ -25,7 +26,7 @@ public class PointsListItem
         CarA6Points = carA6Points;
         CarA5Points = carA5Points;
         CarBonusPoints = carBonusPoints;
-        this.list = list;
+        _list = list;
     }
 
     public int Place { get; set; }
@@ -34,8 +35,8 @@ public class PointsListItem
 
     public Driver Driver { get; set; }
 
-    public int? Gap => list.Best is not null
-        ? this.TotalPoints - list.Best
+    public int? Gap => _list.Best is not null
+        ? this.TotalPoints - _list.Best
         : 0;
 
     public string DisplayName => Driver!.Known ? Driver.User!.Name! : Driver.Name!;
@@ -46,7 +47,5 @@ public class PointsListItem
     public int CarA6Points { get; set; }
     public int CarA5Points { get; set; }
     public int CarBonusPoints { get; set; }
-
 }
-
 

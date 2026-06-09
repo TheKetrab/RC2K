@@ -5,7 +5,7 @@ namespace RC2K.DataAccess.Interfaces.Repositories;
 public interface IUserRepository
 {
     Task<List<User>> GetAll();
-    Task<User?> GetById(Guid id, CancellationToken ct);
+    Task<User?> GetById(Guid id, CancellationToken ct = default);
     Task<User?> GetByName(string name);
     Task Create(User user);
 }

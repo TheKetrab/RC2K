@@ -9,7 +9,7 @@ namespace RC2K.Presentation.Blazor.Views.Components;
 
 public partial class UploadTime
 {
-    private record ProofItem(ProofType Type, string Url);
+    private sealed record ProofItem(ProofType Type, string Url);
 
     private ErrorBoundary? _errorBoundaryRef;
     private CarSelector _carSelectorRef = default!;
@@ -26,7 +26,7 @@ public partial class UploadTime
     }
 
     private List<ProofItem> _proofItems = new() { new(ProofType.Unknown, "") };
-    private List<Proof> Proofs =>
+    private List<Proof> GetProofs() =>
       _proofItems.Where(x => !string.IsNullOrEmpty(x.Url))
                  .Select(x => new Proof() { Type = x.Type, Url = x.Url })
                  .ToList();
@@ -120,7 +120,7 @@ public partial class UploadTime
         {
             errors.Add("You need to put your name.");
         }
-        if (Proofs.Count == 0)
+        if (GetProofs().Count == 0)
         {
             errors.Add("You need to add proofs! Screen with stage, car and time is required. " +
                 "Otherwise your time will be rejected by verifiers. Upload your screen to Google Driver " +
@@ -152,6 +152,7 @@ public partial class UploadTime
             $"Driver instance has been created, your pass-code is: {newDriver.Key}. " +
             "Save it for latter! Otherwise you'll lose access to upload times with this nickname.");
 
+        var proofs = GetProofs();
         var uploadResult = await TimeEntryService.Upload(
             StageId,
             UploadTimeModel.Car!.Id,
@@ -159,7 +160,7 @@ public partial class UploadTime
             UploadTimeModel.Min,
             UploadTimeModel.Sec,
             UploadTimeModel.Cc,
-            Proofs,
+            proofs,
             UploadTimeModel.Label,
             newDriver.Key!
             );
@@ -183,6 +184,7 @@ public partial class UploadTime
             return;
         }
 
+        var proofs = GetProofs();
         var uploadResult = await TimeEntryService.Upload(
             StageId,
             UploadTimeModel.Car!.Id,
@@ -190,7 +192,7 @@ public partial class UploadTime
             UploadTimeModel.Min,
             UploadTimeModel.Sec,
             UploadTimeModel.Cc,
-            Proofs,
+            proofs,
             UploadTimeModel.Label,
             driverCode
         );
@@ -208,6 +210,7 @@ public partial class UploadTime
 
     private async Task HandleUserUploadTime(Guid driverId)
     {
+        var proofs = GetProofs();
         var uploadResult = await TimeEntryService.Upload(
             StageId,
             UploadTimeModel.Car!.Id,
@@ -215,7 +218,7 @@ public partial class UploadTime
             UploadTimeModel.Min,
             UploadTimeModel.Sec,
             UploadTimeModel.Cc,
-            Proofs,
+            proofs,
             UploadTimeModel.Label
         );
 

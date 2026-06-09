@@ -6,5 +6,5 @@ public interface IVerifyInfoRepository
 {
     Task Create(VerifyInfo entity);
     Task<List<VerifyInfo>> GetAll();
-    Task<VerifyInfo?> GetById(Guid id, CancellationToken ct);
+    Task<VerifyInfo?> GetById(Guid id, CancellationToken ct = default);
 }

@@ -8,6 +8,6 @@ public interface IDriverRepository
     Task<List<Driver>> GetAll();
     Task<Driver?> GetByName(string name);
     Task<bool> Exist(string name);
-    Task<Driver?> GetById(Guid id, CancellationToken ct);
+    Task<Driver?> GetById(Guid id, CancellationToken ct = default);
     Task Create(Driver driver);
 }

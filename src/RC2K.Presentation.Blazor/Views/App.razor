@@ -119,7 +119,7 @@
     [CascadingParameter]
     public HttpContext HttpContext { get; set; } = default!;
 
-    private IComponentRenderMode? GetRenderMode(HttpContext context)
+    private static IComponentRenderMode? GetRenderMode(HttpContext context)
     {
         var path = context.Request.Path.Value ?? "";
 

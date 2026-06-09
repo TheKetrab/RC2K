@@ -9,8 +9,8 @@ public class PasswordProvider : IPasswordProvider
     private const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private const int PasswordLength = 16;
 
-    private int _iterations;
-    private byte[] _salt;
+    private readonly int _iterations;
+    private readonly byte[] _salt;
 
     public PasswordProvider(int iterations, string salt)
     {

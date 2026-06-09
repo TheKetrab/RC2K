@@ -161,7 +161,6 @@ a, .btn-link {
 }
 
 .content {
-    padding-top: 1.1rem;
     margin-top: 50px;
     padding: 10px;
     padding-top: 30px;
@@ -209,13 +208,6 @@ h1:focus {
 #points-list-table .mud-table-cell {
     padding: 0 3px;
 }
-
-/*::deep .mud-chip.mud-chip-size-xs {
-    border-radius: 12px;
-    font-size: 10px;
-    height: 16px;
-    padding: 0 8px;
-}*/
 
 #points-list-table .gp {
     color: var(--mud-palette-primary) !important;

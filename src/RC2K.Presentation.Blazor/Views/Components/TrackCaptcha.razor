@@ -6,14 +6,6 @@
 <!-- The goal of this component is to render reCAPTCHA badge only on pages where CAPTCHA mechanism is required -->
 @code {
 
-    private string _recaptchaSiteKey;
-
-    public TrackCaptcha(IConfiguration configuration)
-    {
-        _recaptchaSiteKey = configuration["Captcha:SiteKey"] 
-            ?? throw new MissingConfigurationKeyException("Captcha:SiteKey");
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

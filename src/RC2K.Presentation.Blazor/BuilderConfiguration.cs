@@ -148,7 +148,7 @@ public static class BuilderConfiguration
             {
                 "Development" => typeof(DevEnvironmentProvider),
                 "Production" => typeof(ProdEnvironmentProvider),
-                _ => throw new Exception(
+                _ => throw new ArgumentException(
                     $"Unknown environment: {builder.Configuration["ASPNETCORE_ENVIRONMENT"]}"
                     + " (Set up proper env var ASPNETCORE_ENVIRONMENT")
             });

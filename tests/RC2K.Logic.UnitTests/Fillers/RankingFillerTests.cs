@@ -57,12 +57,15 @@ public class RankingFillerTests
         await _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct);
 
         //Assert
-        Assert.That(entry1.Driver, Is.EqualTo(driver1));
-        Assert.That(entry2.Driver, Is.EqualTo(driver2));
-        _driverRepositoryMock.Verify(x => x.GetById(driver1.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
-        _driverRepositoryMock.Verify(x => x.GetById(driver2.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
-        driverFillerMock.Verify(x => x.FillRecursive(driver1, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
-        driverFillerMock.Verify(x => x.FillRecursive(driver2, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(entry1.Driver, Is.EqualTo(driver1));
+            Assert.That(entry2.Driver, Is.EqualTo(driver2));
+            _driverRepositoryMock.Verify(x => x.GetById(driver1.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
+            _driverRepositoryMock.Verify(x => x.GetById(driver2.Id, It.IsAny<CancellationToken>()), Times.Exactly(2));
+            driverFillerMock.Verify(x => x.FillRecursive(driver1, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
+            driverFillerMock.Verify(x => x.FillRecursive(driver2, context, _fillersBagMock.Object, It.IsAny<CancellationToken>()), Times.Once());
+        }
     }
 
     [Test]

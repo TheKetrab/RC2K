@@ -123,12 +123,9 @@
     private string _rowClassFunc(RankingListItem item, int index)
     {
         string? name = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-        if (name is not null)
+        if (name is not null && item.DisplayName == name)
         {
-            if (item.DisplayName == name)
-            {
-                return "ranking-list-table-user-row";
-            }
+            return "ranking-list-table-user-row";
         }
 
         if (index % 2 != 0)

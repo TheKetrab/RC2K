@@ -74,7 +74,7 @@ public class PointsProvider : IPointsProvider
         foreach (var carGroup in timeEntries.GroupBy(x => x.CarId))
         {
             var timeEntriesPerCar = carGroup.ToList();
-            Car car = timeEntriesPerCar.First().Car!;
+            Car car = timeEntriesPerCar[0].Car!;
 
             var bestOfDriverByTime =
                 timeEntriesPerCar.GroupBy(x => x.DriverId)
@@ -185,7 +185,7 @@ public class PointsProvider : IPointsProvider
         return res;
     }
 
-    private List<(TimeEntry timeEntry, int rank)> CalculateRanked(List<IGrouping<TimeOnly, TimeEntry>> standingsByTime)
+    private static List<(TimeEntry timeEntry, int rank)> CalculateRanked(List<IGrouping<TimeOnly, TimeEntry>> standingsByTime)
     {
         List<(TimeEntry timeEntry, int rank)> ranked = [];        
 

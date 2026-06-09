@@ -10,11 +10,11 @@ namespace RC2K.Presentation.Blazor.AuthProxy
 {
     public class AuthTimeEntryServiceProxy : ITimeEntryService
     {
-        private AuthenticationStateProvider _asp;
-        private TimeEntryService _service;
-        private IDriverRepository _driverRepository;
-        private IUserRepository _userRepository;
-        private IFillersBag _fillers;
+        private readonly AuthenticationStateProvider _asp;
+        private readonly TimeEntryService _service;
+        private readonly IDriverRepository _driverRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IFillersBag _fillers;
 
         public AuthTimeEntryServiceProxy(
             AuthenticationStateProvider asp,
@@ -101,11 +101,11 @@ namespace RC2K.Presentation.Blazor.AuthProxy
         public async Task<Result> Upload(int stageId, int carId, Guid driverId, int min, int sec, int cc, List<Proof> proofs, string? labels, string driverKey)
         {
             Driver driver = await _driverRepository.GetById(driverId, CancellationToken.None)
-                ?? throw new ArgumentException();
+                ?? throw new ArgumentException(nameof(driverId));
 
             if (driver.Known)
             {
-                throw new Exception("For registered users use method without driver key");
+                throw new ArgumentException("For registered users use method without driver key");
             }
 
             if (driver.Key != driverKey)

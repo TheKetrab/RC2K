@@ -50,7 +50,7 @@ public sealed class IdleCircuitHandler : CircuitHandler, IDisposable
         }
     }
 
-    public override Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken _)
+    public override Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
     {
         _currentCircuit = circuit;
         return Task.CompletedTask;

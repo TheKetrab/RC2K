@@ -7,7 +7,7 @@ namespace RC2K.Logic;
 
 public class UserService : IUserService
 {
-    internal static Dictionary<string, string> _emailConfirmationKeys = [];
+    internal static readonly Dictionary<string, string> _emailConfirmationKeys = [];
 
     private readonly IUserRepository _userRepository;
     private readonly IDriverRepository _driverRepository;

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RC2K.Presentation.Blazor;
 
-public class ReCaptchaV3Verifier : ICaptchaVerifier, IDisposable
+public sealed class ReCaptchaV3Verifier : ICaptchaVerifier, IDisposable
 {
     private readonly string _captchaSecret;
     private readonly HttpClient _httpClient;
@@ -36,7 +36,7 @@ public class ReCaptchaV3Verifier : ICaptchaVerifier, IDisposable
             return UNKNOWN;
         }
 
-        _logger.LogInformation($"reCAPTCHA verification returned Score={result.Score}");
+        _logger.LogInformation("reCAPTCHA verification returned Score={Score}", result.Score);
 
         return result.Score switch
         {
@@ -66,7 +66,7 @@ public class ReCaptchaV3Verifier : ICaptchaVerifier, IDisposable
         }
     }
 
-    private class GooglereCAPTCHAv3Response
+    private sealed class GooglereCAPTCHAv3Response
     {
         [JsonPropertyName("success")]
         public bool Success { get; set; }
