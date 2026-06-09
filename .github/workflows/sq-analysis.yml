@@ -56,7 +56,7 @@ jobs:
         shell: powershell
         run: |
           # Start building the base scanner command
-          $sonarCmd = "${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:""TheKetrab_RC2K"" /o:""theketrab"" /d:sonar.token=""$env:SONAR_TOKEN"" /d:sonar.exclusions=""**/Migrations/*.cs"" /d:sonar.cs.opencover.reportsPaths=""**/coverage.opencover.xml"""
+          $sonarCmd = "${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:""TheKetrab_RC2K"" /o:""theketrab"" /d:sonar.token=""$env:SONAR_TOKEN"" /d:sonar.exclusions=""**/Migrations/*.cs"" /d:sonar.cs.opencover.reportsPaths=""${{ runner.temp }}\coverage\*.opencover.xml"""
 
           # Dynamically append PR parameters using secure environment variables
           if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
@@ -71,8 +71,13 @@ jobs:
           # Build the solution
           dotnet build "src/RC2K.sln"
           
-          # Run tests and collect coverage
-          dotnet test "src/RC2K.sln" --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="TestResults/coverage.opencover.xml" /p:Exclude="[RC2K.DomainModel]*,[RC2K.Extensions]*,[RC2K.Parser]*,[RC2K.Presentation]*"
+          # Prepare coverage folder and run tests per test project, writing unique files to runner temp
+          New-Item -ItemType Directory -Force -Path "${{ runner.temp }}\coverage" | Out-Null
+          Get-ChildItem -Path tests -Recurse -Filter *.csproj | Where-Object { $_.FullName -like '*UnitTests*' } | ForEach-Object {
+              $proj = $_.FullName
+              $name = $_.BaseName
+              dotnet test $proj --no-build -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput="${{ runner.temp }}\coverage\$($name).opencover.xml" /p:Exclude="[RC2K.DomainModel]*,[RC2K.Extensions]*,[RC2K.Parser]*,[RC2K.Presentation]*"
+          }
           
           # End Sonar analysis
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
