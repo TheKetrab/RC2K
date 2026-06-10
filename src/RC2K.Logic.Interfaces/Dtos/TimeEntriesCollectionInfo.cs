@@ -1,7 +1,9 @@
 ﻿using RC2K.DomainModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RC2K.Logic.Interfaces.Dtos;
 
+[ExcludeFromCodeCoverage]
 public record TimeEntriesCollectionInfo(
     List<TimeEntry> OrderedTimeEntries, 
     TimeEntry? Best,
