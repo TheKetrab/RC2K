@@ -58,7 +58,7 @@ jobs:
           dotnet tool install --global dotnet-coverage
 
           # 1. Define the report path clearly so both tools agree on it
-          $coveragePath = "${{ runner.temp }}\coverage\output.covertable"
+          $coveragePath = "${{ runner.temp }}\coverage\output.xml"
 
           # 2. Build the arguments array (much safer than a single string)
           $sonarArgs = @(
@@ -67,7 +67,7 @@ jobs:
             "/o:`"theketrab`"",
             "/d:sonar.token=`"$env:SONAR_TOKEN`"",
             "/d:sonar.exclusions=`"**/Migrations/*.cs`"",
-            "/d:sonar.cs.dotnetcoverage.reportPaths=`"$coveragePath`""
+            "/d:sonar.cs.vscoveragexml.reportsPaths=`"$coveragePath`""
           )
 
           # 3. Dynamically add PR arguments if applicable
@@ -81,10 +81,10 @@ jobs:
           & "${{ runner.temp }}\scanner\dotnet-sonarscanner" $sonarArgs
 
           # 5. Build the solution
-          dotnet build "src/RC2K.sln"
+          dotnet build "src/RC2K.sln" --no-incremental
         
           # 6. Collect code coverage (matching the exact path and OpenCover format)
-          dotnet-coverage collect "dotnet test src/RC2K.sln" -o $coveragePath
+          dotnet-coverage collect "dotnet test src/RC2K.sln" -f xml -o $coveragePath
         
           # 7. End Sonar analysis
           & "${{ runner.temp }}\scanner\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
