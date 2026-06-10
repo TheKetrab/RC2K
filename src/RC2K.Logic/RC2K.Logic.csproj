@@ -6,6 +6,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>RC2K.Logic.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+ 
+  <ItemGroup>
     <ProjectReference Include="..\RC2K.DataAccess.Interfaces\RC2K.DataAccess.Interfaces.csproj" />
     <ProjectReference Include="..\RC2K.DomainModel\RC2K.DomainModel.csproj" />
     <ProjectReference Include="..\RC2K.Extensions\RC2K.Utils.csproj" />
