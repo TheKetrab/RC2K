@@ -1,7 +1,9 @@
 ﻿using RC2K.Logic.Interfaces.Fillers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RC2K.Logic.Fillers;
 
+[ExcludeFromCodeCoverage]
 public sealed class FillersBag(
     IBonusPointsFiller bonusPointsFiller,
     IDriverFiller driverFiller,
