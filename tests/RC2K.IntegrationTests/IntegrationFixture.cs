@@ -37,6 +37,7 @@ public class IntegrationFixture
         catch (Exception ex)
         {
             Trace.WriteLine($"Integration tests OneTimeSetUp failure: {ex.Message} ; Stack: {ex.StackTrace}");
+            throw;
         }
     }
 
