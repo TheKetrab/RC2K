@@ -4,6 +4,7 @@ using RC2K.DataAccess.Database;
 using RC2K.DataAccess.Dynamic;
 using RC2K.DataAccess.Dynamic.EnvironmentProviders;
 using RC2K.Logic;
+using System.Diagnostics;
 
 namespace RC2K.IntegrationTests;
 
@@ -23,6 +24,7 @@ public class IntegrationFixture
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddUserSecrets<IntegrationFixture>()
+                .AddEnvironmentVariables()
                 .Build();
 
             IServiceCollection services = new ServiceCollection()
@@ -34,10 +36,8 @@ public class IntegrationFixture
         }
         catch (Exception ex)
         {
-            
+            Trace.WriteLine($"Integration tests OneTimeSetUp failure: {ex.Message} ; Stack: {ex.StackTrace}");
         }
-
-        
     }
 
     [OneTimeTearDown]

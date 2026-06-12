@@ -2,7 +2,6 @@
 
 public class TimeEntry
 {
-
     public required Guid Id { get; init; }
     public required int StageId { get; init; }
     public required int CarId { get; init; }
@@ -12,7 +11,6 @@ public class TimeEntry
     public Guid? VerifyInfoId { get; set; }
     public string? Labels { get; set; }
     public List<Proof> Proofs { get; set; } = [];
-
 
     public Stage? Stage { get; set; }
     public Car? Car { get; set; }
