@@ -53,6 +53,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_REF: ${{ github.head_ref }}
           BASE_REF: ${{ github.base_ref }}
+          Cosmos__ApiKey: ${{ secrets.COSMOS_API_KEY }}
         shell: powershell
         run: |
           dotnet tool install --global dotnet-coverage
