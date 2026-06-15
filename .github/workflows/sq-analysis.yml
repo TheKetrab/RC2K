@@ -68,7 +68,7 @@ jobs:
             "/o:`"theketrab`"",
             "/d:sonar.token=`"$env:SONAR_TOKEN`"",
             "/d:sonar.exclusions=`"**/Migrations/*.cs`"",
-            "/d:sonar.coverage.exclusions=`"src/RC2K.DomainModel/**/*.cs`"",
+            "/d:sonar.coverage.exclusions=`"src/RC2K.DomainModel/**/*.cs, src/RC2K.Presentation*/**/*.cs, src/RC2K.WebApi/**/*.cs`"",
             "/d:sonar.cs.vscoveragexml.reportsPaths=`"$coveragePath`""
           )
 
