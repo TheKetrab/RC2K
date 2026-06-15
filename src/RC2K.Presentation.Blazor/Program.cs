@@ -2,12 +2,7 @@ using RC2K.Presentation.Blazor;
 
 var builder = WebApplication.CreateBuilder(args)
     .ConfigureRazor()
-    .ConfigureAuthentication()
-    .ConfigureDatabase()
-    .RegisterServices()
-    .ConfigureLogging()
-    .AddAuthorization();
-builder.Services.AddHealthChecks();
+    .RegisterServices();
 
 var app = builder.Build()
     .ConfigureExceptionHandler()

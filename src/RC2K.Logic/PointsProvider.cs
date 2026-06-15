@@ -51,22 +51,22 @@ public class PointsProvider : IPointsProvider
         arr.Select((x, i) => new { Val = x, Index = i }).ToDictionary(x => x.Val, x => x.Index);
 
     public int GetPlaceFromGeneralPoints(int generalPoints) =>
-        _generalPointsReverseMap.TryGetValue(generalPoints, out int place) ? place : -1;
+        _generalPointsReverseMap.TryGetValue(generalPoints, out int place) ? place + 1 : -1;
 
     public int GetPlaceFromA8CarPoints(int a8carPoints) =>
-        _a8carPointsReverseMap.TryGetValue(a8carPoints, out int place) ? place : -1;
+        _a8carPointsReverseMap.TryGetValue(a8carPoints, out int place) ? place + 1 : -1;
 
     public int GetPlaceFromA7CarPoints(int a7carPoints) =>
-        _a7carPointsReverseMap.TryGetValue(a7carPoints, out int place) ? place : -1;
+        _a7carPointsReverseMap.TryGetValue(a7carPoints, out int place) ? place + 1 : -1;
 
     public int GetPlaceFromA6CarPoints(int a6carPoints) =>
-        _a6carPointsReverseMap.TryGetValue(a6carPoints, out int place) ? place : -1;
+        _a6carPointsReverseMap.TryGetValue(a6carPoints, out int place) ? place + 1 : -1;
 
     public int GetPlaceFromA5CarPoints(int a5carPoints) =>
-        _a5carPointsReverseMap.TryGetValue(a5carPoints, out int place) ? place : -1;
+        _a5carPointsReverseMap.TryGetValue(a5carPoints, out int place) ? place + 1 : -1;
 
     public int GetPlaceFromBonusCarPoints(int bonusCarPoints) =>
-        _bonusCarPointsReverseMap.TryGetValue(bonusCarPoints, out int place) ? place : -1;
+        _bonusCarPointsReverseMap.TryGetValue(bonusCarPoints, out int place) ? place + 1 : -1;
 
     public Dictionary<Guid, int> CalculateCarStagePoints(List<TimeEntry> timeEntries)
     {

@@ -33,9 +33,18 @@ public abstract class CosmosRepository<TEntity, TModel, TMapper>
     public virtual async Task<TEntity?> GetById(Guid id, CancellationToken ct = default)
     {
         string key = id.ToString();
-        var response = await Container.ReadItemAsync<TModel>(
-            key, new PartitionKey(EntityName), cancellationToken: ct);
-        
+        ItemResponse<TModel> response;
+        try
+        {
+            response = await Container.ReadItemAsync<TModel>(
+                key, new PartitionKey(EntityName), cancellationToken: ct);
+
+        }
+        catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
         var model = response.Resource;
 
         return Mapper.ToDomainModel(model);

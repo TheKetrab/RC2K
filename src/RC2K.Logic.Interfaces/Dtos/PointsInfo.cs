@@ -1,6 +1,9 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 namespace RC2K.Logic.Interfaces.Dtos;
 
+[ExcludeFromCodeCoverage]
 public record PointsInfo(
     int? Best,
     Dictionary<Guid, int> TotalPoints,

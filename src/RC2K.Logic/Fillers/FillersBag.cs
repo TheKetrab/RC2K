@@ -1,29 +1,22 @@
 ﻿using RC2K.Logic.Interfaces.Fillers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RC2K.Logic.Fillers;
 
-public class FillersBag : IFillersBag
+[ExcludeFromCodeCoverage]
+public sealed class FillersBag(
+    IBonusPointsFiller bonusPointsFiller,
+    IDriverFiller driverFiller,
+    IRankingFiller rankingFiller,
+    ITimeEntryFiller timeEntryFiller,
+    IUserFiller userFiller,
+    IVerifyInfoFiller verifyInfoFiller)
+    : IFillersBag
 {
-    public IBonusPointsFiller BonusPointsFiller { get; set; }
-    public IDriverFiller DriverFiller { get; }
-    public ITimeEntryFiller TimeEntryFiller { get; }
-    public IRankingFiller RankingFiller { get; }
-    public IUserFiller UserFiller { get; }
-    public IVerifyInfoFiller VerifyInfoFiller { get; }
-
-    public FillersBag(IBonusPointsFiller bonusPointsFiller,
-                      IDriverFiller driverFiller,
-                      IRankingFiller rankingFiller,
-                      ITimeEntryFiller timeEntryFiller,
-                      IUserFiller userFiller,
-                      IVerifyInfoFiller verifyInfoFiller)
-    {
-        BonusPointsFiller = bonusPointsFiller;
-        DriverFiller = driverFiller;
-        RankingFiller = rankingFiller;
-        TimeEntryFiller = timeEntryFiller;
-        UserFiller = userFiller;
-        VerifyInfoFiller = verifyInfoFiller;
-    }
-
+    public IBonusPointsFiller BonusPointsFiller { get; } = bonusPointsFiller;
+    public IDriverFiller DriverFiller { get; } = driverFiller;
+    public IRankingFiller RankingFiller { get; } = rankingFiller;
+    public ITimeEntryFiller TimeEntryFiller { get; } = timeEntryFiller;
+    public IUserFiller UserFiller { get; } = userFiller;
+    public IVerifyInfoFiller VerifyInfoFiller { get; } = verifyInfoFiller;
 }
