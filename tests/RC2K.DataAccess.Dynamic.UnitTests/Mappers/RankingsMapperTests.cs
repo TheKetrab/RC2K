@@ -2,7 +2,7 @@ using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Dynamic.Models;
 using RC2K.DomainModel;
 
-namespace RC2K.DataAccess.Dynamic.UnitTests;
+namespace RC2K.DataAccess.Dynamic.UnitTests.Mappers;
 
 public class RankingsMapperTests
 {

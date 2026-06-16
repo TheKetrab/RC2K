@@ -64,7 +64,7 @@ public static class LevelHelper
     private readonly static FrozenDictionary<int, RallyCode> _codePrefix2RallyCodeMap =
         new Dictionary<int, RallyCode>(_rallyCode2CodePrefixMap.ToDictionary(x => x.Value, x => x.Key)).ToFrozenDictionary();
 
-public static int GetStageCode(int rally, int stage, bool arcade) =>
+    public static int GetStageCode(int rally, int stage, bool arcade) =>
         stage + 10 * (arcade ? _arcadeId2CodePrefixMap[rally] : rally);
 
     public static int GetStageCode(RallyCode rallyCode, int stage) =>

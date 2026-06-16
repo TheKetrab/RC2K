@@ -26,6 +26,8 @@
 		<PackageReference Include="coverlet.msbuild">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
@@ -49,5 +51,11 @@
 	<ItemGroup>
 		<Using Include="NUnit.Framework" />
 	</ItemGroup>
+
+	<Target Name="CopyDatabaseToOutput" AfterTargets="Build">
+		<Copy SourceFiles="..\..\data\RC2K.db"
+			  DestinationFolder="$(TargetDir)"
+			  SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

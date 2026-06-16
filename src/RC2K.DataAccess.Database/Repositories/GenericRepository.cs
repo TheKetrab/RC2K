@@ -77,8 +77,10 @@ public abstract class GenericRepository<TEntity, TCache> : IGenericRepository<TE
         return await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
     }
 
-    public virtual async Task Insert(TEntity entity) => await _dbSet.AddAsync(entity);
-
+    public virtual async Task Insert(TEntity entity)
+    {
+        await _dbSet.AddAsync(entity);
+    }
     public virtual async Task Delete(int id)
     {
         TEntity? entity = await _dbSet.FindAsync(id);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RC2K.DataAccess.Database;
 using RC2K.DataAccess.Dynamic;
@@ -28,7 +29,9 @@ public class IntegrationFixture
                 .Build();
 
             IServiceCollection services = new ServiceCollection()
-                .RegisterPersistentDataAccess(s => { })
+                .RegisterPersistentDataAccess(s => {
+                    s.AddDbContext<RallyDbContext>(opt => opt.UseSqlite("Data Source=./RC2K.db"));
+                })
                 .RegisterDynamicDataAccess(configuration, typeof(DevEnvironmentProvider))
                 .RegisterLogicServices(configuration);
 

@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     {
         addDbContext(services);
 
-        services.AddSingleton<IMemoryCache, MemoryCache>();
+        services.AddMemoryCache();
         services.AddSingleton<ICarCache, CarCache>();
         services.AddSingleton<IStageCache, StageCache>();
 
