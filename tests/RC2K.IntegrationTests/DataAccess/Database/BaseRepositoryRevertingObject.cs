@@ -42,7 +42,7 @@ public abstract class BaseRepositoryRevertingObject
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        if (_context != null)
+        if (_context != null && false /* TODO: fix disposal od RallyDbContext for shared objects, when running multiple tests */)
         {
             await _context.DisposeAsync();
         }
