@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
-using RC2K.DataAccess.Database;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RC2K.DataAccess.Database.Repositories;
 using RC2K.DataAccess.Interfaces;
 using RC2K.DataAccess.Interfaces.Cache;
@@ -10,48 +7,17 @@ using RC2K.DomainModel;
 
 namespace RC2K.IntegrationTests.DataAccess.Database;
 
-public class GenericRepositoryTests
+public class GenericRepositoryTests : BaseRepositoryRevertingObject
 {
-    private GenericRepository<Car, ICarCache> _genericRepository;
-    private IRallyUoW _rallyUoW;
-    private IDbContextTransaction _transaction;
-    private RallyDbContext _context;
+    private GenericRepository<Car, ICarCache> _genericRepository = default!;
+    private IRallyUoW _rallyUoW = default!;
 
-    [OneTimeSetUp]
-    public void OneTimeSetup()
+    protected override void OnOneTimeSetup()
     {
         _genericRepository = (GenericRepository<Car, ICarCache>)
             IntegrationFixture.ServiceProvider.GetRequiredService<ICarRepository>();
 
         _rallyUoW = IntegrationFixture.ServiceProvider.GetRequiredService<IRallyUoW>();
-
-        _context = IntegrationFixture.ServiceProvider.GetRequiredService<RallyDbContext>();
-    }
-
-    [SetUp]
-    public async Task Setup()
-    {
-        _transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadUncommitted);
-    }
-
-    [TearDown]
-    public async Task TearDown()
-    {
-        if (_transaction != null)
-        {
-            await _transaction.RollbackAsync();
-            await _transaction.DisposeAsync();
-        }
-
-    }
-
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_context != null)
-        {
-            await _context.DisposeAsync();
-        }
     }
 
     [Test]

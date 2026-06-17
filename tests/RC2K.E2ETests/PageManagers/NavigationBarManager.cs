@@ -15,4 +15,13 @@ public class NavigationBarManager(ChromeDriver driver)
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         wait.Until(d => d.Url.Contains("/stages"));
     }
+
+    public void NavigateToLogin()
+    {
+        IWebElement loginButton = driver.FindElement(By.XPath("//button[contains(@class, 'mud-button')][normalize-space()='Login']"));
+        loginButton.Click();
+
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        wait.Until(d => d.Url.Contains("/login"));
+    }
 }

@@ -86,7 +86,7 @@ jobs:
           dotnet build "src/RC2K.sln" --no-incremental
         
           # 6. Collect code coverage (matching the exact path and OpenCover format)
-          dotnet-coverage collect "dotnet test src/RC2K.sln" -f xml -o $coveragePath
+          dotnet-coverage collect "dotnet test src/RC2K.sln --filter `"FullyQualifiedName!~RC2K.E2ETests`"" -f xml -o $coveragePath
         
           # 7. End Sonar analysis
           & "${{ runner.temp }}\scanner\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"

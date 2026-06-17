@@ -1,0 +1,44 @@
+name: Run End-to-End Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  e2e-test:
+    name: Build and Run E2E Tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0'
+
+      - name: Restore Dependencies
+        run: dotnet restore src/RC2K.sln
+
+      - name: Compile Code
+        run: dotnet build src/RC2K.sln --configuration Release --no-restore
+
+      - name: Run E2E Tests
+        env:
+          Host: "http://app.rc2khub.com"
+          TestUserPassword: ${{ secrets.TEST_USER_PASSWORD }}
+        run: |
+          dotnet test tests/RC2K.E2ETests/RC2K.E2ETests.csproj --configuration Release --no-build --logger "trx;LogFileName=e2e-results.trx"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: '**/TestResults/e2e-results.trx'
