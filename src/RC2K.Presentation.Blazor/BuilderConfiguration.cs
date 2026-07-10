@@ -117,6 +117,18 @@ public static class BuilderConfiguration
 
             return new AzureBlobStorageManager(connectionString);
         });
+        builder.Services.AddScoped<IAIManager, AIManager>(provider =>
+        {
+            var ocrSection = builder.Configuration.GetSection("OCR");
+            string endpoint = ocrSection["Endpoint"]
+                ?? throw new MissingConfigurationKeyException("OCR:Endpoint");
+            string apiKey = ocrSection["ApiKey"]
+                ?? throw new MissingConfigurationKeyException("OCR:ApiKey");
+
+            var logger = provider.GetRequiredService<ILogger<AIManager>>();
+            return new AIManager(logger, endpoint, apiKey);
+
+        });
 
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {

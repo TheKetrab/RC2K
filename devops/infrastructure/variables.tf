@@ -34,6 +34,18 @@ variable "blobstorage_connectionstring" {
   sensitive   = true
 }
 
+variable "ocr_endpoint" {
+  description = "Azure AI Vision - OCR analysis endpoint"
+  type        = string
+  sensitive   = true
+}
+
+variable "ocr_apikey" {
+  description = "Azure AI Vision - OCR apikey"
+  type        = string
+  sensitive   = true
+}
+
 variable "keda_client_id" {
   description = "Client id of KEDA app querying Application Insights"
   type        = string

@@ -76,6 +76,14 @@ resource "azurerm_container_app" "res-1" {
         value = var.blobstorage_connectionstring
       }
       env {
+        name = "OCR__Endpoint"
+        value = var.ocr_endpoint
+      }
+      env {
+        name = "OCR__ApiKey"
+        value = var.ocr_apikey
+      }
+      env {
         name        = "MY_CLIENT_ID"
         secret_name = "client-id"
       }
