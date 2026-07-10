@@ -10,74 +10,226 @@
 @inject MessageHelper MessageHelper
 @inject DialogHelper DialogHelper
 @inject ICaptchaVerifier CaptchaVerifier
+@inject IStorageManager StorageManager
+@inject IAIManager AIManager
+@inject ILogger<UploadTime> Logger
+@inject IJSRuntime JS
 
+<style>
+
+    .my-file-upload-secondary .mud-icon-root.mud-svg-icon {
+        fill: var(--mud-palette-secondary) !important;
+    }
+
+    .my-file-upload-secondary .mud-typography.mud-typography-body1.mud-primary-text {
+        color: var(--mud-palette-secondary) !important;
+    }
+
+    .my-file-upload-secondary .mud-file-upload-dragarea.mud-file-upload-dragarea-clickable:hover {
+        border-color: var(--mud-palette-secondary);
+    }
+
+    .left-aligned-radio-group .mud-radio-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .time-entry-data-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: repeat(4, auto);
+        grid-column-gap: 2em;
+        grid-row-gap: 1.5em;
+    }
+
+    .lbl-time {
+        grid-area: 1 / 1 / 2 / 2;
+        padding-bottom: 5px;
+        margin-top: auto;
+    }
+
+    .data-time .mud-input-control {
+        flex: 0 0 auto;
+    }
+
+    .data-time {
+        grid-area: 1 / 2 / 2 / 3;
+    }
+
+    .lbl-driver {
+        grid-area: 2 / 1 / 3 / 2;
+        padding-bottom: 5px;
+        margin-top: auto;
+    }
+
+    .data-driver {
+        grid-area: 2 / 2 / 3 / 3;
+    }
+
+    .lbl-car {
+        grid-area: 3 / 1 / 4 / 2;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .data-car {
+        grid-area: 3 / 2 / 4 / 3;
+    }
+
+    .lbl-label {
+        grid-area: 4 / 1 / 5 / 2;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .data-label {
+        grid-area: 4 / 2 / 5 / 3;
+        font-size: .8em;
+    }
+
+    .data-label .mud-radio-group {
+            justify-content: space-between;
+    }
+
+    .data-label .mud-icon-button {
+        padding: 1px;
+    }
+
+
+
+    
+    .proofs .mud-popover.mud-popover-relative-width {
+        width: auto;
+    }
+
+    .proofs .mud-select {
+        flex-grow: 0;
+        width: 200px;
+    }
+
+</style>
 <MyErrorBoundary @ref="_errorBoundaryRef">
     <ChildContent>
         <TrackCaptcha />
-        <div class="d-flex flex-column">
-            <MudPaper Class="pa-4" style="margin: auto;" MaxWidth="50ch">
-                <MudForm Class="gap-5">
-                    <div style="display: flex; gap: 1em;">
-                        <MudTextField T="int"
-                                      Label="min"
-                                      @bind-Value="UploadTimeModel.Min" />
-                        <MudTextField T="int"
-                                      Label="sec"
-                                      @bind-Value="UploadTimeModel.Sec" />
-                        <MudTextField T="int"
-                                      Label="cc"
-                                      @bind-Value="UploadTimeModel.Cc" />
-                    </div>
-                    <MudTextField T="string"
-                                  Label="Driver name"
-                                  @bind-Value="UploadTimeModel.DriverName" />
+        <MudForm Class="gap-5 pa-3">
+            <div style="display: flex; flex-direction: row; gap: 5px;">
+                <MudCard Style="min-width: 500px; flex-grow: 1; flex-basis: 60%">
+                    <MudCardHeader>
+                        <MudText Color="Color.Primary">Time entry data:</MudText>
+                    </MudCardHeader>
+                    <MudCardContent Class="time-entry-data-grid">
+                        <MudText Class="lbl-time">Time:</MudText>
+                        <div class="data-time" style="display: flex; gap: 1.5em; justify-content: flex-start;">
+                            <MudTextField T="int?"
+                                            Style="max-width: 6ch"
+                                            Placeholder="min"
+                                            @bind-Value="UploadTimeModel.Min" />
+                            <MudTextField T="int?"
+                                          Style="max-width: 6ch"
+                                          Placeholder="sec"
+                                            @bind-Value="UploadTimeModel.Sec" />
+                            <MudTextField T="int?"
+                                          Style="max-width: 6ch"
+                                          Placeholder="cc"
+                                            @bind-Value="UploadTimeModel.Cc" />
+                        </div>
+                        <MudText Class="lbl-driver">Driver name:</MudText>
+                        <MudTextField T="string" Class="data-driver"
+                                        @bind-Value="UploadTimeModel.DriverName" />
+                        <MudText Class="lbl-car">Car:</MudText>
+                        <CarSelector @ref="_carSelectorRef" class="data-car" SelectedCar="@UploadTimeModel.Car" ShowLabel="false" />
+                        <MudText Class="lbl-label">Label:</MudText>
+                        <MudRadioGroup Class="data-label" @bind-Value="UploadTimeModel.Label">
+                            <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
+                            <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
+                            <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
+                            <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
+                        </MudRadioGroup>
+                    </MudCardContent>
+                </MudCard>
+                <MudCard Style="min-width: 300px; flex-basis: 40%;">
+                    <MudCardHeader>
+                        <MudText Color="Color.Secondary">Custom media:</MudText>
+                    </MudCardHeader>
+                    <MudCardContent Style="display: flex;
+                                flex-direction: column;">
+                        <MudFileUpload @bind-Files="_files"
+                                        DragAndDrop="true"
+                                        Class="my-file-upload-secondary" />
+                        <MudButton Variant="Variant.Outlined"
+                                   Style="align-self: flex-end; margin-top: auto;"
+                                Size="Size.Small"
+                                Color="Color.Secondary"
+                                OnClick="UploadAndFillProofs">
+                            @if (_isLoading)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <span class="ms-2">Processing...</span>
+                            }
+                            else
+                            {
+                                <span>Add medias & Fill</span>
+                            }</MudButton>
+                    </MudCardContent>
+                </MudCard>
+            </div>
 
-                    <CarSelector @ref="_carSelectorRef" SelectedCar="@UploadTimeModel.Car" />
+            <MudCard MaxWidth="MaxWidth.Large">
+                <MudCardHeader Style="padding-bottom: 0;">Proofs</MudCardHeader>
+                <MudCardContent Class="proofs">
+                @for (int i = 0; i < _proofItems.Count; i++)
+                {
+                    int index = i;
+                    <div class="d-flex gap-4 mb-3" style="justify-content: flex-start;">
+                        <MudSelect T="ProofType" Label="Type"
+                                    Value="_proofItems[index].Type"
+                                    ValueChanged="@((ProofType value) => _proofItems[index].Type = value)"
+                                    Variant="Variant.Outlined"
+                                    Margin="Margin.Dense"
+                                    Style="max-width: 50ch;">
+                            @foreach (ProofType type in Enum.GetValues(typeof(ProofType)))
+                            {
+                                <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudTextField T="string"
+                            Style="flex-grow: 1;"
+                                        Label="@($"Link {index + 1}")"
+                                        Value="_proofItems[index].Url"
+                                        ValueChanged="@(value => OnValueChanged(index, value))"
+                                        Immediate="true"
+                                          TextChanged="OnProofItemTextChanged"
+                                        Variant="Variant.Outlined"
+                                        Margin="Margin.Dense" />
 
-                    <MudRadioGroup @bind-Value="UploadTimeModel.Label">
-                        <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
-                        <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
-                        <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
-                        <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
-                    </MudRadioGroup>
-
-                    <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
-                        <MudText Typo="Typo.h6" Class="mb-4">Proofs</MudText>
-
-                        @for (int i = 0; i < _proofItems.Count; i++)
+                        @if (_proofItems.Count > 1)
                         {
-                            int index = i;
-                            <div class="d-flex align-center gap-4 mb-3">
-                                <MudSelect T="ProofType" Label="Type"
-                                           Variant="Variant.Outlined" Margin="Margin.Dense" Style="width: 150px;">
-                                    @foreach (ProofType type in Enum.GetValues(typeof(ProofType)))
-                                    {
-                                        <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
-                                    }
-                                </MudSelect>
-                                <MudTextField T="string"
-                                              Label="@($"Link {index + 1}")"
-                                              Value="_proofItems[index].Url"
-                                              ValueChanged="@(value => OnValueChanged(index, value))"
-                                              Variant="Variant.Outlined"
-                                              Margin="Margin.Dense" />
-
-                                @if (_proofItems.Count > 1)
-                                {
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   OnClick="@(() => RemoveRow(index))" />
-                                }
-                            </div>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                            Color="Color.Error"
+                                            OnClick="@(() => RemoveRow(index))" />
                         }
-                    </MudContainer>
-
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto"
-                               OnClick="UploadClick">Upload</MudButton>
-                </MudForm>
-            </MudPaper>
-        </div>
+                    </div>
+                }
+                </MudCardContent>
+            </MudCard>
+            <MudButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Class="ml-auto"
+                        OnClick="UploadClick">Upload time entry</MudButton>
+        </MudForm>
     </ChildContent>
 </MyErrorBoundary>
+
+@code
+{
+    private IReadOnlyList<IBrowserFile> _files = [];
+
+    public void OnProofItemTextChanged(object idx)
+    {
+         if (idx is int i && i == _proofItems.Count-1) 
+         {
+             _proofItems.Add(new ProofItem(ProofType.Unknown, "")); 
+         }
+    }
+}

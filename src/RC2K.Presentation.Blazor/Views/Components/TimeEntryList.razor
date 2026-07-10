@@ -217,32 +217,29 @@ else
             <AuthorizeView>
                 <Authorized>
                     <MudDataGridPager T="TimeEntryListItem" PageSizeOptions="[10, 20, 50]" />
+                    <div style="padding: 0 10px;">
+                        <MudStack Row Style="align-items: center;">
+                            <MudCheckBox @bind-Value="filterDriverCheckBox" Style="min-width: 150px">Driver name:</MudCheckBox>
+                            <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
+                        </MudStack>
+                        <MudStack Row Style="align-items: center;">
+                            <MudCheckBox @bind-Value="filterCarCheckBox" Style="min-width: 150px">Car:</MudCheckBox>
+                            <CarSelector @bind-SelectedCar="filterCar" ShowLabel="false" />
+                        </MudStack>
+                        <MudStack Row Style="align-items: center;">
+                            <MudCheckBox @bind-Value="filterLabelsCheckBox" Style="min-width: 150px">Labels:</MudCheckBox>
+                            <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
+                        </MudStack>
+                        <MudStack Row Style="align-items: center;">
+                            <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
+                        </MudStack>
+                    </div>
                 </Authorized>
             </AuthorizeView>
         </PagerContent>
     </MudDataGrid>
 
-    <AuthorizeView>
-        <Authorized>
-            <MudPaper>
-                <MudStack Row Style="align-items: center;">
-                    <MudCheckBox @bind-Value="filterDriverCheckBox">Driver name:</MudCheckBox>
-                    <MudTextField T="string" @bind-Value="filterDriverText" Immediate="true" />
-                </MudStack>
-                <MudStack Row Style="align-items: center;">
-                    <MudCheckBox @bind-Value="filterCarCheckBox">Car:</MudCheckBox>
-                    <CarSelector @bind-SelectedCar="filterCar" />
-                </MudStack>
-                <MudStack Row Style="align-items: center;">
-                    <MudCheckBox @bind-Value="filterLabelsCheckBox">Labels:</MudCheckBox>
-                    <MudTextField T="string" @bind-Text="filterLabelsText" Placeholder="labels separated by coma" />
-                </MudStack>
-                <MudStack Row Style="align-items: center;">
-                    <MudCheckBox @bind-Value="filterMfmiCheckBox">Show only MFMI</MudCheckBox>
-                </MudStack>
-            </MudPaper>
-        </Authorized>
-    </AuthorizeView>
+
     </div>
 }
 

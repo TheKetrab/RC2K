@@ -2,14 +2,20 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using RC2K.DomainModel;
+using RC2K.Parser.Models.Repl;
 using RC2K.Presentation.Blazor.ViewModels;
 using RC2K.Presentation.Blazor.Views.Dialogs;
+
 
 namespace RC2K.Presentation.Blazor.Views.Components;
 
 public partial class UploadTime
 {
-    private sealed record ProofItem(ProofType Type, string Url);
+    private sealed class ProofItem(ProofType type, string url)
+    {
+        public ProofType Type { get; set; } = type;
+        public string Url { get; set; } = url;
+    }
 
     private ErrorBoundary? _errorBoundaryRef;
     private CarSelector _carSelectorRef = default!;
@@ -69,6 +75,92 @@ public partial class UploadTime
 
     private Task<bool> IsRobot() =>
         IsRobotHelper.IsRobot(JSRuntime, CaptchaVerifier, (msg) => MessageHelper.ShowError(msg));
+
+    private bool _isLoading;
+    private async Task UploadAndFillProofs()
+    {
+        _isLoading = true;
+        try
+        {
+            var userName = await UserService.GetCurrentUserName();
+            List<ProofItem> toRemove = _proofItems.Where(x => string.IsNullOrEmpty(x.Url)).ToList();
+            toRemove.ForEach(x => _proofItems.Remove(x));
+
+            if (_files.Count > 5)
+            {
+                throw new Exception("Maximum 5 files to upload");
+            }
+
+            List<(int, int, int, string)> ocrResults = [];
+            foreach (var f in _files)
+            {
+                using var originalStream = f.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024); // max 5MB
+
+                var uploadStream = new MemoryStream();
+                await originalStream.CopyToAsync(uploadStream);
+                uploadStream.Position = 0;
+
+                string fileName = f.Name;
+                ProofType type = ProofType.Unknown;
+
+                var ext = Path.GetExtension(f.Name).ToLower().Trim();
+                bool isStandardImage = ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".bmp";
+
+                if (!isStandardImage && uploadStream.Length >= 4)
+                {
+                    byte[] buffer = new byte[4];
+                    await uploadStream.ReadAsync(buffer, 0, 4);
+                    string magicString = System.Text.Encoding.ASCII.GetString(buffer);
+
+                    if (magicString == "REPL")
+                    {
+                        type = ProofType.Hst;
+                    }
+
+                    uploadStream.Position = 0;
+                }
+
+                var res = await StorageManager.Upload(userName, StageId, fileName, uploadStream);
+
+                if (isStandardImage)
+                {
+                    type = ProofType.Image;
+                    var ocrRes = await AIManager.GetTimeAndDriverFromStageResultImageView(res);
+                    if (ocrRes is not null)
+                    {
+                        ocrResults.Add(ocrRes.Value);
+                    }
+                }
+
+                _proofItems.Add(new ProofItem(type, res));
+
+                await uploadStream.DisposeAsync();
+            }
+            _proofItems.Add(new ProofItem(ProofType.Unknown, "")); // empty one
+
+            // BEST TIME LOGIC
+            if (ocrResults.Any())
+            {
+                var x1 = ocrResults.MinBy(x => x.Item1 * 60 * 100 + x.Item2 * 100 + x.Item3);
+                if (UploadTimeModel.Min is null or 0 && 
+                    UploadTimeModel.Sec is null or 0 &&
+                    UploadTimeModel.Cc is null or 0)
+                {
+                    UploadTimeModel.Min = x1.Item1;
+                    UploadTimeModel.Sec = x1.Item2;
+                    UploadTimeModel.Cc = x1.Item3;
+                }
+            }
+
+            StateHasChanged();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    
 
     private async Task UploadClick()
     {
@@ -152,9 +244,9 @@ public partial class UploadTime
             StageId,
             UploadTimeModel.Car!.Id,
             newDriver.Id,
-            UploadTimeModel.Min,
-            UploadTimeModel.Sec,
-            UploadTimeModel.Cc,
+            UploadTimeModel.Min ?? 0,
+            UploadTimeModel.Sec ?? 0,
+            UploadTimeModel.Cc ?? 0,
             proofs,
             UploadTimeModel.Label,
             newDriver.Key!
@@ -184,9 +276,9 @@ public partial class UploadTime
             StageId,
             UploadTimeModel.Car!.Id,
             driverId,
-            UploadTimeModel.Min,
-            UploadTimeModel.Sec,
-            UploadTimeModel.Cc,
+            UploadTimeModel.Min ?? 0,
+            UploadTimeModel.Sec ?? 0,
+            UploadTimeModel.Cc ?? 0,
             proofs,
             UploadTimeModel.Label,
             driverCode
@@ -210,9 +302,9 @@ public partial class UploadTime
             StageId,
             UploadTimeModel.Car!.Id,
             driverId,
-            UploadTimeModel.Min,
-            UploadTimeModel.Sec,
-            UploadTimeModel.Cc,
+            UploadTimeModel.Min ?? 0,
+            UploadTimeModel.Sec ?? 0,
+            UploadTimeModel.Cc ?? 0,
             proofs,
             UploadTimeModel.Label
         );
