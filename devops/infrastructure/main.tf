@@ -72,6 +72,10 @@ resource "azurerm_container_app" "res-1" {
         value = var.captcha_secret_key
       }
       env {
+        name = "BlobStorage__ConnectionString"
+        value = var.blobstorage_connectionstring
+      }
+      env {
         name        = "MY_CLIENT_ID"
         secret_name = "client-id"
       }

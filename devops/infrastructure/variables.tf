@@ -28,6 +28,12 @@ variable "application_insights_connection_string" {
   sensitive   = true
 }
 
+variable "blobstorage_connectionstring" {
+  description = "Azure Blob Storage connection string"
+  type        = string
+  sensitive   = true
+}
+
 variable "keda_client_id" {
   description = "Client id of KEDA app querying Application Insights"
   type        = string

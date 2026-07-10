@@ -109,6 +109,14 @@ public static class BuilderConfiguration
 
             return new GmailProvider(senderEmail, sftpAppPassword);
         });
+        builder.Services.AddScoped<IStorageManager, AzureBlobStorageManager>(provider =>
+        {
+            var blobStorageSection = builder.Configuration.GetSection("BlobStorage");
+            string connectionString = blobStorageSection["ConnectionString"]
+                ?? throw new MissingConfigurationKeyException("BlobStorage:ConnectionString");
+
+            return new AzureBlobStorageManager(connectionString);
+        });
 
         builder.Services.AddScoped<ICaptchaVerifier, ReCaptchaV3Verifier>(provider =>
         {
