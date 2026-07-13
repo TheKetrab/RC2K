@@ -23,7 +23,17 @@ public partial class Stages
         IsInitiallyExpanded = true
     };
 
-    protected override async Task OnInitializedAsync()
+    private string GetRallyFullName(string name)
+    {
+        if (string.IsNullOrEmpty(Name) || !Enum.TryParse<RallyCode>(Name, true, out var code))
+        {
+            return "";
+        }
+
+        return RC2K.Utils.LevelHelper.RallyCodeToRallyName(code);
+    }
+
+    protected override async Task OnParametersSetAsync()
     {
         if (!string.IsNullOrEmpty(Name) && Enum.TryParse<RallyCode>(Name, true, out var code))
         {

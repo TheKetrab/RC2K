@@ -24,6 +24,8 @@ window.mapInterop = {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+        map.on('zoomend', () => this.setMarkersSize());
+        map.on('layeradd', (e) => this.appendScaleToTransform(e));
 
         // Markers
         L.marker(waypoints[0], { icon: this.startMarker }).addTo(map)
@@ -70,6 +72,8 @@ window.mapInterop = {
         polyline.addTo(map);
         map.fitBounds(polyline.getBounds());
 
+        this.setMarkersSize();
+
         return result; // returns newly calculated path or null it was previously cached
     },
 
@@ -90,13 +94,21 @@ window.mapInterop = {
             lat: waypoints.reduce((acc, x) => acc + x.lat, 0) / waypoints.length,
             lng: waypoints.reduce((acc, x) => acc + x.lng, 0) / waypoints.length
         }
+
+        if (this.mapInstance !== undefined && this.mapInstance !== null) {
+            this.mapInstance.remove();
+        }
+
         const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
+        this.mapInstance = map;
 
         // Set up the OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+        map.on('zoomend', () => this.setMarkersSize());
+        map.on('layeradd', (e) => this.appendScaleToTransform(e) );
 
         // Markers
         for (const se of startsEnds) {
@@ -117,6 +129,48 @@ window.mapInterop = {
         const group = new L.featureGroup(polylines).addTo(map);
         map.fitBounds(group.getBounds());
 
+        this.setMarkersSize();
+    },
+
+    setMarkersSize: function () {
+
+        if (!this.mapInstance) return;
+
+        const currentZoom = this.mapInstance.getZoom();
+        const defaultZoomThreshold = 10;
+        const microZoomThreshold = 7;
+
+        // Grab the actual HTML element of the map
+        const mapContainer = this.mapInstance.getContainer();
+
+        if (currentZoom < microZoomThreshold) {
+            mapContainer.classList.remove("map-zoomed-out");
+            mapContainer.classList.add("map-zoomed-out-max");
+        } else if (currentZoom < defaultZoomThreshold) {
+            mapContainer.classList.remove("map-zoomed-out-max");
+            mapContainer.classList.add("map-zoomed-out");
+        } else {
+            mapContainer.classList.remove("map-zoomed-out-max");
+            mapContainer.classList.remove("map-zoomed-out");
+        }
+    },
+
+    appendScaleToTransform: function (e) {
+
+        if (e.layer instanceof L.Marker) {
+            const marker = e.layer;
+            const originalSetPos = marker._setPos;
+
+            // hook
+            marker._setPos = function (pos) {
+                originalSetPos.call(this, pos);
+                const computedStyle = window.getComputedStyle(this._icon);
+                if (this._icon) {
+                    this._icon.style.transform += ` scale(var(--my-custom-scale))`;
+                    this._icon.style.transformOrigin = 'bottom center';
+                }
+            };
+        }
     },
 
     getRoute:
@@ -157,7 +211,7 @@ window.mapInterop = {
         icon: 'flag',
         markerColor: 'green',
         prefix: 'fa',
-        iconSize: [32,32]
+        iconSize: [35,46]
     }),
 
     endMarker: L.AwesomeMarkers.icon({
@@ -172,7 +226,7 @@ window.mapInterop = {
         markerColor: 'red',
         prefix: 'fa',
         iconColor: 'dark-gray',
-        iconSize: [32,32]
+        iconSize: [35,46]
     }),
 
 };
