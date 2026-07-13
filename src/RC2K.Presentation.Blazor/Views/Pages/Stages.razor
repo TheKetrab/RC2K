@@ -8,7 +8,7 @@
 <style>
     .stage-table .mud-table-cell {
         padding: 2px 8px 2px 8px !important;
-        font-size: .75rem;
+        font-size: .25rem;
     }
 
     .stage-table .mud-table-cell a.mud-typography-body1 {
@@ -18,7 +18,7 @@
 
 </style>
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
-    <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name ?? "All"))</MudText>
+    <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name is not null ? GetRallyFullName(Name) : "All"))</MudText>
 
     <div style="display: flex; gap: 20px; height: calc(100vh - 200px);">
         <!-- Left side: Table -->
@@ -32,12 +32,12 @@
                       Dense="true"
                       GroupBy="@_groupDefinition">
                 <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Length (km)</MudTh>
-                    <MudTh>Terrain (%)</MudTh>
-                    <MudTh>Temp (&deg;C)</MudTh>
-                    <MudTh>Wind (km/h)</MudTh>
-                    <MudTh>Moods</MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column;"><span>Name</span><span>.</span></div></MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column; align-items: center;"><span>Length</span><span>(km)</span></div></MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column; align-items: center;"><span>Terrain</span><span>(%)</span></div></MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column; align-items: center;"><span>Temp</span><span>(&deg;C)</span></div></MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column; align-items: center;"><span>Wind</span><span>(km/h)</span></div></MudTh>
+                    <MudTh><div style="display: flex; flex-direction: column; align-items: center;"><span>Moods</span><span>.</span></div></MudTh>
                 </HeaderContent>
 
                 <GroupHeaderTemplate>
@@ -47,7 +47,7 @@
                 </GroupHeaderTemplate>
 
                 <RowTemplate>
-                    <MudTd DataLabel="Name">
+                    <MudTd style="width: fit-content" DataLabel="Name">
                         @{
                             string routeName = Name ?? RC2K.Utils.LevelHelper.GetRallyCodeByStageCode(context.Code).ToString().ToLower();
                         }
@@ -63,7 +63,7 @@
                         <div class="d-flex flex-wrap gap-1">
                             @foreach (var mood in GetMoods(context.StageData?.StageDetails?.Mood))
                             {
-                                <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
+                                <MudChip Class="mud-chip-size-xs" T="string" Size="Size.Small" Variant="Variant.Filled" Color="@GetMoodColor(mood)">@mood</MudChip>
                             }
                         </div>
                     </MudTd>

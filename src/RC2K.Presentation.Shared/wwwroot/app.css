@@ -252,3 +252,27 @@ h1:focus {
         transform: rotate(-3deg);
     }
 }
+
+
+:root {
+    --my-custom-scale: 1;
+}
+.leaflet-container.map-zoomed-out .awesome-marker {
+    --my-custom-scale: 0.4;
+}
+.leaflet-container.map-zoomed-out-max .awesome-marker {
+    display: none;
+}
+
+.leaflet-container.map-zoomed-out .awesome-marker > i,
+.leaflet-container.map-zoomed-out-max .awesome-marker > i
+{
+    display: none;
+}
+
+.leaflet-container.map-zoomed-out path.leaflet-interactive,
+.leaflet-container.map-zoomed-out-max path.leaflet-interactive
+{
+    stroke-width: 2 !important;
+}
+
