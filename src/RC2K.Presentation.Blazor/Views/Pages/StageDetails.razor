@@ -83,17 +83,17 @@
                                     @($"{_name}{(Direction == DomainModel.Direction.Arcade ? " - Arcade" : "")}")
                                 </h1>
                                 <MudStack Row="true">
-                                    <MudText Typo="Typo.body1"><b>Length:</b></MudText>
+                                    <MudText Typo="Typo.body1" Style="min-width: 8ch;"><b>Length:</b></MudText>
                                     <MudText Typo="Typo.body1">@_stageDetails.Length km</MudText>
                                 </MudStack>
                                 <MudStack Row="true" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.body1"><b>Road:</b></MudText>
+                                    <MudText Typo="Typo.body1" Style="min-width: 8ch;"><b>Road:</b></MudText>
                                     <div style="width: @((int)_stageDetails.Length * 2)%;" class="road-element">
                                         <RoadComponent Pieces="@([_stageDetails.Asphalt, _stageDetails.Dirt, _stageDetails.Gravel, _stageDetails.Snow])" Colors="@(["asphalt", "dirt", "gravel", "snow"])" />
                                     </div>
                                 </MudStack>
                                 <MudStack Row="true">
-                                    <MudText Typo="Typo.body1"><b>Weather:</b></MudText>
+                                    <MudText Typo="Typo.body1" Style="min-width: 8ch;"><b>Weather:</b></MudText>
                                     <MudText Typo="Typo.body1">@_stageDetails.Temp &deg;C, wind: @_stageDetails.Wind km/h</MudText>
                                 </MudStack>
                             </div>

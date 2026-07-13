@@ -11,6 +11,9 @@ docker run --name rc2k-hub -d \
   -e "Captcha__SecretKey=SECRET" \
   -e "ASPNETCORE_ENVIRONMENT=Development" \
   -e "APPLICATIONINSIGHTS_CONNECTION_STRING=SECRET" \
+  -e "BlobStorage__ConnectionString=SECRET" \
+  -e "Ocr__Endpoint=SECRET" \
+  -e "Ocr__ApiKey=SECRET" \
   -p 5005:8080 rc2k-hub-image
 
 # PROD
@@ -25,4 +28,7 @@ docker run --name rc2k-hub-prod -d \
   -e "Cosmos__ApiKey=SECRET" \
   -e "ASPNETCORE_ENVIRONMENT=Production" \
   -e "ApplicationInsights__ConnectionString=SECRET" \
+  -e "BlobStorage__ConnectionString=SECRET" \
+  -e "Ocr__Endpoint=SECRET" \
+  -e "Ocr__ApiKey=SECRET" \
   -p 5005:8080 rc2k-hub-prod-image

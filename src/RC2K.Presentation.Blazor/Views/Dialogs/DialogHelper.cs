@@ -9,7 +9,8 @@ public class DialogHelper(IDialogService dialogService)
     {
         CloseButton = true,
         BackdropClick = true,
-        CloseOnEscapeKey = true
+        CloseOnEscapeKey = true,
+        MaxWidth = MaxWidth.Medium
     };
 
     public async Task<TResult?> ShowDialogAndGetResult<TDialog, TResult>(string header, DialogParameters? parameters = null)
