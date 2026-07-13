@@ -103,8 +103,8 @@ public partial class StageDetails
         {
             { x => x.StageId, this._stageId },
         };
-
-        object? result = await DialogHelper.ShowDialogAndGetResult<UploadTime, object>("Upload time", parameters);
+        string name = $"{_name} - {(Direction == DomainModel.Direction.Arcade ? "Arcade" : "Simulation")}";
+        object? result = await DialogHelper.ShowDialogAndGetResult<UploadTime, object>("Upload time for " + name, parameters);
         if ((result == null ? 0 : (int)result) == 1)
         {
             await this._timeEntryListRef.ReloadTimeEntries();

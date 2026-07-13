@@ -2,18 +2,38 @@
 
 @inject ICarService CarService
 
+<style>
+
+    .my-car-selector .car-big {
+        transform: translateY(-25%) scale(.8) !important;
+    }
+
+    .my-car-selector .mud-input > input.mud-input-root-outlined, .my-car-selector div.mud-input-slot.mud-input-root-outlined {
+        padding-bottom: 10px;
+        padding-top: 10px;
+        padding-left: 0 !important;
+    }
+
+    .my-car-selector .mud-input-slot.mud-input-root.mud-input-root-outlined.mud-input-root-adorned-end.mud-select-input span {
+        transform: translateY(-10px);
+    }
+
+</style>
+
+
 <MudSelect T="Car"
            Value="SelectedCar"
            ValueChanged="HandleSelectedCarChange"
-           Label="Car"
+           Label="@(ShowLabel ? "Car" : null)"
            Variant="Variant.Outlined"
+           Class="@($"{Class} my-car-selector")"
            Dense="true">
     @foreach (var car in _cars.OrderByDescending(x => x.Class == Car.BonusClass ? 0 : x.Class).ThenBy(x => x.Id))
     {
         <MudSelectItem T="Car" Value="@car">
-            <div style="display: flex;">
-                <div class="car-big" data-car-id="@(car.Id - 1)"></div>
-                <span>@($"A{car.Class} - {@car.Name}")</span>
+            <div style="display: flex; align-items: center;">
+                <div style="transform: scale(.9);" class="car-big" data-car-id="@(car.Id - 1)"></div>
+                <span style="">@($"A{car.Class} - {@car.Name}")</span>
             </div>
         </MudSelectItem>
     }
@@ -23,9 +43,15 @@
 
     [Parameter]
     public Car? SelectedCar { get; set; }
-    
+
     [Parameter]
     public EventCallback<Car?> SelectedCarChanged { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public bool ShowLabel { get; set; } = true;
 
     private List<Car> _cars = [];
     public event EventHandler<Car?>? OnSelectedCarChanged;
