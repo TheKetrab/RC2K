@@ -23,7 +23,10 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
 	<PackageReference Include="Microsoft.Extensions.Configuration" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
@@ -31,7 +34,10 @@
 	<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
-    <PackageReference Include="NUnit.Analyzers" />
+    <PackageReference Include="NUnit.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Selenium.WebDriver" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" />

@@ -7,6 +7,7 @@
     <PackageReference Include="Blazor-Analytics" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" />
     <PackageReference Include="MailKit" />
+    <PackageReference Include="Microsoft.ApplicationInsights" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
