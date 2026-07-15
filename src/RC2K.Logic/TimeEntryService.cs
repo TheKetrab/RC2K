@@ -4,6 +4,7 @@ using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Dtos;
 using RC2K.Logic.Interfaces.Fillers;
+using Microsoft.Extensions.Caching.Memory;
 using SerilogTimings;
 
 namespace RC2K.Logic;
@@ -15,6 +16,7 @@ public class TimeEntryService : ITimeEntryService
     private readonly IPointsProvider _pointsProvider;
     private readonly IFillersBag _fillers;
     private readonly ILogger<TimeEntryService> _logger;
+    private readonly TimeEntryCache _cache;
 
     public TimeEntryService(ITimeEntryRepository timeEntryRepository,
                             IVerifyInfoRepository verifyInfoRepository,
@@ -27,6 +29,7 @@ public class TimeEntryService : ITimeEntryService
         _verifyInfoRepository = verifyInfoRepository;
         _pointsProvider = pointsProvider;
         _fillers = fillers;
+        _cache = new();
 
         _timeEntryRepository.RequestUnitsHandler += (s, e) =>
         {
@@ -36,11 +39,19 @@ public class TimeEntryService : ITimeEntryService
 
     public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default)
     {
+        List<TimeEntry>? cacheEntry = _cache.GetTimeEntries(stageId, carId);
+        if (cacheEntry is not null)
+        {
+            return cacheEntry;
+        }
+
         var timeEntries = carId is not null
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value, ct)
             : await _timeEntryRepository.GetByStageId(stageId, ct);
 
         await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers, ct);
+
+        _cache.SetTimeEntries(stageId, carId, timeEntries);
 
         return timeEntries;
     }
@@ -60,6 +71,8 @@ public class TimeEntryService : ITimeEntryService
         {
             try
             {
+                _cache.RemoveTimeEntries(timeEntry.StageId, null);
+                _cache.RemoveTimeEntries(timeEntry.StageId, timeEntry.CarId);
                 await _timeEntryRepository.Delete(timeEntry.Id.ToString());
             }
             catch (Exception ex)
@@ -160,6 +173,8 @@ public class TimeEntryService : ITimeEntryService
             };
         }
 
+        _cache.RemoveTimeEntries(timeEntry.StageId, timeEntry.CarId);
+        _cache.RemoveTimeEntries(timeEntry.StageId, null);
         await _timeEntryRepository.Create(timeEntry);
         return new Result() { Success = true };
     }
@@ -224,12 +239,17 @@ public class TimeEntryService : ITimeEntryService
             carPointsA7ByDriver,
             carPointsA6ByDriver,
             carPointsA5ByDriver,
-            carPointsBonusByDriver            
+            carPointsBonusByDriver
         );
     }
 
     public async Task<TimeEntriesCollectionInfo> CalculateTimeEntriesWithPoints(int stageId, int maximum = -1, CancellationToken ct = default)
     {
+        if (_cache.GetCollectionInfo(stageId, maximum) is TimeEntriesCollectionInfo cacheEntry)
+        {
+            return cacheEntry;
+        }
+
         using (Operation.Time("Fetch TimeEntryList | StageId = {stageId} | Maximum = {maximum}", stageId, maximum))
         {
             List<TimeEntry> timeEntries = await this.Get(stageId, ct: ct);
@@ -257,7 +277,7 @@ public class TimeEntryService : ITimeEntryService
                 placesByClass = placesByClass.Where(x => existingTimeEntries.Contains(x.Key)).ToDictionary();
             }
 
-            return new TimeEntriesCollectionInfo(
+            TimeEntriesCollectionInfo res = new(
                 orderedTimeEntries,
                 best,
                 generalPoints,
@@ -266,9 +286,45 @@ public class TimeEntryService : ITimeEntryService
                 placesByCar,
                 placesByClass,
                 pointsInfo);
+
+            _cache.SetCollectionInfo(stageId, maximum, res);
+            return res;
         }
     }
 
     public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId) =>
         _timeEntryRepository.GetBestTimesForDriver(driverId);
+
+    private class TimeEntryCache
+    {
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(5);
+        private readonly MemoryCache _cache = new(new MemoryCacheOptions {});
+
+        private static string GetTimeEntriesCacheKey(int stageId, int? carId) =>
+            $"time-entries-{stageId}-{carId}";
+
+        private static string GetCollectionInfoCacheKey(int stageId, int maximum) =>
+            $"te-collection-info-{stageId}-max:{maximum}";
+
+        public void SetTimeEntries(int stageId, int? carId, List<TimeEntry> timeEntries) =>
+            _cache.Set(GetTimeEntriesCacheKey(stageId, carId), timeEntries, _cacheExpiration);
+
+        public void SetCollectionInfo(int stageId, int maximum, TimeEntriesCollectionInfo collectionInfo) =>
+            _cache.Set(GetCollectionInfoCacheKey(stageId, maximum), collectionInfo, _cacheExpiration);
+
+        public void RemoveTimeEntries(int stageId, int? carId) =>
+            _cache.Remove(GetTimeEntriesCacheKey(stageId, carId));
+
+        public void RemoveCollectionInfo(int stageId, int maximum) =>
+            _cache.Remove(GetCollectionInfoCacheKey(stageId, maximum));
+
+        public List<TimeEntry>? GetTimeEntries(int stageId, int? carId) =>
+            _cache.TryGetValue(GetTimeEntriesCacheKey(stageId, carId),
+                out List<TimeEntry>? timeEntries) ? timeEntries : null;
+
+        public TimeEntriesCollectionInfo? GetCollectionInfo(int stageId, int maximum) =>
+            _cache.TryGetValue(GetCollectionInfoCacheKey(stageId, maximum),
+                out TimeEntriesCollectionInfo? collectionInfo) ? collectionInfo : null;
+
+    }
 }
