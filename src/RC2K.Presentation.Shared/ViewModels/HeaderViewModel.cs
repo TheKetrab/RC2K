@@ -20,6 +20,7 @@ public class HeaderViewModel : BaseViewModel
         //] },
         new MenuItem() { Item = "Admin", ItemLink = "admin", Icon = Icon.Settings, Subitems = [
             ("Verify info","admin/verification"),
+            ("Discord messages","admin/cron-messages"),
         ] },
         new MenuItem() { Item = "Stages", ItemLink = "stages", Icon = Icon.Stage, Subitems = [
             GetRallySubitem(RallyCode.Vauxhall),

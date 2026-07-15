@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Caching.Memory;
 using RC2K.DataAccess.Dynamic.Mappers;
 using RC2K.DataAccess.Dynamic.Models;
 using RC2K.DataAccess.Interfaces;
@@ -8,7 +7,7 @@ using RC2K.DomainModel;
 
 namespace RC2K.DataAccess.Dynamic.Repositories;
 
-public class CronMessageRepository(Database database, CronMessageMapper mapper, IEnvironmentProvider envProvider, IMemoryCache cache)
+public class CronMessageRepository(Database database, CronMessageMapper mapper, IEnvironmentProvider envProvider)
     : CosmosRepository<CronMessage, CronMessageModel, CronMessageMapper>(database, mapper, envProvider)
     , ICronMessageRepository
 {

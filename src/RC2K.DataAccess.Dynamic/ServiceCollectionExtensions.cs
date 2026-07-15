@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(db);
 
         services.AddScoped<BonusPointsMapper>();
+        services.AddScoped<CronMessageMapper>();
         services.AddScoped<DriverMapper>();
         services.AddScoped<NotificationMapper>();
         services.AddScoped<TimeEntryMapper>();
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IEnvironmentProvider), environmentProviderType);
 
         services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
+        services.AddScoped<ICronMessageRepository, CronMessageRepository>();
         services.AddScoped<IDriverRepository, DriverRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
