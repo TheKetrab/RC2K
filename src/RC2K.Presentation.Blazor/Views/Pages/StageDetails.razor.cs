@@ -95,6 +95,9 @@ public partial class StageDetails
 
         int stageCode = stage.Code;
         await StageService.SetPath(stageCode, path);
+
+        _path = path;
+        StateHasChanged();
     }
 
     private async Task OpenUploadDialog()

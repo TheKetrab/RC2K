@@ -1,0 +1,38 @@
+﻿@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime;
+
+<div id="@_chartElementId" style="width: 100%; height: @(Height)px;"></div>
+
+@code {
+
+    private readonly string _chartElementId = $"elevation-chart-{Guid.NewGuid():N}";
+
+    [Parameter]
+    public int StageCode { get; set; }
+
+    [Parameter]
+    public int Height { get; set; } = 200;
+
+    private bool _needsRedraw;
+    private int? _lastDrawnStageCode;
+
+    protected override void OnParametersSet()
+    {
+        if (_lastDrawnStageCode != StageCode)
+        {
+            _needsRedraw = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_needsRedraw)
+        {
+            return;
+        }
+
+        _needsRedraw = false;
+        _lastDrawnStageCode = StageCode;
+        await JSRuntime.InvokeVoidAsync("elevationChartInterop.init", _chartElementId, StageCode);
+    }
+}
