@@ -121,6 +121,10 @@
     .stage-map {
         order: 6;
     }
+
+    .stage-altitude {
+        order: 7;
+    }
 }
 @media (min-width: 769px) {
 
