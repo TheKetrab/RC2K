@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "RC2K.Function.Messages": {
+      "commandName": "Executable",
+      "executablePath": "func",
+      "commandLineArgs": "host start",
+      "workingDirectory": "$(TargetDir)"
+    }
+  }
+}
