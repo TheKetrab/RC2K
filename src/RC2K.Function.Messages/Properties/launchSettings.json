@@ -1,10 +1,12 @@
 ﻿{
   "profiles": {
     "RC2K.Function.Messages": {
-      "commandName": "Executable",
-      "executablePath": "func",
-      "commandLineArgs": "host start",
-      "workingDirectory": "$(TargetDir)"
+      "commandName": "Project",
+      "commandLineArgs": "--port 7051",
+      "environmentVariables": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+      }
     }
   }
 }

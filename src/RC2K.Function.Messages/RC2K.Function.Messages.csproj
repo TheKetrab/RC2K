@@ -5,21 +5,32 @@
 	<OutputType>Exe</OutputType>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
+	<UserSecretsId>d90ff11c-a470-417f-971a-0ac7815aca05</UserSecretsId>
 
   </PropertyGroup>
   <ItemGroup>
+    <None Include="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Functions.Extensions" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" />
+    <PackageReference Include="System.Memory.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RC2K.DataAccess.Dynamic\RC2K.DataAccess.Dynamic.csproj" />
+    <ProjectReference Include="..\RC2K.DataAccess.Interfaces\RC2K.DataAccess.Interfaces.csproj" />
+    <ProjectReference Include="..\RC2K.Logic.Interfaces\RC2K.Logic.Interfaces.csproj" />
+    <ProjectReference Include="..\RC2K.Logic\RC2K.Logic.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 </Project>

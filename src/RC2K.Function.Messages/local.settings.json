@@ -2,6 +2,9 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "Cosmos__Endpoint": "https://rc2k-db.documents.azure.com:443/",
+    "Cosmos__Database": "rc2k-db",
+    "Discord__WebhookId": "1529113778694787103"
   }
 }
