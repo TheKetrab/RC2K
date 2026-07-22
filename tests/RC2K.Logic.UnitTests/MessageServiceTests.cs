@@ -4,15 +4,15 @@ using RC2K.DomainModel;
 
 namespace RC2K.Logic.UnitTests;
 
-public class CronMessageServiceTests
+public class MessageServiceTests
 {
-    private CronMessageService _sut;
-    private Mock<ICronMessageRepository> _cronMessageRepositoryMock;
+    private MessageService _sut;
+    private Mock<IMessageRepository> _cronMessageRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
-        _cronMessageRepositoryMock = new Mock<ICronMessageRepository>();
+        _cronMessageRepositoryMock = new Mock<IMessageRepository>();
         _sut = new(_cronMessageRepositoryMock.Object);
     }
 
@@ -20,7 +20,7 @@ public class CronMessageServiceTests
     public async Task GetAll_CallsRepositoryAndReturnsItsResult()
     {
         //Arrange
-        List<CronMessage> cronMessages = [AnyCronMessage(), AnyCronMessage()];
+        List<DateTimeMessage> cronMessages = [AnyDateTimeMessage(), AnyDateTimeMessage()];
 
         _cronMessageRepositoryMock.Setup(x => x.GetAll())
             .Returns(Task.FromResult(cronMessages));
@@ -33,12 +33,12 @@ public class CronMessageServiceTests
         Assert.That(result, Is.EqualTo(cronMessages));
     }
 
-    private CronMessage AnyCronMessage() =>
+    private DateTimeMessage AnyDateTimeMessage() =>
         new() 
         {
             Id = Guid.NewGuid(),
-            Message = "Test Message",
+            Value = "Test Message",
             Published = false,
-            Cron = "* * * * *"
+            DateTime = new DateTime(2026,10,10)
         };
 }

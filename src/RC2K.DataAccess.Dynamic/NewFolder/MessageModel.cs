@@ -2,7 +2,7 @@
 
 namespace RC2K.DataAccess.Dynamic.Models;
 
-public class CronMessageModel
+public class MessageModel
 {
     [JsonRequired]
     [JsonPropertyName("partitionKey")]
@@ -17,8 +17,12 @@ public class CronMessageModel
     public required bool Published { get; init; }
 
     [JsonRequired]
-    [JsonPropertyName("cron")]
-    public required string Cron { get; init; }
+    [JsonPropertyName("datetime")]
+    public required string DateTime { get; init; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
     [JsonRequired]
     [JsonPropertyName("message")]
     public required string Message { get; init; }

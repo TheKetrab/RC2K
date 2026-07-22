@@ -1,0 +1,55 @@
+﻿@rendermode InteractiveServer
+
+@page "/admin/messages"
+
+@inject IMessageService CronMessageService
+
+@using System.Collections.Generic
+@using System.Net
+@using System.Text
+
+<MudTable Items="@_messages" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Cron Messages</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Published</MudTh>
+        <MudTh>Time</MudTh>
+        <MudTh>Message</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Published">@context.Published</MudTd>
+        <MudTd DataLabel="Date & time">@context.DateTime</MudTd>
+        <MudTd DataLabel="Message">@(GetPrettyPrintJsonValue(context.Value))</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+
+    private string GetPrettyPrintJsonValue(string base64Msg)
+    {
+        try
+        {
+            byte[] jsonBytes = Convert.FromBase64String(base64Msg);
+            string jsonString = Encoding.UTF8.GetString(jsonBytes);
+            return jsonString;
+            //string decodedJson = WebUtility.HtmlDecode(jsonString);
+            //return decodedJson;
+        }
+        catch (Exception ex)
+        {
+            return base64Msg;
+        }
+    }
+
+    private List<DateTimeMessage> _messages = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _messages = await CronMessageService.GetAll();
+    }
+}
