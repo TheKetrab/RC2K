@@ -15,7 +15,12 @@
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="3.1.2" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.61.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" Version="1.18.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
     <!-- Blazor / ASP.NET Core -->
     <PackageVersion Include="Blazor-Analytics" Version="4.0.0" />
     <PackageVersion Include="Extensions.MudBlazor.StaticInput" Version="4.1.0" />
@@ -54,5 +59,6 @@
     <PackageVersion Include="MailKit" Version="4.17.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="System.CommandLine" Version="2.0.9" />
+    <PackageVersion Include="System.Memory.Data" Version="10.0.10" />
   </ItemGroup>
 </Project>

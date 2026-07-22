@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
             return new PasswordProvider(iterations, salt);
         });
         services.AddScoped<ICarService, CarService>();
+        services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<ITimeEntryService, TimeEntryService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IRankingService, RankingService>();

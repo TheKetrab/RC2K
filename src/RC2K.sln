@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.IntegrationTests", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.E2ETests", "..\tests\RC2K.E2ETests\RC2K.E2ETests.csproj", "{51D59C4D-7F9E-44D4-891D-CB29D9BB8FB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC2K.Function.Messages", "RC2K.Function.Messages\RC2K.Function.Messages.csproj", "{01F48984-27E9-48CC-8596-48CC10BA3195}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{51D59C4D-7F9E-44D4-891D-CB29D9BB8FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51D59C4D-7F9E-44D4-891D-CB29D9BB8FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51D59C4D-7F9E-44D4-891D-CB29D9BB8FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01F48984-27E9-48CC-8596-48CC10BA3195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01F48984-27E9-48CC-8596-48CC10BA3195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01F48984-27E9-48CC-8596-48CC10BA3195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01F48984-27E9-48CC-8596-48CC10BA3195}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +185,7 @@ Global
 		{994F4A2A-78ED-4229-AA85-0ACAF59C46D4} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
 		{1E5BFBB2-63A3-46A3-82C5-4AE3D6CCBFFB} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
 		{51D59C4D-7F9E-44D4-891D-CB29D9BB8FB3} = {6BD62259-47D6-4BDB-A2FF-35645AF3B5FF}
+		{01F48984-27E9-48CC-8596-48CC10BA3195} = {252FC98F-8D05-4296-BB0C-7E17AC658E14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2480C222-5570-494B-B3BA-70770ECED63E}
