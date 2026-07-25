@@ -23,4 +23,13 @@ public class MessageService(IMessageRepository cronMessageRepository) : IMessage
     }
 
     public Task Update(DateTimeMessage entity) => cronMessageRepository.Update(entity);
+    public Task Delete(DateTimeMessage entity) => cronMessageRepository.Delete(entity.Id.ToString());
+    public async Task Create(DateTimeMessage entity)
+    {
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = Guid.NewGuid();
+        }
+        await cronMessageRepository.Create(entity);
+    }
 }

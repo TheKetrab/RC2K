@@ -2,54 +2,67 @@
 
 @page "/admin/messages"
 
-@inject IMessageService CronMessageService
+@inject IMessageService MessageService
+@inject MessageHelper MessageHelper
+@inject ILogger<Messages> Logger
 
 @using System.Collections.Generic
-@using System.Net
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
 @using System.Text
 
-<MudTable Items="@_messages" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm">
+<MudDataGrid @ref="_grid" T="MessageItemViewModel" Items="@_messages" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm"
+    EditMode="DataGridEditMode.Cell"
+    ColumnResizeMode="ResizeMode.Column"
+             RowStyleFunc="RowStyleFunc"
+    ReadOnly="false"
+    Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.OnRowClick">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Cron Messages</MudText>
+        <MudText Typo="Typo.h6">Messages</MudText>
         <MudSpacer />
+        <MudButtonGroup Class="ma-0 pa-0" Color="Color.Success" Variant="Variant.Filled">
+            <MudButton OnClick="NewItemAsync">
+                Add New Item
+            </MudButton>
+        </MudButtonGroup>
     </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Published</MudTh>
-        <MudTh>Time</MudTh>
-        <MudTh>Message</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Published">@context.Published</MudTd>
-        <MudTd DataLabel="Date & time">@context.DateTime</MudTd>
-        <MudTd DataLabel="Message">@(GetPrettyPrintJsonValue(context.Value))</MudTd>
-    </RowTemplate>
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Id" Editable="false" Filterable="false" Width="80px"/>
+        <PropertyColumn Property="x => x.Name" Title="Name" Sortable="false" Filterable="false" Required="false" />
+        <PropertyColumn Property="x => x.Published" Title="Published" Sortable="false" Filterable="false">
+            <EditTemplate>
+                <MudCheckBox @bind-Value="context.Item.Published" />
+            </EditTemplate>
+        </PropertyColumn>
+        <TemplateColumn Title="Date & time" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudTextField @bind-Value="context.Item.Time"
+                              Validation="(string dateTime) => ValidateDateTime(dateTime)" />
+            </CellTemplate>
+            <EditTemplate>
+                <MudTextField @bind-Value="context.Item.Time"
+                              Validation="(string dateTime) => ValidateDateTime(dateTime)" />
+            </EditTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Message" Title="Message definition" Sortable="false" Filterable="false" />
+        <TemplateColumn Title="Actions" Width="80px" Sortable="false" Filterable="false" Editable="false">
+            <CellTemplate>
+                <div class="d-flex justify-space-between align-center">
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@(context.Item.IsDeleted ? Icons.Material.Outlined.Restore : Icons.Material.Outlined.Delete)"
+                                   OnClick="@(() => DeleteItemClicked(context.Item))" />
+                    <MudIconButton Size="@Size.Small"
+                                   Disabled="@(!context.Item.IsDirty)"
+                                   Icon="@(Icons.Material.Outlined.Refresh)"
+                                   OnClick="@(() => ResetItemClicked(context.Item))" />
+                </div>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>    
     <PagerContent>
         <MudTablePager />
+        <MudButton Class="ma-1" Color="Color.Primary" Variant="Variant.Filled" OnClick="Update" Disabled="@(!AnyToUpdate)">
+            Update
+        </MudButton>
     </PagerContent>
-</MudTable>
-
-@code {
-
-    private string GetPrettyPrintJsonValue(string base64Msg)
-    {
-        try
-        {
-            byte[] jsonBytes = Convert.FromBase64String(base64Msg);
-            string jsonString = Encoding.UTF8.GetString(jsonBytes);
-            return jsonString;
-            //string decodedJson = WebUtility.HtmlDecode(jsonString);
-            //return decodedJson;
-        }
-        catch (Exception ex)
-        {
-            return base64Msg;
-        }
-    }
-
-    private List<DateTimeMessage> _messages = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        _messages = await CronMessageService.GetAll();
-    }
-}
+</MudDataGrid>

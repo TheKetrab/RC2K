@@ -6,5 +6,7 @@ public interface IMessageRepository
 {
     Task<List<DateTimeMessage>> GetAll();
     Task Update(DateTimeMessage entity);
+    Task Create(DateTimeMessage entity);
+    Task Delete(string id);
 
 }

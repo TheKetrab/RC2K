@@ -27,4 +27,7 @@ public class MessageModel
     [JsonPropertyName("message")]
     public required string Message { get; init; }
 
+    [JsonRequired]
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = "message";
 }
