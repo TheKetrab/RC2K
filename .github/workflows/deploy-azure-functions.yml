@@ -8,8 +8,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'Messages'
-  WORKING_DIRECTORY: 'src/RC2K.Function.Messages'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'published'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'src/RC2K.Function.Messages'
   DOTNET_VERSION: '10.0.x'
 
 jobs:
