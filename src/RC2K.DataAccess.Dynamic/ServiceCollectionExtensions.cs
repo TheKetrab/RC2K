@@ -15,6 +15,32 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterDynamicDataAccess(
         this IServiceCollection services, IConfiguration configuration, Type environmentProviderType)
     {
+        services.RegisterCosmos(configuration, environmentProviderType);
+
+        services.AddScoped<BonusPointsMapper>();
+        services.AddScoped<DateTimeMessageMapper>();
+        services.AddScoped<DriverMapper>();
+        services.AddScoped<NotificationMapper>();
+        services.AddScoped<TimeEntryMapper>();
+        services.AddScoped<RankingsMapper>();
+        services.AddScoped<UserMapper>();
+        services.AddScoped<VerifyInfoMapper>();
+
+        services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IDriverRepository, DriverRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
+        services.AddScoped<IRankingsRepository, RankingsRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IVerifyInfoRepository, VerifyInfoRepository>();
+        
+        return services;
+    }
+
+    public static IServiceCollection RegisterCosmos(
+        this IServiceCollection services, IConfiguration configuration, Type environmentProviderType)
+    {
         var cosmosSection = configuration.GetSection("Cosmos");
 
         string endpoint = cosmosSection["Endpoint"]
@@ -31,24 +57,8 @@ public static class ServiceCollectionExtensions
         Database db = client.GetDatabase(database);
         services.AddSingleton(db);
 
-        services.AddScoped<BonusPointsMapper>();
-        services.AddScoped<DriverMapper>();
-        services.AddScoped<NotificationMapper>();
-        services.AddScoped<TimeEntryMapper>();
-        services.AddScoped<RankingsMapper>();
-        services.AddScoped<UserMapper>();
-        services.AddScoped<VerifyInfoMapper>();
-
         services.AddScoped(typeof(IEnvironmentProvider), environmentProviderType);
 
-        services.AddScoped<IBonusPointsRepository, BonusPointsRepository>();
-        services.AddScoped<IDriverRepository, DriverRepository>();
-        services.AddScoped<INotificationRepository, NotificationRepository>();
-        services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
-        services.AddScoped<IRankingsRepository, RankingsRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IVerifyInfoRepository, VerifyInfoRepository>();
-        
         return services;
     }
 }
