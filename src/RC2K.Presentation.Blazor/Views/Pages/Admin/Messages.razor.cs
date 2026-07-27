@@ -34,7 +34,7 @@ public partial class Messages
         return null;
     }
 
-    private string RowStyleFunc(MessageItemViewModel item, int rowNumber)
+    private static string RowStyleFunc(MessageItemViewModel item, int rowNumber)
     {
         if (item.IsDeleted)
         {
@@ -67,10 +67,12 @@ public partial class Messages
         var toUpdate = _messages.Where(x => x.IsDirty && !x.IsDeleted && !x.IsNew).ToList();
         var toAdd = _messages.Where(x => x.IsNew).ToList();
 
-        bool success = true;
-        toDelete.ForEach(async x => success &= (await TryUpdateItem(MessageService.Delete, x)));
-        toUpdate.ForEach(async x => success &= (await TryUpdateItem(MessageService.Update, x)));
-        toAdd.ForEach(async x => success &= (await TryUpdateItem(MessageService.Create, x)));
+        var deleteTasks = toDelete.Select(x => TryUpdateItem(MessageService.Delete, x));
+        var updateTasks = toUpdate.Select(x => TryUpdateItem(MessageService.Update, x));
+        var addTasks = toAdd.Select(x => TryUpdateItem(MessageService.Create, x));
+
+        bool[] results = await Task.WhenAll(deleteTasks.Concat(updateTasks).Concat(addTasks));
+        bool success = results.All(r => r);
 
         if (success)
         {
@@ -118,7 +120,7 @@ public partial class Messages
         }
     }
 
-    private void ResetItemClicked(MessageItemViewModel item)
+    private static void ResetItemClicked(MessageItemViewModel item)
     {
         if (!item.IsDirty)
         {
@@ -139,7 +141,4 @@ public partial class Messages
         _messages = messages.Select(x => x.ToViewModel()).ToList();
         StateHasChanged();
     }
-
-
-
 }

@@ -46,7 +46,7 @@ public class SendDiscordMessage(
         }
         else
         {
-            logger.LogWarning("Function with id {id} already scheduled", todayIdBase);
+            logger.LogWarning("Function with id {Id} already scheduled", todayIdBase);
         }
     }
 
@@ -68,7 +68,7 @@ public class SendDiscordMessage(
 
         if (now < scheduledTime)
         {
-            logger.LogInformation("Creating timer. Now is {now}, scheduled at: {scheduled}", now.ToString(), scheduledTime.ToString());
+            logger.LogInformation("Creating timer. Now is {Now}, scheduled at: {Scheduled}", now.ToString(), scheduledTime.ToString());
             await context.CreateTimer(scheduledTime, CancellationToken.None);
         }
 
@@ -78,7 +78,7 @@ public class SendDiscordMessage(
     [Function(nameof(SendDiscordMessageActivity))]
     public async Task SendDiscordMessageActivity([ActivityTrigger] object input)
     {
-        logger.LogInformation("Sending to Discord given object {input}", input);
+        logger.LogInformation("Sending to Discord given object {Input}", input);
 
         if (!TryParseInput(input, out DateTimeMessage? msg))
         {
@@ -103,7 +103,7 @@ public class SendDiscordMessage(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to send discord message {message}", jsonPayload);
+                logger.LogError(ex, "Failed to send discord message {Message}", jsonPayload);
                 continue;
             }
 
@@ -147,13 +147,13 @@ public class SendDiscordMessage(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to deserialize json: {jsonString}", jsonString);
+            logger.LogError(ex, "Failed to deserialize json: {JsonString}", jsonString);
             payloads = null;
             return false;
         }
         if (payloads is null)
         {
-            logger.LogError("Payload is null after deserialization json: {jsonString}", jsonString);
+            logger.LogError("Payload is null after deserialization json: {JsonString}", jsonString);
             return false;
         }
 

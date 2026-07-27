@@ -8,5 +8,4 @@ public interface IMessageRepository
     Task Update(DateTimeMessage entity);
     Task Create(DateTimeMessage entity);
     Task Delete(string id);
-
 }

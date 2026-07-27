@@ -17,7 +17,6 @@ Console.WriteLine("Azure Functions for Messages starting...");
 var builder = FunctionsApplication.CreateBuilder(args);
 builder.Services.AddDurableTaskWorker();
 
-
 builder.Services.RegisterCosmos(builder.Configuration,
     builder.Configuration["AZURE_FUNCTIONS_ENVIRONMENT"] switch
     {

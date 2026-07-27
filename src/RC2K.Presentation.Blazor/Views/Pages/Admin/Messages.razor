@@ -6,12 +6,18 @@
 @inject MessageHelper MessageHelper
 @inject ILogger<Messages> Logger
 
-<MudDataGrid T="MessageItemViewModel" Items="@_messages" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm"
-    EditMode="DataGridEditMode.Cell"
-    ColumnResizeMode="ResizeMode.Column"
+<MudDataGrid T="MessageItemViewModel"
+             Items="@_messages"
+             MultiSelection="true"
+             Hover="true"
+             Breakpoint="Breakpoint.Sm"
+             EditMode="DataGridEditMode.Cell"
+             ColumnResizeMode="ResizeMode.Column"
              RowStyleFunc="RowStyleFunc"
-    ReadOnly="false"
-    Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.OnRowClick">
+             ReadOnly="false"
+             Bordered="true"
+             Dense="true"
+             EditTrigger="DataGridEditTrigger.OnRowClick">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Messages</MudText>
         <MudText>Date & Time in CET/CEST (Local Poland time)</MudText>
@@ -23,7 +29,7 @@
         </MudButtonGroup>
     </ToolBarContent>
     <Columns>
-        <PropertyColumn Property="x => x.Id" Title="Id" Editable="false" Filterable="false" Width="80px"/>
+        <PropertyColumn Property="x => x.Id" Title="Id" Editable="false" Filterable="false" Style="width: 80px"/>
         <PropertyColumn Property="x => x.Name" Title="Name" Sortable="false" Filterable="false" Required="false" />
         <PropertyColumn Property="x => x.Published" Title="Published" Sortable="false" Filterable="false">
             <EditTemplate>

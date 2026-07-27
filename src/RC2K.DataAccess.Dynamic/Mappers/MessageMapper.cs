@@ -23,7 +23,7 @@ public class DateTimeMessageMapper : IModelMapper<DateTimeMessage, MessageModel>
         return new DateTimeMessage()
         {
             Id = model.Id,
-            DateTime = DateTime.ParseExact(model.DateTime!, "dd/MM/yyyy HH:mm:ss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
+            DateTime = DateTime.ParseExact(model.DateTime, "dd/MM/yyyy HH:mm:ss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
             Published = model.Published,
             Value = model.Message,
             Name = model.Name

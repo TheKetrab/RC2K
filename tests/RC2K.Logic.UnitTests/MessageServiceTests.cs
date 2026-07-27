@@ -33,7 +33,7 @@ public class MessageServiceTests
         Assert.That(result, Is.EqualTo(cronMessages));
     }
 
-    private DateTimeMessage AnyDateTimeMessage() =>
+    private static DateTimeMessage AnyDateTimeMessage() =>
         new() 
         {
             Id = Guid.NewGuid(),

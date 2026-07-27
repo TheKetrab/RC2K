@@ -12,14 +12,14 @@ public class MessageItemViewModel
     public bool IsDeleted { get; set; }
 
     private string? _initName;
-    public string Name
+    public string? Name
     {
         get;
         set => Set(ref field, ref _initName, value);
     }
 
     private string? _initMessage;
-    public string Message
+    public string? Message
     {
         get;
         set => Set(ref field, ref _initMessage, value);
@@ -69,9 +69,9 @@ public static class MessageItemViewModelExtensions
         return new DateTimeMessage()
         {
             Id = viewModel.Id,
-            Value = EncodeJsonValue(viewModel.Message),
+            Value = EncodeJsonValue(viewModel.Message ?? ""),
             Name = viewModel.Name,
-            Published = viewModel.Published.Value,
+            Published = viewModel.Published ?? false,
             DateTime = GetUtcDateTime(viewModel.Time)
         };
     }
@@ -97,7 +97,7 @@ public static class MessageItemViewModelExtensions
             string jsonString = Encoding.UTF8.GetString(jsonBytes);
             return jsonString;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return base64Msg;
         }
@@ -110,8 +110,13 @@ public static class MessageItemViewModelExtensions
         return base64Msg;
     }
 
-    private static DateTime GetUtcDateTime(string plDateTimeStr)
+    private static DateTime GetUtcDateTime(string? plDateTimeStr)
     {
+        if (plDateTimeStr is null)
+        {
+            return DateTime.MinValue;
+        }
+
         DateTime plDateTime = DateTime.ParseExact(plDateTimeStr, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
         TimeZoneInfo localZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
         DateTime utcDateTime = TimeZoneInfo.ConvertTimeToUtc(plDateTime, localZone);
