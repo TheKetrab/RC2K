@@ -72,7 +72,7 @@ public static class MessageItemViewModelExtensions
             Value = EncodeJsonValue(viewModel.Message),
             Name = viewModel.Name,
             Published = viewModel.Published.Value,
-            DateTime = DateTime.ParseExact(viewModel.Time, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
+            DateTime = GetUtcDateTime(viewModel.Time)
         };
     }
 
@@ -84,7 +84,7 @@ public static class MessageItemViewModelExtensions
             Message = DecodeJsonValue(domainModel.Value),
             Name = domainModel.Name,
             Published = domainModel.Published,
-            Time = domainModel.DateTime.ToString("dd/MM/yyyy HH:mm:ss"),
+            Time = GetPlDateTimeStr(domainModel.DateTime)
         };
 
     }
@@ -110,7 +110,19 @@ public static class MessageItemViewModelExtensions
         return base64Msg;
     }
 
+    private static DateTime GetUtcDateTime(string plDateTimeStr)
+    {
+        DateTime plDateTime = DateTime.ParseExact(plDateTimeStr, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+        TimeZoneInfo localZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+        DateTime utcDateTime = TimeZoneInfo.ConvertTimeToUtc(plDateTime, localZone);
+        return utcDateTime;
+    }
 
-
-
+    private static string GetPlDateTimeStr(DateTime utcDateTime)
+    {
+        TimeZoneInfo polishZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+        DateTime plDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, polishZone);
+        string plDateTimeStr = plDateTime.ToString("dd/MM/yyyy HH:mm:ss");
+        return plDateTimeStr;
+    }
 }

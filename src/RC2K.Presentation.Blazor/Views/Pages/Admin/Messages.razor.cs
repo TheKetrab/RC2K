@@ -7,25 +7,26 @@ namespace RC2K.Presentation.Blazor.Views.Pages.Admin;
 
 public partial class Messages
 {
-    private MudDataGrid<MessageItemViewModel> _grid = default!;
     private List<MessageItemViewModel> _messages = [];
 
     public bool AnyToUpdate =>
         _messages?.Any(x => x.IsDeleted || x.IsNew || x.IsDirty) ?? false;
 
-    private static string? ValidateDateTime(string dateTime)
+    private static string? ValidateDateTime(string dateTimeStr)
     {
-        if (string.IsNullOrWhiteSpace(dateTime))
+        if (string.IsNullOrWhiteSpace(dateTimeStr))
         {
             return "DateTime is required";
         }
 
-        if (!DateTime.TryParseExact(dateTime, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+        if (!DateTime.TryParseExact(dateTimeStr, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime))
         {
             return "DateTime should be in format: dd/MM/yyyy HH:mm:ss";
         }
 
-        if (date < DateTime.Now)
+        TimeZoneInfo localZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+        DateTime utcDateTime = TimeZoneInfo.ConvertTimeToUtc(dateTime, localZone);
+        if (utcDateTime < DateTime.UtcNow)
         {
             return "Date should not be from the past";
         }
