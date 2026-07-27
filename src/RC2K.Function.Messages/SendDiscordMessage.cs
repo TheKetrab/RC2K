@@ -21,10 +21,10 @@ public class SendDiscordMessage(
 
     [Function(nameof(SendDiscordMessage_CheckAndStart))]
     public async Task SendDiscordMessage_CheckAndStart(
-        [TimerTrigger("0,30 * * * * *")] TimerInfo myTimer,
+        [TimerTrigger("0 0 8 * * *")] TimerInfo myTimer,
         [DurableClient] DurableTaskClient client)
     {
-        string todayIdBase = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_G_0";
+        string todayIdBase = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_0";
         var existingInstance = await client.GetInstanceAsync(todayIdBase);
 
         if (existingInstance == null ||
@@ -37,7 +37,7 @@ public class SendDiscordMessage(
 
             for (int i=0; i < todayMessages.Count; i++)
             {
-                string id = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_G_{i}";
+                string id = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_{i}";
                 await client.ScheduleNewOrchestrationInstanceAsync(
                     nameof(SendDiscordMessage_ScheduleSendTime),
                     todayMessages[i],
