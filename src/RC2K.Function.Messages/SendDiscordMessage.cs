@@ -19,9 +19,12 @@ public class SendDiscordMessage(
     private readonly string _discordWebhookUrl = 
         $"https://discord.com/api/webhooks/{webhooksConfiguration.WebhookId}/{webhooksConfiguration.WebhookToken}";
 
+    /// <summary>
+    /// Triggered every day 6:00 UTC (8:00 CEST, 7:00 CET - pl time)
+    /// </summary>
     [Function(nameof(SendDiscordMessage_CheckAndStart))]
     public async Task SendDiscordMessage_CheckAndStart(
-        [TimerTrigger("0 0 8 * * *")] TimerInfo myTimer,
+        [TimerTrigger("0 0 6 * * *")] TimerInfo myTimer,
         [DurableClient] DurableTaskClient client)
     {
         string todayIdBase = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_0";
