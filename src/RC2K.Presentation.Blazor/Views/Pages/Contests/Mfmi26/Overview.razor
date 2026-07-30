@@ -1,0 +1,21 @@
+﻿@rendermode InteractiveServer
+
+@page "/contests/mfmi26"
+@page "/contests/mfmi26/overview"
+
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+
+<MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+    <MudButton Href="/contests/mfmi26/overview">Overview</MudButton>
+    <MudButton Href="/contests/mfmi26/entry-list">Entry list</MudButton>
+    <MudButton Href="/contests/mfmi26/standings">Standings</MudButton>
+    <MudButton Href="/contests/mfmi26/summaries">Rally summaries</MudButton>
+    <MudButton Color="Color.Secondary" Href="/contests/mfmi26/submit">Submit</MudButton>
+</MudButtonGroup>
+
+<div style="width: 100px; height: 300px; background: green;">
+    PDF
+</div>
