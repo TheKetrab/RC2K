@@ -1,0 +1,275 @@
+﻿@using RC2K.Utils
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+@inject IStageService StageService
+@inject ICarService CarService
+
+<div style="width: 100%; display: flex; justify-content: center;">
+    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+        @foreach (var x in LevelHelper.GetRallyCodesBySimulationOrder())
+        {
+            <MudButton Href="@($"/contests/{MainLink}/standings/{LevelHelper.RallyCodeToRallyShortName(x)}")" Style="font-size: 8pt; text-transform: none;">
+                @LevelHelper.RallyCodeToRallyName(x)
+            </MudButton>
+        }
+    </MudButtonGroup>
+</div>
+@if (_isLoading)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="@($"100vh")" />
+    <MudOverlay Visible="true" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    @foreach (var stage in _viewModel.Stages)
+    {
+        <div style="display: grid; grid-template-columns: 1fr 4fr; border-top: solid black 1px; margin-top: 10px;">
+            <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+                <h1>@stage.StageName</h1>
+                <img src="@(stage.IsRallySummary ? $"img/rallies/{stage.StageImage}.PNG" : $"img/maps/{stage.StageImage}")" />
+            </div>
+            <MudDataGrid T="EntryListItemViewModel"
+            Items="@stage.Entries"
+            ShowColumnOptions="false">
+                <Columns>
+                    <PropertyColumn Property="x => x.Rank" Title="Rank" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.Nr" Title="#" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="@(x => x.Driver.Known ? x.Driver.User.Name : x.Driver.Name)" Title="Name" Filterable="false" Sortable="false" />
+                    <TemplateColumn Title="Car">
+                        <CellTemplate>
+                            <div class="car" data-car-id="@(context.Item.Car.Id - 1)"></div>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Nat" >
+                        <CellTemplate>
+                            <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.TimeDisplay" Title="Time" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+                    @if (!stage.IsRallySummary)
+                    {
+                        <TemplateColumn Title="Proofs" Filterable="false" Sortable="false">
+                            <CellTemplate>
+                                <p style="display: flex;">
+                                    @{
+                                        foreach (var p in context.Item.Proofs.OrderBy(x => x.Type))
+                                        {
+                                            <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                                        }
+                                    }
+                                </p>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    }
+                </Columns>
+            </MudDataGrid>
+        </div>
+    }
+}
+@code {
+
+    private bool _isLoading = false;
+    private RallyContestInfoViewModel _viewModel;
+
+    [Parameter]
+    public RallyCode RallyCode { get; set; }
+
+    [Parameter]
+    public string MainLink { get; set; }
+
+    [Parameter]
+    public string LabelFilter { get; set; }
+
+    [Parameter]
+    public Func<string,string> GetNrFunc { get; set; }
+
+    [Parameter]
+    public Func<string, string> GetGroupFunc { get; set; }
+
+    [Parameter]
+    public Func<string, string> GetCarFunc { get; set; }
+
+    class RallyContestInfoViewModel
+    {
+        public List<StageContestInfoViewModel> Stages = [];
+    }
+
+    class StageContestInfoViewModel
+    {
+        public string StageName { get; set; }
+        public string StageImage { get; set; }
+        public bool IsRallySummary { get; set; }
+        public List<EntryListItemViewModel> Entries = [];
+    }
+
+    class EntryListItemViewModel
+    {
+        public int Rank { get; set; }
+        public string Nr { get; init; }
+        public Driver Driver { get; set; }
+        public string Group { get; init; }
+        public Car Car { get; init; }
+        public TimeOnly Time { get; set; }
+        public string TimeDisplay => (Time == TimeOnly.MaxValue) ? "N/A" : Time.ToString("m:ss.ff");
+        public TimeSpan Gap { get; set; }
+        public string GapDisplay => TimeDisplay == "N/A" ? "N/A" : (Gap == TimeSpan.Zero ? "" : $"- {Gap.ToString(@"m\:ss\.ff")}");
+        public List<Proof> Proofs { get; set; }
+    }
+
+    private async Task<Car> ResolveCar(string driverName)
+    {
+        string carName = GetCarFunc(driverName);
+        List<Car> cars = await CarService.GetAll();
+        return cars.First(x => x.Name == carName);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            await Reload();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+
+    }
+
+    private async Task Reload()
+    {
+        _viewModel = new();
+
+        var stages = (await StageService.GetAllByRallyCode(RallyCode))
+            .Where(x => x.Direction == DomainModel.Direction.Simulation)
+            .ToList();
+
+        List<StageContestInfoViewModel> stagesViewModel = [];
+        foreach (var s in stages)
+        {
+            var vm = await GetViewModelForStage(s);
+            stagesViewModel.Add(vm);
+        }
+
+        var globalVm = await GetViewModelForSummary(stagesViewModel);
+        stagesViewModel.Add(globalVm);
+
+        _viewModel.Stages = stagesViewModel;
+    }
+
+    private async Task<StageContestInfoViewModel> GetViewModelForStage(Stage s)
+    {
+        StageContestInfoViewModel vm = new();
+        vm.StageName = s.StageData.Name;
+        vm.StageImage = s.StageData.ImgName;
+        vm.Entries = new();
+
+        var timeEntries = (await TimeEntryService.Get(s.Id))
+            .Where(x => x.Labels?.Contains(LabelFilter) ?? false)
+            .ToList();
+
+        var best = timeEntries.OrderBy(x => x.Time).First();
+        vm.Entries = timeEntries.Select(te => new EntryListItemViewModel()
+        {
+            Car = te.Car,
+            Driver = te.Driver,
+            Nr = GetNrFunc(te.Driver.FriendlyName),
+            Gap = (te.Time - best.Time),
+            Group = GetGroupFunc(te.Driver.FriendlyName),
+            Proofs = te.Proofs,
+            Rank = -1,
+            Time = te.Time
+        }).ToList();
+
+        var standings =
+            vm.Entries.OrderBy(x => x.Time)
+                      .GroupBy(x => x.Time)
+                      .ToList();
+        var ranks = CalculateRanked(standings).ToDictionary(x => x.vm, x => x.rank);
+        vm.Entries.ForEach(entry => entry.Rank = ranks[entry] + 1);
+        vm.Entries = vm.Entries.OrderBy(x => x.Rank).ToList();
+
+        // TODO: add N/A: DNS, DSQ, DNF
+
+        return vm;
+    }
+
+    private async Task<StageContestInfoViewModel> GetViewModelForSummary(List<StageContestInfoViewModel> stagesViewModel)
+    {
+        StageContestInfoViewModel vm = new();
+        vm.StageName = LevelHelper.RallyCodeToRallyName(RallyCode);
+        vm.StageImage = LevelHelper.RallyCodeToRallyImageName(RallyCode);
+        vm.IsRallySummary = true;
+        vm.Entries = new();
+        var allDrivers = stagesViewModel.SelectMany(x => x.Entries).Select(x => x.Driver).DistinctBy(x => x.Id).ToList();
+        foreach (var d in allDrivers)
+        {
+            EntryListItemViewModel driverVm = new()
+            {
+                Nr = GetNrFunc(d.FriendlyName),
+                Driver = d,
+                Group = GetGroupFunc(d.FriendlyName),
+                Gap = TimeSpan.Zero,
+                Proofs = [],
+                Rank = -1,
+                Car = await ResolveCar(d.FriendlyName)
+            };
+
+            TimeOnly totalTime = new TimeOnly(0, 0, 0, 0, 0);
+            bool isGlobalNa = false;
+            foreach (var s in stagesViewModel)
+            {
+                var entry = s.Entries.FirstOrDefault(x => x.Driver.Id == d.Id);
+                if (entry is null)
+                {
+                    isGlobalNa = true;
+                }
+                else
+                {
+                    totalTime = totalTime.Add(entry.Time.ToTimeSpan());
+                }
+            }
+            if (isGlobalNa)
+            {
+                totalTime = TimeOnly.MaxValue;
+            }
+            driverVm.Time = totalTime;
+            vm.Entries.Add(driverVm);
+        }
+
+        var best = vm.Entries.OrderBy(x => x.Time).First();
+        vm.Entries.ForEach(x => x.Gap = x.Time - best.Time);
+
+        var standings =
+            vm.Entries.OrderBy(x => x.Time)
+                      .GroupBy(x => x.Time)
+                      .ToList();
+        var ranks = CalculateRanked(standings).ToDictionary(x => x.vm, x => x.rank);
+        vm.Entries.ForEach(entry => entry.Rank = ranks[entry] + 1);
+        vm.Entries = vm.Entries.OrderBy(x => x.Rank).ToList();
+
+        return vm;
+    }
+
+    private static List<(EntryListItemViewModel vm, int rank)> CalculateRanked(List<IGrouping<TimeOnly, EntryListItemViewModel>> standingsByTime)
+    {
+        List<(EntryListItemViewModel vm, int rank)> ranked = [];
+
+        int rank = 0;
+        foreach (var g in standingsByTime)
+        {
+            ranked.AddRange(g.Select(x => (x, rank)));
+            rank += g.Count();
+        }
+
+        return ranked;
+    }
+
+}

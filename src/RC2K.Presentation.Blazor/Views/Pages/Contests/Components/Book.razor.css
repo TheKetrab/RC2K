@@ -1,0 +1,104 @@
+﻿#bookContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    position: relative;
+}
+
+#prev-btn, #next-btn {
+    transition: transform 0.5s, visibility 0.5s;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+}
+
+#next-btn {
+    right: 0;
+    transform: translateX(calc(100% + 10px));
+}
+#prev-btn {
+    left: 0;
+    transform: translateX(calc(-100% - 10px));
+}
+
+.book {
+    position: relative;
+    width: 50%;
+    aspect-ratio: 1 / 1.41;
+    transition: transform 0.5s;
+    position: relative;
+    transition: transform 0.5s;
+}
+
+.paper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    perspective: 2250px;
+}
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: left;
+    transition: transform .5s;
+}
+
+.front {
+    z-index: 1;
+    backface-visibility: hidden;
+    border-left: 3px solid #f06127;
+}
+
+.back {
+    z-index: 0;
+}
+
+.front-content, .back-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+    /* Page lighting effect */
+    .front-content::after, .back-content::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+    }
+
+    .front-content::after {
+        background: linear-gradient(to left, rgba(255,255,255,0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+    }
+
+    .back-content::after {
+        background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+    }
+
+.back-content {
+    transform: rotateY(180deg);
+}
+
+.flipped .front, .flipped .back {
+    transform: rotateY(-180deg);
+}
+
+.download-link {
+    text-align: center;
+    margin-top: 20px;
+}

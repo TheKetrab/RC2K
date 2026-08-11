@@ -50,6 +50,9 @@ public static class LevelHelper
             { RallyCode.Vauxhall, "vauxhall" }
         }.ToFrozenDictionary();
 
+    private readonly static FrozenDictionary<string, RallyCode> _shortName2rallyCode =
+        _rallyCode2shortName.ToDictionary(x => x.Value, x => x.Key).ToFrozenDictionary();
+
     private readonly static FrozenDictionary<RallyCode, string> _rallyCode2imageName =
         new Dictionary<RallyCode, string>()
         {
@@ -73,6 +76,12 @@ public static class LevelHelper
     public static RallyCode GetRallyCodeByStageCode(int stage) =>
         _codePrefix2RallyCodeMap[stage / 10];
 
+    public static RallyCode GetRallyCodeByShortName(string shortName) =>
+        _shortName2rallyCode[shortName];
+
+    public static IEnumerable<string> GetRallyShortNames() =>
+        _rallyCode2shortName.Values;
+
     public static string RallyCodeToRallyName(RallyCode rallyCode) =>
         _rallyCode2RallyNameMap[rallyCode];
 
@@ -90,4 +99,14 @@ public static class LevelHelper
 
     public static string StageCodeToRallyImageName(int stageCode) =>
         RallyCodeToRallyImageName(GetRallyCodeByStageCode(stageCode));
+
+    public static IEnumerable<RallyCode> GetRallyCodesBySimulationOrder()
+    {
+        yield return RallyCode.Vauxhall;
+        yield return RallyCode.Pirelli;
+        yield return RallyCode.Scottish;
+        yield return RallyCode.Seat;
+        yield return RallyCode.Stena;
+        yield return RallyCode.Sony;
+    }
 }

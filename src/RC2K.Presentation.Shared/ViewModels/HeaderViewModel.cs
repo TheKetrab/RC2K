@@ -34,6 +34,7 @@ public class HeaderViewModel : BaseViewModel
             //("MFMI23","contests/mfmi23"),
             //("The White Heat","contests/twh"),
             //("MFMI22","contests/mfmi22"),
+            ("MFMI24","contests/mfmi24/overview"),
             ("MFMI26","contests/mfmi26/overview"),
         ] },
         //new MenuItem() { Item = "Mods", ItemLink = "mods", Icon = Icon.Mod, Subitems = [

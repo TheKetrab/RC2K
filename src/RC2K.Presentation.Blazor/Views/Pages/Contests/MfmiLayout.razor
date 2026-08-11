@@ -1,0 +1,22 @@
+﻿
+@inherits LayoutComponentBase
+@layout MainLayout
+@inject MfmiLayoutState LayoutState
+@implements IDisposable
+
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+
+<MfmiNav ContestMainLink="@LayoutState.Contest?.MainLink" />
+@Body
+
+@code {
+    protected override void OnInitialized()
+    {
+        LayoutState.OnStateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LayoutState.OnStateChanged -= StateHasChanged;
+    }
+}

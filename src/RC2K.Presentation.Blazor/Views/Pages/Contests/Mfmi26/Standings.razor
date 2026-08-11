@@ -1,8 +1,32 @@
 ﻿@rendermode InteractiveServer
 
+@using RC2K.Utils;
+
 @page "/contests/mfmi26/standings"
+@page "/contests/mfmi26/standings/{rally}"
+@inherits BaseMfmi26Page
 
 @inject ITimeEntryService TimeEntryService
 @inject INotificationService NotificationService
 @inject IUserService UserService
 @inject MessageHelper MessageHelper
+@inject IStageService StageService
+
+<MfmiStandings MainLink="@Contest.MainLink" 
+               RallyCode="RallyCode"
+               LabelFilter="MFMI26"
+               GetGroupFunc="Mfmi26Helper.GetGroup"
+               GetNrFunc="Mfmi26Helper.GetNr"
+               GetCarFunc="Mfmi26Helper.GetCar"/>
+
+
+@code {
+
+    [Parameter]
+    public string Rally { get; set; }
+
+    private RallyCode RallyCode => Rally is null
+        ? LevelHelper.GetRallyCodesBySimulationOrder().First()
+        : LevelHelper.GetRallyCodeByShortName(Rally);
+
+}

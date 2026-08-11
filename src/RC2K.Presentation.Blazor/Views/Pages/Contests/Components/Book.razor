@@ -1,0 +1,129 @@
+﻿<div style="margin: 50px; display: flex; flex-direction: column;">
+    <div id="bookContainer">
+        <button id="prev-btn" style="@PrevBtnStyle" @onclick="GoPrevPage">
+            <i class="fas fa-arrow-circle-left"></i>
+        </button>
+
+        <div id="book" class="book" style="@BookStyle">
+            @for (int i = 0; i < _papers.Count; i++)
+            {
+                PaperState paper = _papers[i];
+                int pageNum = i + 1;
+                string paperClass = paper.IsFlipped ? "paper flipped" : "paper";
+
+                <div id="@($"p{pageNum}")" class="@paperClass" style="z-index: @paper.ZIndex;">
+                    <div class="front">
+                        <div id="@($"f{pageNum}")" class="front-content">
+                            <img src="@paper.FrontImage" style="height: 100%; width: 100%;" alt="Page @(pageNum * 2 - 1)" />
+                        </div>
+                    </div>
+                    <div class="back">
+                        <div id="@($"b{pageNum}")" class="back-content">
+                            <img src="@paper.BackImage" style="height: 100%; width: 100%;" alt="Page @(pageNum * 2)" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <button id="next-btn" style="@NextBtnStyle" @onclick="GoNextPage">
+            <i class="fas fa-arrow-circle-right"></i>
+        </button>
+    </div>
+
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ArrowDownward" Color="Color.Secondary" Href="@DownloadUrl" Style="margin-top: 20px; align-self: center;">
+        Download booklet
+    </MudButton>
+</div>
+@code {
+
+    [Parameter]
+    public List<PaperModel> Pages { get; set; } = [];
+
+    [Parameter]
+    public string DownloadUrl { get; set; } = string.Empty;
+
+    private List<PaperState> _papers = [];
+    private int _currentLocation = 1;
+    private int _numOfPapers => _papers.Count;
+    private int _maxLocation => _numOfPapers + 1;
+
+    protected override void OnInitialized()
+    {
+        var inputPages = Pages;
+        int total = inputPages.Count;
+
+        for (int i = 0; i < total; i++)
+        {
+            _papers.Add(new PaperState
+            {
+                FrontImage = inputPages[i].FrontImage,
+                BackImage = inputPages[i].BackImage,
+                IsFlipped = false,
+                ZIndex = total - i
+            });
+        }
+    }
+
+    private void GoNextPage()
+    {
+        if (_currentLocation < _maxLocation)
+        {
+            UpdatePaper(_currentLocation - 1, flipped: true);
+            _currentLocation++;
+        }
+    }
+
+    private void GoPrevPage()
+    {
+        if (_currentLocation > 1)
+        {
+            UpdatePaper(_currentLocation - 2, flipped: false);
+            _currentLocation--;
+        }
+    }
+
+    private void UpdatePaper(int index, bool flipped)
+    {
+        foreach (var p in _papers)
+        {
+            p.ZIndex -= 1;
+        }
+
+        _papers[index].IsFlipped = flipped;
+        _papers[index].ZIndex = _numOfPapers;
+    }
+
+    private string BookStyle => _currentLocation switch
+    {
+        1 => "transform: translateX(0%);",
+        _ when _currentLocation == _maxLocation => "transform: translateX(100%);",
+        _ => "transform: translateX(50%);"
+    };
+
+    private string PrevBtnStyle => _currentLocation switch
+    {
+        1 => "visibility: hidden;",
+        _ when _currentLocation == _maxLocation => "visibility: visible; left: 25%;",
+        _ => "visibility: visible;"
+    };
+
+    private string NextBtnStyle => _currentLocation switch
+    {
+        1 => "visibility: visible; right: 25%;",
+        _ when _currentLocation == _maxLocation => "visibility: hidden;",
+        _ => "visibility: visible;"
+    };
+
+    public class PaperModel
+    {
+        public string FrontImage { get; set; } = string.Empty;
+        public string BackImage { get; set; } = string.Empty;
+    }
+
+    private class PaperState : PaperModel
+    {
+        public bool IsFlipped { get; set; }
+        public int ZIndex { get; set; }
+    }
+}

@@ -141,6 +141,8 @@ public static class BuilderConfiguration
             return new ReCaptchaV3Verifier(secretKey, httpClientFactory, logger);
         });
 
+        builder.Services.AddScoped<MfmiLayoutState>();
+
         return builder;
     }
 

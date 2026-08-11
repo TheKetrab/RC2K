@@ -1,0 +1,40 @@
+﻿@rendermode InteractiveServer
+
+@page "/contests/mfmi24"
+@page "/contests/mfmi24/overview"
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@inherits BaseMfmi24Page
+
+<Book DownloadUrl="@DownloadUrl" Pages="@Pages" />
+
+@code {
+
+    private const string BaseBookUrl = "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/book/MFMI24";
+
+    public List<Book.PaperModel> Pages { get; set; } = default!;
+
+    public string DownloadUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Pages = GetMfmi24Pages();
+        DownloadUrl = $"{BaseBookUrl}/Magnetic Fields Memorial Invitational 2024 REGULATIONS BOOKLET.pdf";
+    }
+
+    private List<Book.PaperModel> GetMfmi24Pages()
+    {
+        List<Book.PaperModel> defaultList = [];
+        for (int i = 1; i <= 11; i++)
+        {
+            int frontNum = (i * 2) - 1;
+            int backNum = i * 2;
+            defaultList.Add(new Book.PaperModel
+            {
+                FrontImage = $"{BaseBookUrl}/mfmi24_regulations-{(frontNum < 10 ? "0" : "")}{frontNum}.png",
+                BackImage = $"{BaseBookUrl}/mfmi24_regulations-{(backNum < 10 ? "0" : "")}{backNum}.png"
+            });
+        }
+        return defaultList;
+    }
+}
