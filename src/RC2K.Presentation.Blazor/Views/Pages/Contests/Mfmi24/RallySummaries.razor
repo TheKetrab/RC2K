@@ -1,5 +1,13 @@
 ﻿@rendermode InteractiveServer
 
 @page "/contests/mfmi24/summaries"
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26
 
 @inherits BaseMfmi24Page
+
+<MfmiSummaries LabelFilter="MFMI24"
+               GetGroupFunc="Mfmi24Helper.GetGroup"
+               GetNrFunc="Mfmi24Helper.GetNr"
+               GetCarFunc="Mfmi24Helper.GetCar"/>
+
