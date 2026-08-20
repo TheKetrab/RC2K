@@ -1,6 +1,5 @@
 ﻿@using Microsoft.Extensions.Caching.Memory
 @using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
-@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
 @using RC2K.Utils
 @inject ITimeEntryService TimeEntryService
 @inject INotificationService NotificationService
@@ -125,6 +124,14 @@ else
     {
         _viewModel = new();
 
+        string cacheKey = GetViewModelCacheKey();
+        var cachedValue = Cache.Get<List<MfmiStandingsStageContestInfoViewModel>>(cacheKey);
+        if (cachedValue is not null)
+        {
+            _viewModel.Stages = cachedValue;
+            return;
+        }
+
         var stages = (await StageService.GetAllByRallyCode(RallyCode))
             .Where(x => x.Direction == DomainModel.Direction.Simulation)
             .ToList();
@@ -140,30 +147,19 @@ else
             standingsByStageId[s.Id] = standings;
         }
 
-
         var rallyStandingsInfo = MfmiHelper.GetRallyStandingsInfo(standingsByStageId);
-
         var globalVm = await GetViewModelForSummary(rallyStandingsInfo);
         stagesViewModel.Add(globalVm);
 
+        Cache.Set<List<MfmiStandingsStageContestInfoViewModel>>(cacheKey, stagesViewModel);
         _viewModel.Stages = stagesViewModel;
     }
 
-    private string GetStageViewModelCacheKey(int stageId) =>
-        $"MfmiStandings_{MainLink}_{RallyCode}_{stageId}";
-
-    private string GetGlobalViewModelCacheKey() =>
-        $"MfmiStandings_{MainLink}_{RallyCode}_GLOBAL";
+    private string GetViewModelCacheKey() =>
+        $"MfmiStandings_{MainLink}_{RallyCode}";
 
     private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForStage(Stage stage, List<MfmiHelper.StandingsInfo> standings)
     {
-        string cacheKey = GetStageViewModelCacheKey(stage.Id);
-        var cachedValue = Cache.Get<MfmiStandingsStageContestInfoViewModel>(cacheKey);
-        if (cachedValue is not null)
-        {
-            return cachedValue;
-        }
-
         MfmiStandingsStageContestInfoViewModel vm = new()
         {
             StageName = stage.StageData!.Name,
@@ -188,19 +184,11 @@ else
             vm.Entries.Add(entry);
         }
 
-        Cache.Set<MfmiStandingsStageContestInfoViewModel>(cacheKey, vm);
         return vm;
     }
 
     private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForSummary(List<MfmiHelper.StandingsInfo> standingsByStageId)
     {
-        string cacheKey = GetGlobalViewModelCacheKey();
-        var cachedValue = Cache.Get<MfmiStandingsStageContestInfoViewModel>(cacheKey);
-        if (cachedValue is not null)
-        {
-            return cachedValue;
-        }
-
         MfmiStandingsStageContestInfoViewModel vm = new()
         {
             StageName = LevelHelper.RallyCodeToRallyName(RallyCode),
@@ -226,7 +214,6 @@ else
             vm.Entries.Add(entry);
         }
 
-        Cache.Set<MfmiStandingsStageContestInfoViewModel>(cacheKey, vm);
         return vm;
     }
 }

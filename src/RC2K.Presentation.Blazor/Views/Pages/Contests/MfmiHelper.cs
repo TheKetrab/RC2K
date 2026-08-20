@@ -1,7 +1,5 @@
 ﻿using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
-using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24;
-using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
 
@@ -16,7 +14,6 @@ public static class MfmiHelper
         public List<Proof> Proofs { get; set; }
     }
 
-    // TODO: memory cache
     public async static Task<List<StandingsInfo>> GetStandingsInfo(ITimeEntryService timeEntryService, Stage stage, string labelFilter)
     {
         var timeEntries = (await timeEntryService.Get(stage.Id))
