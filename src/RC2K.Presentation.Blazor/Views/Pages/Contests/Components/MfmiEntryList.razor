@@ -1,0 +1,72 @@
+﻿@using Microsoft.Extensions.Caching.Memory
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
+@using RC2K.Utils
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+@inject IStageService StageService
+@inject ICarService CarService
+@inject IDriverService DriverService
+@inject IMemoryCache Cache
+
+
+<MudDataGrid T="MfmiEntryListItemViewModel"
+             Items="@_items"
+             Hover="true"
+             Breakpoint="Breakpoint.Sm"
+             ReadOnly="false"
+             Bordered="true"
+             Dense="true">
+    <Columns>
+        <PropertyColumn Property="x => x.Nr" Title="#" />
+        <PropertyColumn Property="@(x => x.Driver.Known ? x.Driver.User.Name : x.Driver.Name)" Title="Name" />
+        <TemplateColumn Title="Nationality">
+            <CellTemplate>
+                <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" />
+        <PropertyColumn Property="x => x.Car.Name" Title="Car" />
+        <TemplateColumn Title="Driver profile">
+            <CellTemplate>
+                <MudButton Href="@context.Item.DriverProfile">
+                    Show
+                </MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+@code {
+
+    private List<MfmiEntryListItemViewModel> _items { get; set; }
+
+    [Parameter]
+    public List<MfmiParticipant> Participants { get; set; }
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _items = new();
+
+        var cars = await CarService.GetAll();
+
+        foreach (var p in Participants)
+        {
+            var driver = (await DriverService.GetByName(p.Name)) ?? throw new Exception();
+            var car = cars.First(x => x.Name == p.Car);
+            _items.Add(new MfmiEntryListItemViewModel()
+            {
+                Nr = p.Nr,
+                Car = car,
+                Driver = driver,
+                DriverProfile = p.CustomProperties.TryGetValue(Constants.DriverProfileProperty, out object driverProfile) ? driverProfile.ToString() : "",
+                Group = p.CustomProperties.TryGetValue(Constants.GroupProperty, out object group) ? (int)group : -1,
+            });
+        }
+
+    }
+}

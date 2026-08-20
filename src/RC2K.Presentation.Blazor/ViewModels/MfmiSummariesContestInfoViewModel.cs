@@ -4,19 +4,19 @@ namespace RC2K.Presentation.Blazor.ViewModels;
 
 public class MfmiSummariesContestInfoViewModel
 {
-    public List<RallyContestInfoViewModel> Rallies = [];
+    public List<MfmiSummariesRallyContestInfoViewModel> Rallies = [];
 }
 
-public class RallyContestInfoViewModel
+public class MfmiSummariesRallyContestInfoViewModel
 {
     public RallyCode? RallyCode { get; set; }
     public string RallyName { get; set; }
     public string RallyImage { get; set; }
     public bool IsFinalSummary { get; set; }
-    public List<EntryListItemViewModel> Entries = [];
+    public List<MfmiSummariesEntryListItemViewModel> Entries = [];
 }
 
-public class EntryListItemViewModel
+public class MfmiSummariesEntryListItemViewModel
 {
     public int Rank { get; set; }
     public required int Nr { get; init; }

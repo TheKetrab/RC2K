@@ -36,19 +36,24 @@ public class MfmiSummariesRepository(Db database, MfmiSummariesContestInfoViewMo
     private async Task<Guid> GetIdIfExistsOrCreateNew(string edition, int day)
     {
         var query = new QueryDefinition(@"
-            SELECT c.id FROM c WHERE c.type = 'mfmi-summary' AND c.edition = @edition AND c.day = @day")
-            .WithParameter("@edition", edition)
-            .WithParameter("@day", day);
+            SELECT VALUE c.id 
+            FROM c 
+            WHERE c.type = 'mfmi-summary' AND c.edition = @edition AND c.day = @day")
+           .WithParameter("@edition", edition)
+           .WithParameter("@day", day);
 
         Guid? guid = null;
-        using var it = Container.GetItemQueryIterator<Guid>(query);
-        if (it.HasMoreResults)
+        using var it = Container.GetItemQueryIterator<Guid>(
+            query,
+            requestOptions: new QueryRequestOptions { MaxItemCount = 1 });
+
+        while (it.HasMoreResults)
         {
             var res = await it.ReadNextAsync();
-            guid = res.FirstOrDefault();
-            if (guid == Guid.Empty)
+            if (res.FirstOrDefault() is Guid foundGuid && foundGuid != Guid.Empty)
             {
-                guid = null;
+                guid = foundGuid;
+                break;
             }
         }
 

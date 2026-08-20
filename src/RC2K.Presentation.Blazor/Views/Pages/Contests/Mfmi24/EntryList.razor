@@ -1,75 +1,24 @@
 ﻿@rendermode InteractiveServer
 
 @page "/contests/mfmi24/entry-list"
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
 @inherits BaseMfmi24Page
 
 @inject IDriverService DriverService
 @inject ICarService CarService
 
-<MudDataGrid T="EntryListItemViewModel"
-             Items="@_items"
-             Hover="true"
-             Breakpoint="Breakpoint.Sm"
-             ReadOnly="false"
-             Bordered="true"
-             Dense="true">
-    <Columns>
-        <PropertyColumn Property="x => x.Nr" Title="#" />
-        <PropertyColumn Property="@(x => x.Driver.Known ? x.Driver.User.Name : x.Driver.Name)" Title="Name" />
-        <TemplateColumn Title="Nationality">
-            <CellTemplate>
-               <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" />
-        <PropertyColumn Property="x => x.Car.Name" Title="Car" />
-        <TemplateColumn Title="Driver profile">
-            <CellTemplate>
-                <MudButton Href="@context.Item.DriverProfile">
-                    Show
-                </MudButton>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
-
+<MfmiEntryList Participants="Participants" />
 
 @code {
 
-    private List<EntryListItemViewModel> _items;
-
-    class EntryListItemViewModel
-    {
-        public int Nr { get; init; }
-        public Driver Driver { get; set; }
-        public int Group { get; init; }
-        public Car Car { get; init; }
-        public string DriverProfile { get; init; }
-    }
-
+    private List<MfmiParticipant> Participants { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
-        _items = new ();
-
-        var cars = await CarService.GetAll();
-        var c1 = cars.First();
-        var c2 = cars.Skip(1).First();
-
-        foreach (var p in Contest.Participants)
-        {
-            var driver = (await DriverService.GetByName(p.Name)) ?? throw new Exception() ;
-            var car = cars.First(x => x.Name == p.Car);
-            _items.Add(new EntryListItemViewModel()
-            {
-                Nr = p.Nr,
-                Car = car,
-                Driver = driver,
-                DriverProfile = p.DriverProfile,
-                Group = p.Group
-            });
-        }
+        List<Mfmi24Participant> participants = Contest.Participants.ToList();
+        Participants = participants.Cast<MfmiParticipant>().ToList();
     }
 
 }

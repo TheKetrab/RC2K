@@ -43,12 +43,12 @@ public class MfmiSummariesContestInfoViewModelMapper : IModelMapper<MfmiSummarie
         MfmiSummariesContestInfoViewModel viewModel = new();
         foreach (var rally in cosmosModel.Rallies)
         {
-            RallyContestInfoViewModel rallyViewModel = new();
+            MfmiSummariesRallyContestInfoViewModel rallyViewModel = new();
             RallyCode? rc = rally.RallyCode == -1 ? null : (RallyCode)rally.RallyCode;
             if (rc is null)
             {
-                rallyViewModel.RallyName = "TODO";
-                rallyViewModel.RallyImage = "TODO";
+                rallyViewModel.RallyName = "Final Summary";
+                rallyViewModel.RallyImage = "main_rally";
                 rallyViewModel.RallyCode = rc;
                 rallyViewModel.IsFinalSummary = true;
             }
@@ -61,7 +61,7 @@ public class MfmiSummariesContestInfoViewModelMapper : IModelMapper<MfmiSummarie
             }
             foreach (var entry in rally.Entries)
             {
-                EntryListItemViewModel entryViewModel = new()
+                MfmiSummariesEntryListItemViewModel entryViewModel = new()
                 {
                     Group = entry.Group,
                     Nr = entry.Nr,

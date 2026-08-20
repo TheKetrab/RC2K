@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Caching.Memory
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
 @using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
 @using RC2K.Utils
 @inject ITimeEntryService TimeEntryService
@@ -35,9 +36,10 @@ else
                 <h1>@stage.StageName</h1>
                 <img src="@(stage.IsRallySummary ? $"img/rallies/{stage.StageImage}.PNG" : $"img/maps/{stage.StageImage}")" />
             </div>
-            <MudDataGrid T="EntryListItemViewModel"
-            Items="@stage.Entries"
-            ShowColumnOptions="false">
+            <MudDataGrid T="MfmiStandingsEntryListItemViewModel"
+                         Items="@stage.Entries"
+                         Hover="true"
+                         ShowColumnOptions="false">
                 <Columns>
                     <PropertyColumn Property="x => x.Rank" Title="Rank" Filterable="false" Sortable="false" />
                     <PropertyColumn Property="x => x.Nr" Title="#" Filterable="false" Sortable="false" />
@@ -78,7 +80,7 @@ else
 @code {
 
     private bool _isLoading = false;
-    private RallyContestInfoViewModel _viewModel;
+    private MfmiStandingsContestInfoViewModel _viewModel;
 
 
     [Parameter]
@@ -98,33 +100,6 @@ else
 
     [Parameter]
     public Func<string, string> GetCarFunc { get; set; }
-
-    class RallyContestInfoViewModel
-    {
-        public List<StageContestInfoViewModel> Stages = [];
-    }
-
-    class StageContestInfoViewModel
-    {
-        public string StageName { get; set; }
-        public string StageImage { get; set; }
-        public bool IsRallySummary { get; set; }
-        public List<EntryListItemViewModel> Entries = [];
-    }
-
-    class EntryListItemViewModel
-    {
-        public int Rank { get; set; }
-        public int Nr { get; init; }
-        public Driver Driver { get; set; }
-        public string Group { get; init; }
-        public Car Car { get; init; }
-        public TimeSpan Time { get; set; }
-        public string TimeDisplay => (Time == TimeSpan.MaxValue) ? "N/A" : Time.ToString(@"m\:ss\.ff");
-        public TimeSpan Gap { get; set; }
-        public string GapDisplay => TimeDisplay == "N/A" ? "N/A" : (Gap == TimeSpan.Zero ? "" : $"- {Gap.ToString(@"m\:ss\.ff")}");
-        public List<Proof> Proofs { get; set; }
-    }
 
     private async Task<Car> ResolveCar(string driverName)
     {
@@ -155,11 +130,11 @@ else
             .Where(x => x.Direction == DomainModel.Direction.Simulation)
             .ToList();
 
-        List<StageContestInfoViewModel> stagesViewModel = [];
-        Dictionary<int, List<Mfmi24Helper.StandingsInfo>> standingsByStageId = new();
+        List<MfmiStandingsStageContestInfoViewModel> stagesViewModel = [];
+        Dictionary<int, List<MfmiHelper.StandingsInfo>> standingsByStageId = new();
         foreach (var s in stages)
         {
-            var standings = await Mfmi24Helper.GetStandingsInfo(TimeEntryService, s, LabelFilter);
+            var standings = await MfmiHelper.GetStandingsInfo(TimeEntryService, s, LabelFilter);
             var vm = await GetViewModelForStage(s, standings);
 
             stagesViewModel.Add(vm);
@@ -167,7 +142,7 @@ else
         }
 
 
-        var rallyStandingsInfo = Mfmi24Helper.GetRallyStandingsInfo(standingsByStageId);
+        var rallyStandingsInfo = MfmiHelper.GetRallyStandingsInfo(standingsByStageId);
 
         var globalVm = await GetViewModelForSummary(rallyStandingsInfo);
         stagesViewModel.Add(globalVm);
@@ -181,64 +156,76 @@ else
     private string GetGlobalViewModelCacheKey() =>
         $"MfmiStandings_{MainLink}_{RallyCode}_GLOBAL";
 
-    private async Task<StageContestInfoViewModel> GetViewModelForStage(Stage stage, List<Mfmi24Helper.StandingsInfo> standings)
+    private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForStage(Stage stage, List<MfmiHelper.StandingsInfo> standings)
     {
         string cacheKey = GetStageViewModelCacheKey(stage.Id);
-        var cachedValue = Cache.Get<StageContestInfoViewModel>(cacheKey);
+        var cachedValue = Cache.Get<MfmiStandingsStageContestInfoViewModel>(cacheKey);
         if (cachedValue is not null)
         {
             return cachedValue;
         }
 
-        StageContestInfoViewModel vm = new();
+        MfmiStandingsStageContestInfoViewModel vm = new();
         vm.StageName = stage.StageData.Name;
         vm.StageImage = stage.StageData.ImgName;
         vm.Entries = new();
 
-        vm.Entries = standings.Select(s => new EntryListItemViewModel()
+        foreach (var s in standings)
         {
-            Car = ResolveCar(s.Driver.FriendlyName).GetAwaiter().GetResult(), // TODO
-            Driver = s.Driver,
-            Nr = GetNrFunc(s.Driver.FriendlyName),
-            Gap = s.Gap,
-            Group = GetGroupFunc(s.Driver.FriendlyName),
-            Proofs = s.Proofs,
-            Rank = s.Rank,
-            Time = s.Time
-        }).ToList();
+            string driverName = s.Driver.FriendlyName;
+            var car = await ResolveCar(driverName);
+            var entry = new MfmiStandingsEntryListItemViewModel()
+            {
+                Car = car,
+                Driver = s.Driver,
+                Nr = GetNrFunc(driverName),
+                Gap = s.Gap,
+                Group = GetGroupFunc(driverName),
+                Proofs = s.Proofs,
+                Rank = s.Rank,
+                Time = s.Time
+            };
+            vm.Entries.Add(entry);
+        }
 
-        Cache.Set<StageContestInfoViewModel>(cacheKey, vm);
+        Cache.Set<MfmiStandingsStageContestInfoViewModel>(cacheKey, vm);
         return vm;
     }
 
-    private async Task<StageContestInfoViewModel> GetViewModelForSummary(List<Mfmi24Helper.StandingsInfo> standingsByStageId)
+    private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForSummary(List<MfmiHelper.StandingsInfo> standingsByStageId)
     {
         string cacheKey = GetGlobalViewModelCacheKey();
-        var cachedValue = Cache.Get<StageContestInfoViewModel>(cacheKey);
+        var cachedValue = Cache.Get<MfmiStandingsStageContestInfoViewModel>(cacheKey);
         if (cachedValue is not null)
         {
             return cachedValue;
         }
 
-        StageContestInfoViewModel vm = new();
+        MfmiStandingsStageContestInfoViewModel vm = new();
         vm.StageName = LevelHelper.RallyCodeToRallyName(RallyCode);
         vm.StageImage = LevelHelper.RallyCodeToRallyImageName(RallyCode);
         vm.IsRallySummary = true;
         vm.Entries = new();
 
-        vm.Entries = standingsByStageId.Select(s => new EntryListItemViewModel()
+        foreach (var s in standingsByStageId)
         {
-            Car = ResolveCar(s.Driver.FriendlyName).GetAwaiter().GetResult(), // TODO
-            Driver = s.Driver,
-            Nr = GetNrFunc(s.Driver.FriendlyName),
-            Gap = s.Gap,
-            Group = GetGroupFunc(s.Driver.FriendlyName),
-            Proofs = s.Proofs,
-            Rank = s.Rank,
-            Time = s.Time
-        }).ToList();
+            string driverName = s.Driver.FriendlyName;
+            var car = await ResolveCar(driverName);
+            var entry = new MfmiStandingsEntryListItemViewModel()
+            {
+                Car = car,
+                Driver = s.Driver,
+                Nr = GetNrFunc(driverName),
+                Gap = s.Gap,
+                Group = GetGroupFunc(driverName),
+                Proofs = s.Proofs,
+                Rank = s.Rank,
+                Time = s.Time
+            };
+            vm.Entries.Add(entry);
+        }
 
-        Cache.Set<StageContestInfoViewModel>(cacheKey, vm);
+        Cache.Set<MfmiStandingsStageContestInfoViewModel>(cacheKey, vm);
         return vm;
     }
 }
