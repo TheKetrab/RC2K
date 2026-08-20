@@ -1,0 +1,292 @@
+﻿@using RC2K.Presentation.Blazor.Database
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
+@using RC2K.Utils
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+@inject IStageService StageService
+@inject ICarService CarService
+
+@if (_isLoading)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="@($"100vh")" />
+    <MudOverlay Visible="true" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    @foreach (var rally in _viewModel.Rallies)
+    {
+        <div style="display: grid; grid-template-columns: 1fr 4fr; border-top: solid black 1px; margin-top: 10px;">
+            <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+                <h1>@rally.RallyName</h1>
+                <img src="@(rally.IsFinalSummary ? $"img/{rally.RallyImage}.PNG" : $"img/rallies/{rally.RallyImage}.PNG")" />
+            </div>
+            <MudDataGrid T="MfmiSummariesEntryListItemViewModel"
+                         Items="@rally.Entries"
+                         Hover="true"
+                         ShowColumnOptions="false">
+                <Columns>
+                    <PropertyColumn Property="x => x.Rank" Title="Rank" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.Nr" Title="#" Filterable="false" Sortable="false" />
+                     <PropertyColumn Property="x => x.DriverFriendlyName" Title="Name" Filterable="false" Sortable="false" />
+                    <TemplateColumn Title="Car">
+                        <CellTemplate>
+                            <div class="car" data-car-id="@(context.Item.CarId - 1)"></div>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Nat" >
+                        <CellTemplate>
+                            <span class="fi @($"fi-{@context.Item.DriverNationality}")"></span>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.TimeDisplay" Title="Time" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.TimeWcbDisplay" Title="Time (WCB-adjusted)" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.Points" Title="Points" Filterable="false" Sortable="false" /> 
+                </Columns>
+            </MudDataGrid>
+        </div>
+    }
+}
+@code {
+
+    private bool _isLoading = false;
+    private MfmiSummariesContestInfoViewModel _viewModel;
+
+    /// <summary>
+    /// Label to filter Time Entries by MFMI edition
+    /// </summary>
+    [Parameter]
+    public required string LabelFilter { get; set; }
+
+    /// <summary>
+    /// Resolve Nr of competitor by driver name
+    /// </summary>
+    [Parameter]
+    public required Func<string,int> GetNrFunc { get; set; }
+
+    /// <summary>
+    /// Resolve Group of competitor by driver name
+    /// </summary>
+    [Parameter]
+    public required Func<string, string> GetGroupFunc { get; set; }
+
+    /// <summary>
+    /// Resolve Car of competitor by driver name
+    /// </summary>
+    [Parameter]
+    public required Func<string, string> GetCarFunc { get; set; }
+
+    /// <summary>
+    /// Summaries state depends on day of competition, this is function that returs what can be shown depending on local pl date time
+    /// </summary>
+    [Parameter]
+    public required Func<int> GetCompetitionDayFunc { get; set; }
+
+    /// <summary>
+    /// Heavy calculation durable cached in CosmosDb
+    /// </summary>
+    [Parameter]
+    public required Func<int,Task<MfmiSummariesContestInfoViewModel?>> GetCalculatedViewModelFunc { get; set; }
+
+    /// <summary>
+    /// Store heavy calculation durable cache in CosmosDb
+    /// </summary>
+    [Parameter]
+    public required Func<MfmiSummariesContestInfoViewModel,int,Task> SetCalculatedViewModelFunc { get; set; }
+
+
+    private async Task<Car> ResolveCar(string driverName)
+    {
+        string carName = GetCarFunc(driverName);
+        List<Car> cars = await CarService.GetAll();
+        return cars.First(x => x.Name == carName);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            await Reload();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task Reload()
+    {
+        int day = GetCompetitionDayFunc();
+        var calculatedViewModel = await GetCalculatedViewModelFunc(day);
+        if (calculatedViewModel is not null)
+        {
+            _viewModel = calculatedViewModel;
+            return;
+        }
+
+        _viewModel = new();
+
+        var rallies = LevelHelper.GetRallyCodesBySimulationOrder();
+
+        Dictionary<RallyCode, List<MfmiHelper.StandingsInfo>> rallyStandingsInfoAll = [];
+        foreach (var rallyCode in rallies) 
+        {
+            var stages = (await StageService.GetAllByRallyCode(rallyCode))
+               .Where(x => x.Direction == DomainModel.Direction.Simulation)
+               .ToList();
+
+            Dictionary<int, List<MfmiHelper.StandingsInfo>> standingsByStageId = [];
+            foreach (var stage in stages) 
+            {
+                var standings = await MfmiHelper.GetStandingsInfo(TimeEntryService, stage, LabelFilter);
+                standingsByStageId.Add(stage.Id, standings);
+            }
+            var rallyStandingsInfo = MfmiHelper.GetRallyStandingsInfo(standingsByStageId);
+            rallyStandingsInfoAll[rallyCode] = rallyStandingsInfo;
+        }
+
+        List<MfmiSummariesRallyContestInfoViewModel> ralliesViewModel = [];
+        foreach (var (rallyCode,standings) in rallyStandingsInfoAll)
+        {
+            var vm = await GetViewModelForRally(rallyCode, standings);
+            ralliesViewModel.Add(vm);
+        }
+
+        var globalVm = await GetViewModelForFinal(ralliesViewModel);
+        ralliesViewModel.Add(globalVm);
+
+        _viewModel.Rallies = ralliesViewModel;
+
+        await SetCalculatedViewModelFunc(_viewModel, day);
+    }
+
+    private async Task<MfmiSummariesRallyContestInfoViewModel> GetViewModelForRally(RallyCode rally, List<MfmiHelper.StandingsInfo> standings)
+    {
+        MfmiSummariesRallyContestInfoViewModel vm = new()
+        {
+            RallyName = LevelHelper.RallyCodeToRallyName(rally),
+            RallyImage = LevelHelper.RallyCodeToRallyImageName(rally),
+            RallyCode = rally,
+        };
+
+        foreach (var s in standings)
+        {
+            string driverName = s.Driver.FriendlyName;
+            Car car = await ResolveCar(driverName);
+
+            var entry = new MfmiSummariesEntryListItemViewModel()
+            {
+                CarId = car.Id,
+                DriverFriendlyName = s.Driver.FriendlyName,
+                DriverNationality = s.Driver.Nationality,
+                Nr = GetNrFunc(driverName),
+                Group = GetGroupFunc(driverName),
+                Rank = s.Rank,
+                Time = s.Time,                
+            };
+
+            var wcbTime = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(s.Time) * Mfmi24Helper.GetCarModifier(car)));
+            entry.TimeWcb = wcbTime;
+            vm.Entries.Add(entry);
+        }
+
+        var bestOfDriverByTime =
+            vm.Entries.GroupBy(x => x.TimeWcb).ToList();
+
+        var rankedPoints = Utils.CalculateRanked(bestOfDriverByTime)
+            .ToDictionary(x => x.item, x => vm.Entries.Count - x.rank);
+        foreach (var entry in vm.Entries)
+        {
+            if (entry.Time == TimeSpan.MaxValue)
+            {
+                entry.Points = 0;
+            }
+            else
+            {
+                entry.Points = rankedPoints[entry];
+            }
+        }
+
+        return vm;
+    }
+
+    private async Task<MfmiSummariesRallyContestInfoViewModel> GetViewModelForFinal(List<MfmiSummariesRallyContestInfoViewModel> ralliesViewModel)
+    {
+        MfmiSummariesRallyContestInfoViewModel vm = new()
+        {
+            RallyName = "Final Summary",
+            RallyImage = "main_rally",
+            RallyCode = null,
+            IsFinalSummary = true,
+        };
+
+        var allDriversDict = ralliesViewModel
+            .SelectMany(x => x.Entries)
+            .Select(x => new { Name = x.DriverFriendlyName, Nat = x.DriverNationality })
+            .DistinctBy(x => x.Name)
+            .ToDictionary(x => x.Name, x => x.Nat);
+        var allDrivers = allDriversDict.Keys;
+        foreach (var dFriendlyName in allDrivers)
+        {
+            var car = await ResolveCar(dFriendlyName);
+            MfmiSummariesEntryListItemViewModel driverVm = new()
+            {
+                Nr = GetNrFunc(dFriendlyName),
+                DriverFriendlyName = dFriendlyName,
+                DriverNationality = allDriversDict[dFriendlyName],
+                Group = GetGroupFunc(dFriendlyName),
+                Rank = -1,
+                Points = ralliesViewModel.Sum(x => x.Entries.FirstOrDefault(y => y.DriverFriendlyName == dFriendlyName)?.Points ?? 0),
+                CarId = car.Id
+            };
+
+            int totalPoints = 0;
+            TimeSpan totalTime = TimeSpan.Zero;
+            bool isGlobalNa = false;
+            foreach (var s in ralliesViewModel)
+            {
+                var entry = s.Entries.FirstOrDefault(x => x.DriverFriendlyName == dFriendlyName);
+                totalPoints += entry?.Points ?? 0;
+                if (entry is null || entry.Time == TimeSpan.MaxValue)
+                {
+                    isGlobalNa = true;
+                }
+                else
+                {
+                    totalTime = totalTime.Add(entry.Time);
+                }
+            }
+            TimeSpan timeWcb;
+            if (isGlobalNa)
+            {
+                totalTime = TimeSpan.MaxValue;
+                timeWcb = TimeSpan.MaxValue;
+            }
+            else
+            {
+                timeWcb = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(totalTime) * Mfmi24Helper.GetCarModifier(car)));
+                
+            }
+            driverVm.Time = totalTime;
+            driverVm.Points = totalPoints;
+            driverVm.TimeWcb = timeWcb;
+            vm.Entries.Add(driverVm);
+        }
+
+        var standings =
+            vm.Entries.OrderByDescending(x => x.Points)
+                      .GroupBy(x => x.Points)
+                      .ToList();
+        var ranks = Utils.CalculateRanked(standings).ToDictionary(x => x.item, x => x.rank);
+        vm.Entries.ForEach(entry => entry.Rank = ranks[entry] + 1);
+        vm.Entries = vm.Entries.OrderBy(x => x.Rank).ToList();
+
+        return vm;
+    }
+}

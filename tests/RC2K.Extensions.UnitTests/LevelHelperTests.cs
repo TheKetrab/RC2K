@@ -38,5 +38,16 @@ public class LevelHelperTests
     public void StageCodeToRallyImageName_UsesProperDictionary() =>
         Assert.That(LevelHelper.StageCodeToRallyImageName(62), Is.EqualTo("WELPIR"));
 
+    [Test]
+    public void GetRallyCodeByShortName_UsesProperDictionary() =>
+        Assert.That(LevelHelper.GetRallyCodeByShortName("stena"), Is.EqualTo(RallyCode.Stena));
+    
+    [Test]
+    public void StageCodeToRallyShortName_UsesProperDictionary () =>
+        Assert.That(LevelHelper.StageCodeToRallyShortName(42), Is.EqualTo("vauxhall"));
+
+    [Test]
+    public void GetRallyCodesBySimulationOrder_UsesProperOrder() =>
+        Assert.That(LevelHelper.GetRallyCodesBySimulationOrder().ToList()[0], Is.EqualTo(RallyCode.Vauxhall));
 
 }

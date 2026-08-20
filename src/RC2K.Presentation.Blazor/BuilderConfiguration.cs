@@ -12,6 +12,7 @@ using RC2K.Logic;
 using RC2K.Logic.Interfaces;
 using RC2K.Parser;
 using RC2K.Presentation.Blazor.AuthProxy;
+using RC2K.Presentation.Blazor.Database;
 using RC2K.Presentation.Blazor.TrafficLimits;
 using RC2K.Presentation.Blazor.Views;
 using RC2K.Presentation.Blazor.Views.Dialogs;
@@ -92,6 +93,8 @@ public static class BuilderConfiguration
                     $"Unknown environment: {builder.Configuration["ASPNETCORE_ENVIRONMENT"]}"
                     + " (Set up proper env var ASPNETCORE_ENVIRONMENT")
             });
+        builder.Services.AddScoped<MfmiSummariesRepository>();
+        builder.Services.AddScoped<MfmiSummariesContestInfoViewModelMapper>();
 
         builder.Services
             .RegisterLogicServices(builder.Configuration)
@@ -140,6 +143,8 @@ public static class BuilderConfiguration
 
             return new ReCaptchaV3Verifier(secretKey, httpClientFactory, logger);
         });
+
+        builder.Services.AddScoped<MfmiLayoutState>();
 
         return builder;
     }

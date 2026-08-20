@@ -6,6 +6,9 @@ public static class TimeExtensions
     public static int ToCentiseconds(this TimeOnly time) =>
         time.Hour * 3600 * 100 + time.Minute * 60 * 100 + time.Second * 100 + time.Millisecond / 10;
 
+    public static long ToCentiseconds(this TimeSpan time) =>
+        time.Hours * 3600 * 100 + time.Minutes * 60 * 100 + time.Seconds * 100 + time.Milliseconds / 10;
+
     public static TimeOnly ToTimeOnly(this int centiseconds)
     {
         int hours = centiseconds / 360000;
@@ -21,5 +24,8 @@ public static class TimeExtensions
 
         return new TimeOnly(hours, minutes, seconds, milliseconds);
     }
+
+    public static TimeSpan ToTimeSpan(this long centiseconds) =>
+        TimeSpan.FromMilliseconds(centiseconds * 10L);
 
 }
