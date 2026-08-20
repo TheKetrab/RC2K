@@ -31,11 +31,12 @@ public class HeaderViewModel : BaseViewModel
             GetRallySubitem(RallyCode.Sony),
         ] },
         new MenuItem() { Item = "Contests", ItemLink = "contests", Icon = Icon.Contest, Subitems = [
-            //("MFMI23","contests/mfmi23"),
             //("The White Heat","contests/twh"),
             //("MFMI22","contests/mfmi22"),
-            ("MFMI24","contests/mfmi24/overview"),
-            ("MFMI26","contests/mfmi26/overview"),
+            ("MFMI23","contests/mfmi23"),
+            ("MFMI24","contests/mfmi24"),
+            ("MFMI25","contests/mfmi25"),
+            //("MFMI26","contests/mfmi26"),
         ] },
         //new MenuItem() { Item = "Mods", ItemLink = "mods", Icon = Icon.Mod, Subitems = [
         //    ("Skins","mods/skins"),

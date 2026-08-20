@@ -1,0 +1,24 @@
+﻿@rendermode InteractiveServer
+
+@page "/contests/mfmi23/entry-list"
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@inherits BaseMfmi23Page
+
+@inject IDriverService DriverService
+@inject ICarService CarService
+
+<MfmiEntryList Participants="Participants" />
+
+@code {
+
+    private List<MfmiParticipant> Participants { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<Mfmi23Participant> participants = Contest.Participants.ToList();
+        Participants = participants.Cast<MfmiParticipant>().ToList();
+    }
+
+}

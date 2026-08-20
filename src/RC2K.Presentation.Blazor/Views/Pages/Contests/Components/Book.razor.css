@@ -55,7 +55,6 @@
 .front {
     z-index: 1;
     backface-visibility: hidden;
-    border-left: 3px solid #f06127;
 }
 
 .back {

@@ -1,4 +1,6 @@
-﻿using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24;
+﻿using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi23;
+using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24;
+using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi25;
 using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
@@ -27,6 +29,7 @@ public class Constants
     public const string NrProperty = nameof(NrProperty);
     public const string GroupProperty = nameof(GroupProperty);
     public const string DriverProfileProperty = nameof(DriverProfileProperty);
+    public const string TeamProperty = nameof(TeamProperty);
 }
 
 public class MfmiParticipant : IParticipant
@@ -62,11 +65,15 @@ public class ContestsDefinitions
             return field;
         } 
     }
+    public Mfmi23Contest Mfmi23 { get; }
     public Mfmi24Contest Mfmi24 { get; }
+    public Mfmi25Contest Mfmi25 { get; }
     public Mfmi26Contest Mfmi26 { get; }
     private ContestsDefinitions()
     {
+        Mfmi23 = new();
         Mfmi24 = new();
+        Mfmi25 = new();
         Mfmi26 = new();
     }
 }

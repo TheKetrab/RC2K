@@ -29,13 +29,16 @@
         </TemplateColumn>
         <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" />
         <PropertyColumn Property="x => x.Car.Name" Title="Car" />
-        <TemplateColumn Title="Driver profile">
-            <CellTemplate>
-                <MudButton Href="@context.Item.DriverProfile">
-                    Show
-                </MudButton>
-            </CellTemplate>
-        </TemplateColumn>
+        @if (ShowDriverProfile)
+        {
+            <TemplateColumn Title="Driver profile">
+                <CellTemplate>
+                    <MudButton Href="@context.Item.DriverProfile">
+                        Show
+                    </MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        }
     </Columns>
 </MudDataGrid>
 
@@ -46,7 +49,8 @@
     [Parameter]
     public List<MfmiParticipant> Participants { get; set; }
 
-
+    [Parameter]
+    public bool ShowDriverProfile { get; set; } = true;
 
     protected override async Task OnParametersSetAsync()
     {

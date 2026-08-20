@@ -12,7 +12,7 @@
                 string paperClass = paper.IsFlipped ? "paper flipped" : "paper";
 
                 <div id="@($"p{pageNum}")" class="@paperClass" style="z-index: @paper.ZIndex;">
-                    <div class="front">
+                    <div class="front" style="border-left: 3px solid @CenterColor;">
                         <div id="@($"f{pageNum}")" class="front-content">
                             <img src="@paper.FrontImage" style="height: 100%; width: 100%;" alt="Page @(pageNum * 2 - 1)" />
                         </div>
@@ -36,6 +36,9 @@
     </MudButton>
 </div>
 @code {
+
+    [Parameter]
+    public string CenterColor { get; set; }
 
     [Parameter]
     public List<PaperModel> Pages { get; set; } = [];
