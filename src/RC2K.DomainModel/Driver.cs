@@ -10,5 +10,5 @@ public class Driver
     public User? User { get; set; }
     public string? Nationality { get; init; }
 
-    public string FriendlyName => Known ? User.Name : Name;
+    public string FriendlyName => Known ? (User?.Name ?? "?") : Name!;
 }

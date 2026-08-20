@@ -18,7 +18,7 @@
 @code {
 
     [Parameter]
-    public string Rally { get; set; }
+    public string? Rally { get; set; }
 
     private RallyCode RallyCode => Rally is null
         ? LevelHelper.GetRallyCodesBySimulationOrder().First()

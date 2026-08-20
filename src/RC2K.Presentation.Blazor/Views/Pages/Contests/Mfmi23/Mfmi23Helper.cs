@@ -41,15 +41,6 @@ public static class Mfmi23Helper
 
     public static int GetCompetitionDay()
     {
-        // TODO to polish time
-        if (DateTime.Now <= new DateTime(2023, 07, 21)) return 1;
-        if (DateTime.Now <= new DateTime(2023, 07, 22)) return 2;
-        if (DateTime.Now <= new DateTime(2023, 07, 23)) return 3;
-        if (DateTime.Now <= new DateTime(2023, 07, 24)) return 4;
-        // TODO ...
-        return 20;
+        return 20; // it's over
     }
-
-
 }
-

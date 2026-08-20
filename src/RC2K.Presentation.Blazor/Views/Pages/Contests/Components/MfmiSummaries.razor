@@ -61,43 +61,43 @@ else
     /// Label to filter Time Entries by MFMI edition
     /// </summary>
     [Parameter]
-    public string LabelFilter { get; set; }
+    public required string LabelFilter { get; set; }
 
     /// <summary>
     /// Resolve Nr of competitor by driver name
     /// </summary>
     [Parameter]
-    public Func<string,int> GetNrFunc { get; set; }
+    public required Func<string,int> GetNrFunc { get; set; }
 
     /// <summary>
     /// Resolve Group of competitor by driver name
     /// </summary>
     [Parameter]
-    public Func<string, string> GetGroupFunc { get; set; }
+    public required Func<string, string> GetGroupFunc { get; set; }
 
     /// <summary>
     /// Resolve Car of competitor by driver name
     /// </summary>
     [Parameter]
-    public Func<string, string> GetCarFunc { get; set; }
+    public required Func<string, string> GetCarFunc { get; set; }
 
     /// <summary>
     /// Summaries state depends on day of competition, this is function that returs what can be shown depending on local pl date time
     /// </summary>
     [Parameter]
-    public Func<int> GetCompetitionDayFunc { get; set; }
+    public required Func<int> GetCompetitionDayFunc { get; set; }
 
     /// <summary>
     /// Heavy calculation durable cached in CosmosDb
     /// </summary>
     [Parameter]
-    public Func<int,Task<MfmiSummariesContestInfoViewModel?>> GetCalculatedViewModelFunc { get; set; }
+    public required Func<int,Task<MfmiSummariesContestInfoViewModel?>> GetCalculatedViewModelFunc { get; set; }
 
     /// <summary>
     /// Store heavy calculation durable cache in CosmosDb
     /// </summary>
     [Parameter]
-    public Func<MfmiSummariesContestInfoViewModel,int,Task> SetCalculatedViewModelFunc { get; set; }
+    public required Func<MfmiSummariesContestInfoViewModel,int,Task> SetCalculatedViewModelFunc { get; set; }
 
 
     private async Task<Car> ResolveCar(string driverName)
@@ -114,15 +114,10 @@ else
             _isLoading = true;
             await Reload();
         }
-        catch (Exception ex)
-        {
-
-        }
         finally
         {
             _isLoading = false;
         }
-
     }
 
     private async Task Reload()
@@ -173,11 +168,12 @@ else
 
     private async Task<MfmiSummariesRallyContestInfoViewModel> GetViewModelForRally(RallyCode rally, List<MfmiHelper.StandingsInfo> standings)
     {
-        MfmiSummariesRallyContestInfoViewModel vm = new();
-        vm.RallyName = LevelHelper.RallyCodeToRallyName(rally);
-        vm.RallyImage = LevelHelper.RallyCodeToRallyImageName(rally);
-        vm.RallyCode = rally;
-        vm.Entries = new();
+        MfmiSummariesRallyContestInfoViewModel vm = new()
+        {
+            RallyName = LevelHelper.RallyCodeToRallyName(rally),
+            RallyImage = LevelHelper.RallyCodeToRallyImageName(rally),
+            RallyCode = rally,
+        };
 
         foreach (var s in standings)
         {
@@ -222,14 +218,19 @@ else
 
     private async Task<MfmiSummariesRallyContestInfoViewModel> GetViewModelForFinal(List<MfmiSummariesRallyContestInfoViewModel> ralliesViewModel)
     {
-        MfmiSummariesRallyContestInfoViewModel vm = new();
-        vm.RallyName = "Final Summary";
-        vm.RallyImage = "main_rally";
-        vm.RallyCode = null;
-        vm.IsFinalSummary = true;
-        vm.Entries = new();
+        MfmiSummariesRallyContestInfoViewModel vm = new()
+        {
+            RallyName = "Final Summary",
+            RallyImage = "main_rally",
+            RallyCode = null,
+            IsFinalSummary = true,
+        };
 
-        var allDriversDict = ralliesViewModel.SelectMany(x => x.Entries).Select(x => new { Name = x.DriverFriendlyName, Nat = x.DriverNationality }).DistinctBy(x => x.Name).ToDictionary(x => x.Name, x => x.Nat);
+        var allDriversDict = ralliesViewModel
+            .SelectMany(x => x.Entries)
+            .Select(x => new { Name = x.DriverFriendlyName, Nat = x.DriverNationality })
+            .DistinctBy(x => x.Name)
+            .ToDictionary(x => x.Name, x => x.Nat);
         var allDrivers = allDriversDict.Keys;
         foreach (var dFriendlyName in allDrivers)
         {
@@ -288,5 +289,4 @@ else
 
         return vm;
     }
-
 }

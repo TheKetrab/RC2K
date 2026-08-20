@@ -43,37 +43,37 @@ public class MfmiSummariesContestInfoViewModelMapper : IModelMapper<MfmiSummarie
         MfmiSummariesContestInfoViewModel viewModel = new();
         foreach (var rally in cosmosModel.Rallies)
         {
-            MfmiSummariesRallyContestInfoViewModel rallyViewModel = new();
             RallyCode? rc = rally.RallyCode == -1 ? null : (RallyCode)rally.RallyCode;
-            if (rc is null)
-            {
-                rallyViewModel.RallyName = "Final Summary";
-                rallyViewModel.RallyImage = "main_rally";
-                rallyViewModel.RallyCode = rc;
-                rallyViewModel.IsFinalSummary = true;
-            }
-            else
-            {
-                rallyViewModel.RallyName = LevelHelper.RallyCodeToRallyName((RallyCode)rally.RallyCode);
-                rallyViewModel.RallyImage = LevelHelper.RallyCodeToRallyImageName((RallyCode)rally.RallyCode);
-                rallyViewModel.RallyCode = rc;
-                rallyViewModel.IsFinalSummary = false;
-            }
+            MfmiSummariesRallyContestInfoViewModel rallyViewModel = rc is null
+                ? new MfmiSummariesRallyContestInfoViewModel()
+                {
+                    RallyName = "Final Summary",
+                    RallyImage = "main_rally",
+                    RallyCode = rc,
+                    IsFinalSummary = true
+                }
+                : new MfmiSummariesRallyContestInfoViewModel()
+                {
+                    RallyName = LevelHelper.RallyCodeToRallyName((RallyCode)rally.RallyCode),
+                    RallyImage = LevelHelper.RallyCodeToRallyImageName((RallyCode)rally.RallyCode),
+                    RallyCode = rc,
+                    IsFinalSummary = false
+                };
+
             foreach (var entry in rally.Entries)
             {
                 MfmiSummariesEntryListItemViewModel entryViewModel = new()
                 {
-                    Group = entry.Group,
+                    CarId = entry.CarId,
+                    Group = entry.Group ?? "?",
                     Nr = entry.Nr,
                     DriverFriendlyName = entry.DriverFriendlyName,
+                    DriverNationality = entry.DriverNationality,
+                    Rank = entry.Rank,
+                    Time = Utils.Utils.CentisecondsToTimeSpan(entry.TimeCentiseconds),
+                    TimeWcb = Utils.Utils.CentisecondsToTimeSpan(entry.TimeWcbCentiseconds),
+                    Points = entry.Points,
                 };
-
-                entryViewModel.Rank = entry.Rank;
-                entryViewModel.DriverNationality = entry.DriverNationality;
-                entryViewModel.CarId = entry.CarId;
-                entryViewModel.Time = Utils.Utils.CentisecondsToTimeSpan(entry.TimeCentiseconds);
-                entryViewModel.TimeWcb = Utils.Utils.CentisecondsToTimeSpan(entry.TimeWcbCentiseconds);
-                entryViewModel.Points = entry.Points;
 
                 rallyViewModel.Entries.Add(entryViewModel);
             }

@@ -38,7 +38,7 @@
 @code {
 
     [Parameter]
-    public string CenterColor { get; set; }
+    public string CenterColor { get; set; } = "#ffffff";
 
     [Parameter]
     public List<PaperModel> Pages { get; set; } = [];
@@ -124,7 +124,7 @@
         public string BackImage { get; set; } = string.Empty;
     }
 
-    private class PaperState : PaperModel
+    private sealed class PaperState : PaperModel
     {
         public bool IsFlipped { get; set; }
         public int ZIndex { get; set; }

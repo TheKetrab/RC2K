@@ -1,8 +1,6 @@
 ﻿@rendermode InteractiveServer
 
 @using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
-@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
-@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26
 @using RC2K.Utils;
 
 @page "/contests/mfmi24/standings"
@@ -20,7 +18,7 @@
 @code {
 
     [Parameter]
-    public string Rally { get; set; }
+    public string? Rally { get; set; }
 
     private RallyCode RallyCode => Rally is null
         ? LevelHelper.GetRallyCodesBySimulationOrder().First()

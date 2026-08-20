@@ -12,13 +12,11 @@
 
 @code {
 
-    private List<MfmiParticipant> Participants { get; set; }
-
+    private List<MfmiParticipant> Participants { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         List<Mfmi24Participant> participants = Contest.Participants.ToList();
         Participants = participants.Cast<MfmiParticipant>().ToList();
     }
-
 }

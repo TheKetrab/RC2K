@@ -1,7 +1,6 @@
 ﻿@using Microsoft.Extensions.Caching.Memory
 @using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
-@using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24
-@using RC2K.Utils
+
 @inject ITimeEntryService TimeEntryService
 @inject INotificationService NotificationService
 @inject IUserService UserService
@@ -21,7 +20,7 @@
              Dense="true">
     <Columns>
         <PropertyColumn Property="x => x.Nr" Title="#" />
-        <PropertyColumn Property="@(x => x.Driver.Known ? x.Driver.User.Name : x.Driver.Name)" Title="Name" />
+        <PropertyColumn Property="x => x.Driver.FriendlyName" Title="Name" />
         <TemplateColumn Title="Nationality">
             <CellTemplate>
                 <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
@@ -44,10 +43,10 @@
 
 @code {
 
-    private List<MfmiEntryListItemViewModel> _items { get; set; }
+    private List<MfmiEntryListItemViewModel> _items { get; set; } = default!;
 
     [Parameter]
-    public List<MfmiParticipant> Participants { get; set; }
+    public required List<MfmiParticipant> Participants { get; set; } = default!;
 
     [Parameter]
     public bool ShowDriverProfile { get; set; } = true;
@@ -67,8 +66,8 @@
                 Nr = p.Nr,
                 Car = car,
                 Driver = driver,
-                DriverProfile = p.CustomProperties.TryGetValue(Constants.DriverProfileProperty, out object driverProfile) ? driverProfile.ToString() : "",
-                Group = p.CustomProperties.TryGetValue(Constants.GroupProperty, out object group) ? (int)group : -1,
+                DriverProfile = p.CustomProperties.TryGetValue(Constants.DriverProfileProperty, out object? driverProfile) ? driverProfile.ToString() : "",
+                Group = p.CustomProperties.TryGetValue(Constants.GroupProperty, out object? group) ? (int)group : -1,
             });
         }
 

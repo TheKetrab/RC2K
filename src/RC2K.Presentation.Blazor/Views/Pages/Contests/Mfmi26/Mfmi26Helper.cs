@@ -21,12 +21,17 @@ public static class Mfmi26Helper
         {"Migger", "Mitsubishi Lancer Evo V" },
     };
 
-    public static string GetNr(string driver) =>
-        _name2nr.TryGetValue(driver, out int res) ? res.ToString() : "?";
+    public static int GetNr(string driver) =>
+        _name2nr.TryGetValue(driver, out int res) ? res : -1;
 
     public static string GetGroup(string driver) =>
         _name2group.TryGetValue(driver, out int res) ? res.ToString() : "?";
 
     public static string GetCar(string driver) =>
         _name2car.TryGetValue(driver, out string? res) ? (res ?? "?") : "?";
+
+    public static int GetCompetitionDay()
+    {
+        return -1; // not started
+    }
 }

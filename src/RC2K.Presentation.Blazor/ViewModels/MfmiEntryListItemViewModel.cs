@@ -5,8 +5,8 @@ namespace RC2K.Presentation.Blazor.ViewModels;
 public class MfmiEntryListItemViewModel
 {
     public int Nr { get; init; }
-    public Driver Driver { get; set; }
+    public required Driver Driver { get; init; }
     public int Group { get; init; }
-    public Car Car { get; init; }
-    public string DriverProfile { get; init; }
+    public required Car Car { get; init; }
+    public string? DriverProfile { get; set; }
 }

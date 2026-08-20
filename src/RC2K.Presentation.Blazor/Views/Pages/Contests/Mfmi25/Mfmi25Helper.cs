@@ -1,5 +1,6 @@
 ﻿using RC2K.DomainModel;
 using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
+using RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi25;
 
@@ -34,16 +35,8 @@ public static class Mfmi25Helper
     public static string GetCar(string driver) =>
         _name2car.TryGetValue(driver, out string? res) ? (res ?? "?") : "?";
 
-    public static double GetCarModifier(Car car) => car.Id switch
-    {
-        _ => 1 // TODO
-        //8 => 1.05, // Mitsubishi Lancer Evo V
-        //15 => 1.04, // Peugeot 206 WRC
-        //5 => 1.03, // Subaru Impreza WRC
-        //23 => 1.02, // Mitsubishi Lancer Evo IV
-        //3 => 1.01, // Seat Cordoba WRC
-        //_ => 1
-    };
+    public static double GetCarModifier(Car car) =>
+        Mfmi24Helper.GetCarModifier(car);
 
     public static int GetCompetitionDay()
     {

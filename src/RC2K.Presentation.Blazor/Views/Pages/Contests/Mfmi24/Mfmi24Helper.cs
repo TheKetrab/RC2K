@@ -1,6 +1,4 @@
 ﻿using RC2K.DomainModel;
-using RC2K.Logic;
-using RC2K.Logic.Interfaces;
 using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi24;
@@ -43,13 +41,7 @@ public static class Mfmi24Helper
 
     public static int GetCompetitionDay()
     {
-        // TODO to polish time
-        if (DateTime.Now <= new DateTime(2024, 07, 21)) return 1;
-        if (DateTime.Now <= new DateTime(2024, 07, 22)) return 2;
-        if (DateTime.Now <= new DateTime(2024, 07, 23)) return 3;
-        if (DateTime.Now <= new DateTime(2024, 07, 24)) return 4;
-        // TODO ...
-        return 20;
+        return 20; // it's over
     }
 
 

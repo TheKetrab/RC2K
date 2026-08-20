@@ -4,16 +4,16 @@ namespace RC2K.Presentation.Blazor.ViewModels;
 
 public class MfmiSummariesContestInfoViewModel
 {
-    public List<MfmiSummariesRallyContestInfoViewModel> Rallies = [];
+    public List<MfmiSummariesRallyContestInfoViewModel> Rallies { get; set; } = [];
 }
 
 public class MfmiSummariesRallyContestInfoViewModel
 {
-    public RallyCode? RallyCode { get; set; }
-    public string RallyName { get; set; }
-    public string RallyImage { get; set; }
+    public required RallyCode? RallyCode { get; init; }
+    public required string RallyName { get; init; }
+    public required string RallyImage { get; init; }
     public bool IsFinalSummary { get; set; }
-    public List<MfmiSummariesEntryListItemViewModel> Entries = [];
+    public List<MfmiSummariesEntryListItemViewModel> Entries { get; set; } = [];
 }
 
 public class MfmiSummariesEntryListItemViewModel
