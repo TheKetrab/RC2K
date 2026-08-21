@@ -1,6 +1,7 @@
 ﻿
 window.mapInterop = {
     mapInstance: null,
+    hoverMarker: null,
     initMap: async function (mapElementId, waypoints, showWaypoints, api, path) {
         
         if (waypoints.length < 2)
@@ -15,6 +16,7 @@ window.mapInterop = {
         if (this.mapInstance !== undefined && this.mapInstance !== null) {
             this.mapInstance.remove();
         }
+        this.hoverMarker = null; // stale reference would target the removed map
 
         const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
         this.mapInstance = map;
@@ -98,6 +100,7 @@ window.mapInterop = {
         if (this.mapInstance !== undefined && this.mapInstance !== null) {
             this.mapInstance.remove();
         }
+        this.hoverMarker = null; // stale reference would target the removed map
 
         const map = L.map(mapElementId).setView([origin.lat, origin.lng], 13);
         this.mapInstance = map;
@@ -130,6 +133,32 @@ window.mapInterop = {
         map.fitBounds(group.getBounds());
 
         this.setMarkersSize();
+    },
+
+    showHoverMarker: function (lat, lng) {
+
+        if (!this.mapInstance) return;
+
+        if (!this.hoverMarker) {
+            this.hoverMarker = L.circleMarker([lat, lng], {
+                radius: 8,
+                color: '#e53935',
+                weight: 2,
+                fillColor: '#ffffff',
+                fillOpacity: 1,
+                interactive: false
+            }).addTo(this.mapInstance);
+        } else {
+            this.hoverMarker.setLatLng([lat, lng]);
+        }
+    },
+
+    hideHoverMarker: function () {
+
+        if (this.hoverMarker && this.mapInstance) {
+            this.mapInstance.removeLayer(this.hoverMarker);
+        }
+        this.hoverMarker = null;
     },
 
     setMarkersSize: function () {
