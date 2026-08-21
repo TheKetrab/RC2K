@@ -1,5 +1,6 @@
 ﻿using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
+using RC2K.Utils;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("RC2K.Logic.UnitTests")]
@@ -83,7 +84,7 @@ public class PointsProvider : IPointsProvider
                                  .GroupBy(x => x.Time)
                                  .ToList();
 
-            var ranked = CalculateRanked(bestOfDriverByTime);
+            var ranked = Utils.Utils.CalculateRanked(bestOfDriverByTime);
 
             Func<int,int> getPoints = car.Class switch
             {
@@ -97,7 +98,7 @@ public class PointsProvider : IPointsProvider
 
             for (int i=0; i<5 && i< ranked.Count; i++)
             {
-                res.Add(ranked[i].timeEntry.Id, getPoints(ranked[i].rank));
+                res.Add(ranked[i].item.Id, getPoints(ranked[i].rank));
             }
         }
 
@@ -114,12 +115,12 @@ public class PointsProvider : IPointsProvider
                        .GroupBy(x => x.Time)
                        .ToList();
 
-        var ranked = CalculateRanked(bestOfDriverByTime);
+        var ranked = Utils.Utils.CalculateRanked(bestOfDriverByTime);
 
         Dictionary<Guid, int> res = [];
         for (int i = 0; i < 30 && i < ranked.Count; i++)
         {
-            res.Add(ranked[i].timeEntry.Id, _generalPoints[ranked[i].rank]);
+            res.Add(ranked[i].item.Id, _generalPoints[ranked[i].rank]);
         }
 
         return res;
@@ -134,9 +135,9 @@ public class PointsProvider : IPointsProvider
                        .GroupBy(x => x.Time)
                        .ToList();
 
-        var ranked = CalculateRanked(standings);
+        var ranked = Utils.Utils.CalculateRanked(standings);
 
-        return ranked.ToDictionary(x => x.timeEntry.Id, x => x.rank + 1);
+        return ranked.ToDictionary(x => x.item.Id, x => x.rank + 1);
     }
 
     public Dictionary<Guid, int> CalculatePlaceByCar(List<TimeEntry> timeEntries)
@@ -151,7 +152,7 @@ public class PointsProvider : IPointsProvider
                                  .GroupBy(x => x.Time)
                                  .ToList();
 
-            var ranked = CalculateRanked(standings);
+            var ranked = Utils.Utils.CalculateRanked(standings);
 
             foreach (var (timeEntry, rank) in ranked)
             {
@@ -174,7 +175,7 @@ public class PointsProvider : IPointsProvider
                                    .GroupBy(x => x.Time)
                                    .ToList();
 
-            var ranked = CalculateRanked(standings);
+            var ranked = Utils.Utils.CalculateRanked(standings);
 
             foreach (var (timeEntry, rank) in ranked)
             {
@@ -183,19 +184,5 @@ public class PointsProvider : IPointsProvider
         }
 
         return res;
-    }
-
-    private static List<(TimeEntry timeEntry, int rank)> CalculateRanked(List<IGrouping<TimeOnly, TimeEntry>> standingsByTime)
-    {
-        List<(TimeEntry timeEntry, int rank)> ranked = [];        
-
-        int rank = 0;
-        foreach (var g in standingsByTime)
-        {
-            ranked.AddRange(g.Select(x => (x, rank)));
-            rank += g.Count();
-        }
-        
-        return ranked;
     }
 }

@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "RC2K.Function.Messages": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7051",
+      "environmentVariables": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+      }
+    }
+  }
+}

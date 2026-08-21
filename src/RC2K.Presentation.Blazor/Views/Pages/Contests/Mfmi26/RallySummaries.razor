@@ -1,0 +1,35 @@
+﻿@rendermode InteractiveServer
+
+@page "/contests/mfmi26/summaries"
+@using RC2K.Presentation.Blazor.Database
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+
+@inject MfmiSummariesRepository MfmiSummariesRepository
+@inherits BaseMfmi26Page
+
+<MfmiSummaries LabelFilter="MFMI26"
+               GetGroupFunc="Mfmi26Helper.GetGroup"
+               GetNrFunc="Mfmi26Helper.GetNr"
+               GetCarFunc="Mfmi26Helper.GetCar"
+               GetCompetitionDayFunc="Mfmi26Helper.GetCompetitionDay"
+               GetCalculatedViewModelFunc="CosmosCacheGet"
+               SetCalculatedViewModelFunc="CosmosCacheSet"/>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        CosmosCacheGet = async (day) => await MfmiSummariesRepository.Get(Contest.MainLink, day);
+        CosmosCacheSet = async (viewModel, day) => await MfmiSummariesRepository.Set(viewModel, Contest.MainLink, day);
+    }
+
+    private Func<int, Task<MfmiSummariesContestInfoViewModel?>> CosmosCacheGet { get; set; } = default!;
+    private Func<MfmiSummariesContestInfoViewModel, int, Task> CosmosCacheSet { get; set; } = default!;
+
+}

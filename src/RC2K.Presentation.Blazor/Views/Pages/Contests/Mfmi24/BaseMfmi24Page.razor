@@ -1,0 +1,13 @@
+﻿@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@layout MfmiLayout
+@inject MfmiLayoutState LayoutState
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        LayoutState.SetContest(Contest);
+    }
+
+    public Mfmi24Contest Contest { get; } = ContestsDefinitions.Instance.Mfmi24;
+}

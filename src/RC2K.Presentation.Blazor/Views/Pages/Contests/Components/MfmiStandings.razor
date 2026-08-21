@@ -1,0 +1,219 @@
+﻿@using Microsoft.Extensions.Caching.Memory
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@using RC2K.Utils
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+@inject IStageService StageService
+@inject ICarService CarService
+@inject IMemoryCache Cache
+
+<div style="width: 100%; display: flex; justify-content: center;">
+    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+        @foreach (var x in LevelHelper.GetRallyCodesBySimulationOrder())
+        {
+            <MudButton Href="@($"/contests/{MainLink}/standings/{LevelHelper.RallyCodeToRallyShortName(x)}")" Style="font-size: 8pt; text-transform: none;">
+                @LevelHelper.RallyCodeToRallyName(x)
+            </MudButton>
+        }
+    </MudButtonGroup>
+</div>
+@if (_isLoading)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="@($"100vh")" />
+    <MudOverlay Visible="true" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    @foreach (var stage in _viewModel.Stages)
+    {
+        <div style="display: grid; grid-template-columns: 1fr 4fr; border-top: solid black 1px; margin-top: 10px;">
+            <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+                <h1>@stage.StageName</h1>
+                <img src="@(stage.IsRallySummary ? $"img/rallies/{stage.StageImage}.PNG" : $"img/maps/{stage.StageImage}")" />
+            </div>
+            <MudDataGrid T="MfmiStandingsEntryListItemViewModel"
+                         Items="@stage.Entries"
+                         Hover="true"
+                         ShowColumnOptions="false">
+                <Columns>
+                    <PropertyColumn Property="x => x.Rank" Title="Rank" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.Nr" Title="#" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="@(x => x.Driver.Known ? x.Driver.User.Name : x.Driver.Name)" Title="Name" Filterable="false" Sortable="false" />
+                    <TemplateColumn Title="Car">
+                        <CellTemplate>
+                            <div class="car" data-car-id="@(context.Item.Car.Id - 1)"></div>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Nat" >
+                        <CellTemplate>
+                            <span class="fi @($"fi-{@context.Item.Driver!.Nationality}")"></span>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.TimeDisplay" Title="Time" Filterable="false" Sortable="false" />
+                    <PropertyColumn Property="x => x.GapDisplay" Title="Gap" Filterable="false" Sortable="false" />
+                    @if (!stage.IsRallySummary)
+                    {
+                        <TemplateColumn Title="Proofs" Filterable="false" Sortable="false">
+                            <CellTemplate>
+                                <p style="display: flex;">
+                                    @{
+                                        foreach (var p in context.Item.Proofs.OrderBy(x => x.Type))
+                                        {
+                                            <MudIconButton Target="_blank" Class="proof-item" Icon="@IconMapper.ProofTypeToIcon(p.Type)" Href="@p.Url" Size="Size.Small" />
+                                        }
+                                    }
+                                </p>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    }
+                </Columns>
+            </MudDataGrid>
+        </div>
+    }
+}
+@code {
+
+    private bool _isLoading = false;
+    private MfmiStandingsContestInfoViewModel _viewModel;
+
+
+    [Parameter]
+    public RallyCode RallyCode { get; set; }
+
+    [Parameter]
+    public required string MainLink { get; set; }
+
+    [Parameter]
+    public required string LabelFilter { get; set; }
+
+    [Parameter]
+    public required Func<string,int> GetNrFunc { get; set; }
+
+    [Parameter]
+    public required Func<string, string> GetGroupFunc { get; set; }
+
+    [Parameter]
+    public required Func<string, string> GetCarFunc { get; set; }
+
+    private async Task<Car> ResolveCar(string driverName)
+    {
+        string carName = GetCarFunc(driverName);
+        List<Car> cars = await CarService.GetAll();
+        return cars.First(x => x.Name == carName);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            await Reload();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task Reload()
+    {
+        _viewModel = new();
+
+        string cacheKey = GetViewModelCacheKey();
+        var cachedValue = Cache.Get<List<MfmiStandingsStageContestInfoViewModel>>(cacheKey);
+        if (cachedValue is not null)
+        {
+            _viewModel.Stages = cachedValue;
+            return;
+        }
+
+        var stages = (await StageService.GetAllByRallyCode(RallyCode))
+            .Where(x => x.Direction == DomainModel.Direction.Simulation)
+            .ToList();
+
+        List<MfmiStandingsStageContestInfoViewModel> stagesViewModel = [];
+        Dictionary<int, List<MfmiHelper.StandingsInfo>> standingsByStageId = new();
+        foreach (var s in stages)
+        {
+            var standings = await MfmiHelper.GetStandingsInfo(TimeEntryService, s, LabelFilter);
+            var vm = await GetViewModelForStage(s, standings);
+
+            stagesViewModel.Add(vm);
+            standingsByStageId[s.Id] = standings;
+        }
+
+        var rallyStandingsInfo = MfmiHelper.GetRallyStandingsInfo(standingsByStageId);
+        var globalVm = await GetViewModelForSummary(rallyStandingsInfo);
+        stagesViewModel.Add(globalVm);
+
+        Cache.Set<List<MfmiStandingsStageContestInfoViewModel>>(cacheKey, stagesViewModel);
+        _viewModel.Stages = stagesViewModel;
+    }
+
+    private string GetViewModelCacheKey() =>
+        $"MfmiStandings_{MainLink}_{RallyCode}";
+
+    private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForStage(Stage stage, List<MfmiHelper.StandingsInfo> standings)
+    {
+        MfmiStandingsStageContestInfoViewModel vm = new()
+        {
+            StageName = stage.StageData!.Name,
+            StageImage = stage.StageData!.ImgName!,
+        };
+
+        foreach (var s in standings)
+        {
+            string driverName = s.Driver.FriendlyName;
+            var car = await ResolveCar(driverName);
+            var entry = new MfmiStandingsEntryListItemViewModel()
+            {
+                Car = car,
+                Driver = s.Driver,
+                Nr = GetNrFunc(driverName),
+                Gap = s.Gap,
+                Group = GetGroupFunc(driverName),
+                Proofs = s.Proofs,
+                Rank = s.Rank,
+                Time = s.Time
+            };
+            vm.Entries.Add(entry);
+        }
+
+        return vm;
+    }
+
+    private async Task<MfmiStandingsStageContestInfoViewModel> GetViewModelForSummary(List<MfmiHelper.StandingsInfo> standingsByStageId)
+    {
+        MfmiStandingsStageContestInfoViewModel vm = new()
+        {
+            StageName = LevelHelper.RallyCodeToRallyName(RallyCode),
+            StageImage = LevelHelper.RallyCodeToRallyImageName(RallyCode),
+            IsRallySummary = true,
+        };
+
+        foreach (var s in standingsByStageId)
+        {
+            string driverName = s.Driver.FriendlyName;
+            var car = await ResolveCar(driverName);
+            var entry = new MfmiStandingsEntryListItemViewModel()
+            {
+                Car = car,
+                Driver = s.Driver,
+                Nr = GetNrFunc(driverName),
+                Gap = s.Gap,
+                Group = GetGroupFunc(driverName),
+                Proofs = s.Proofs,
+                Rank = s.Rank,
+                Time = s.Time
+            };
+            vm.Entries.Add(entry);
+        }
+
+        return vm;
+    }
+}

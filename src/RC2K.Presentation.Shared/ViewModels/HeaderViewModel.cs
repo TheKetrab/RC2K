@@ -20,6 +20,7 @@ public class HeaderViewModel : BaseViewModel
         //] },
         new MenuItem() { Item = "Admin", ItemLink = "admin", Icon = Icon.Settings, Subitems = [
             ("Verify info","admin/verification"),
+            ("Messages","admin/messages"),
         ] },
         new MenuItem() { Item = "Stages", ItemLink = "stages", Icon = Icon.Stage, Subitems = [
             GetRallySubitem(RallyCode.Vauxhall),
@@ -29,11 +30,14 @@ public class HeaderViewModel : BaseViewModel
             GetRallySubitem(RallyCode.Stena),
             GetRallySubitem(RallyCode.Sony),
         ] },
-        //new MenuItem() { Item = "Contests", ItemLink = "contests", Icon = Icon.Contest, Subitems = [
-        //    ("MFMI23","contests/mfmi23"),
-        //    ("The White Heat","contests/twh"),
-        //    ("MFMI22","contests/mfmi22"),
-        //] },
+        new MenuItem() { Item = "Contests", ItemLink = "contests", Icon = Icon.Contest, Subitems = [
+            //("The White Heat","contests/twh"),
+            //("MFMI22","contests/mfmi22"),
+            ("MFMI23","contests/mfmi23"),
+            ("MFMI24","contests/mfmi24"),
+            ("MFMI25","contests/mfmi25"),
+            //("MFMI26","contests/mfmi26"),
+        ] },
         //new MenuItem() { Item = "Mods", ItemLink = "mods", Icon = Icon.Mod, Subitems = [
         //    ("Skins","mods/skins"),
         //    ("Maps","mods/maps"),

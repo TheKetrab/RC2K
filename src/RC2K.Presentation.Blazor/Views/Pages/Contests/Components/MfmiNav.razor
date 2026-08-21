@@ -1,0 +1,16 @@
+﻿
+<div style="width: 100%; display: flex;">
+    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary" Style="margin: 10px auto 10px auto;">
+        <MudButton Href=@($"/contests/{ContestMainLink}/overview")>Overview</MudButton>
+        <MudButton Href=@($"/contests/{ContestMainLink}/entry-list")>Entry list</MudButton>
+        <MudButton Href=@($"/contests/{ContestMainLink}/standings")>Standings</MudButton>
+        <MudButton Href=@($"/contests/{ContestMainLink}/summaries")>Rally summaries</MudButton>
+        <MudButton Color="Color.Secondary" Href=@($"/contests/{ContestMainLink}/submit")>Submit</MudButton>
+    </MudButtonGroup>
+</div>
+@code {
+
+    [Parameter]
+    public string ContestMainLink { get; set; }
+
+}

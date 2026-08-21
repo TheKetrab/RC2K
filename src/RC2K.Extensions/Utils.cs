@@ -6,10 +6,13 @@ namespace RC2K.Utils;
 
 public static class Utils
 {
-    public static int TimeOnlyToCentiseconds(TimeOnly time) =>
-        time.Hour * 3600 * 100 + time.Minute * 60 * 100 + time.Second * 100 + time.Millisecond / 10;
+    public static int TimeOnlyToCentiseconds(TimeOnly time) => time.ToCentiseconds();
 
     public static TimeOnly CentisecondsToTimeOnly(int centiseconds) => centiseconds.ToTimeOnly();
+
+    public static long TimeSpanToCentiseconds(TimeSpan time) => time.ToCentiseconds();
+
+    public static TimeSpan CentisecondsToTimeSpan(long centiseconds) => centiseconds.ToTimeSpan();
 
     public static string DateTimeToString(DateTime dt) =>
         dt.ToString("dd/MM/yyyy");
@@ -54,4 +57,17 @@ public static class Utils
     public static string SerializeProof(Proof proof) =>
         $"{(char)proof.Type}|{proof.Url}";
 
+    public static List<(TItem item, int rank)> CalculateRanked<TItem,TKey>(List<IGrouping<TKey, TItem>> itemsByKey)
+    {
+        List<(TItem item, int rank)> ranked = [];
+
+        int rank = 0;
+        foreach (var g in itemsByKey)
+        {
+            ranked.AddRange(g.Select(x => (x, rank)));
+            rank += g.Count();
+        }
+
+        return ranked;
+    }
 }

@@ -2,12 +2,12 @@
 
 public enum RallyCode
 {
-    Sony,
-    Vauxhall,
-    Pirelli,
-    Scottish,
-    Seat,
-    Stena
+    Vauxhall = 1,
+    Pirelli = 2,
+    Scottish = 3,
+    Seat = 4,
+    Stena = 5,
+    Sony = 6,
 }
 
 [Flags]

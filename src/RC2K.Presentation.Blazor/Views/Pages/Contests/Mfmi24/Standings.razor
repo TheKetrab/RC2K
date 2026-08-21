@@ -1,0 +1,27 @@
+﻿@rendermode InteractiveServer
+
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
+@using RC2K.Utils;
+
+@page "/contests/mfmi24/standings"
+@page "/contests/mfmi24/standings/{rally}"
+@inherits BaseMfmi24Page
+
+<MfmiStandings MainLink="@Contest.MainLink" 
+               RallyCode="RallyCode"
+               LabelFilter="MFMI24"
+               GetGroupFunc="Mfmi24Helper.GetGroup"
+               GetNrFunc="Mfmi24Helper.GetNr"
+               GetCarFunc="Mfmi24Helper.GetCar"/>
+
+
+@code {
+
+    [Parameter]
+    public string? Rally { get; set; }
+
+    private RallyCode RallyCode => Rally is null
+        ? LevelHelper.GetRallyCodesBySimulationOrder().First()
+        : LevelHelper.GetRallyCodeByShortName(Rally);
+
+}
