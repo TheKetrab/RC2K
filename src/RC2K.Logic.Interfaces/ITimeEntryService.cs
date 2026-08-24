@@ -10,7 +10,7 @@ public interface ITimeEntryService
     Task<Result> Upload(TimeEntry timeEntry);
     Task Delete(List<TimeEntry> timeEntries);
 
-    Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default);
+    Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default, bool hideMfmi26 = true);
     Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId);
     Task<List<TimeEntry>> GetAllNotVerified();
     Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment);

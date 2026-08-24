@@ -135,16 +135,25 @@
                                             @bind-Value="UploadTimeModel.Cc" />
                         </div>
                         <MudText Class="lbl-driver">Driver name:</MudText>
-                        <MudTextField T="string" Class="data-driver"
-                                        @bind-Value="UploadTimeModel.DriverName" />
+                        <MudTextField T="string"
+                                      Class="data-driver" 
+                                      Disabled="@(FixedDriverName is not null)"
+                                      @bind-Value="UploadTimeModel.DriverName" />
                         <MudText Class="lbl-car">Car:</MudText>
-                        <CarSelector @ref="_carSelectorRef" class="data-car" SelectedCar="@UploadTimeModel.Car" ShowLabel="false" />
+                        <CarSelector @ref="_carSelectorRef" class="data-car" SelectedCar="@UploadTimeModel.Car" ShowLabel="false" Disabled="@FixedCarId.HasValue" />
                         <MudText Class="lbl-label">Label:</MudText>
                         <MudRadioGroup Class="data-label" @bind-Value="UploadTimeModel.Label">
-                            <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
-                            <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
-                            <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
-                            <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
+                            @if (FixedLabel is null)
+                            {
+                                <MudRadio Value="@("TA")" Color="Color.Primary">Time Attack</MudRadio>
+                                <MudRadio Value="@("BRC")" Color="Color.Secondary">BRC</MudRadio>
+                                <MudRadio Value="@("A8")" Color="Color.Success">A8</MudRadio>
+                                <MudRadio Value="@("Arcade")" Color="Color.Warning">Arcade</MudRadio>
+                            }
+                            else
+                            {
+                                <MudRadio Value="@FixedLabel" Color="Color.Warning">@FixedLabel</MudRadio>                                
+                            }
                         </MudRadioGroup>
                     </MudCardContent>
                 </MudCard>
@@ -223,7 +232,32 @@
 
 @code
 {
+    [Parameter]
+    public string? FixedLabel { get; set; }
+
+    [Parameter]
+    public int? FixedCarId { get; set; }
+
+    [Parameter]
+    public string? FixedDriverName { get; set; }
+
     private IReadOnlyList<IBrowserFile> _files = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (FixedLabel is not null)
+        {
+            UploadTimeModel.Label = FixedLabel;
+        }
+        if (FixedCarId.HasValue)
+        {
+            UploadTimeModel.Car = (await CarService.GetAll()).FirstOrDefault(x => x.Id == FixedCarId.Value);
+        }
+        if (FixedDriverName is not null)
+        {
+            UploadTimeModel.DriverName = FixedDriverName;   
+        }
+    }
 
     public void OnProofItemTextChanged(object idx)
     {

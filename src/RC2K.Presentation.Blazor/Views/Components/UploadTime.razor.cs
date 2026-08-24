@@ -24,7 +24,7 @@ public partial class UploadTime
     public int StageId { get; set; }
 
     [CascadingParameter]
-    public required IMudDialogInstance MudDialog { get; set; }
+    public required IMudDialogInstance? MudDialog { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -255,7 +255,7 @@ public partial class UploadTime
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
-            MudDialog.Close(1); // refresh
+            MudDialog?.Close(1); // refresh
         }
         else
         {
@@ -287,7 +287,7 @@ public partial class UploadTime
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
-            MudDialog.Close(1); // refresh
+            MudDialog?.Close(1); // refresh
         }
         else
         {
@@ -312,7 +312,7 @@ public partial class UploadTime
         if (uploadResult.Success)
         {
             ShowUploadedMessage();
-            MudDialog.Close(1); // refresh
+            MudDialog?.Close(1); // refresh
         }
         else
         {

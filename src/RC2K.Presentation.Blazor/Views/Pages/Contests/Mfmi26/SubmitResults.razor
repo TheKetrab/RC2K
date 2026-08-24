@@ -1,8 +1,63 @@
 ﻿@rendermode InteractiveServer
 
 @page "/contests/mfmi26/submit"
+@using RC2K.Presentation.Blazor.AuthProxy
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
 @inherits BaseMfmi26Page
 @inject ITimeEntryService TimeEntryService
 @inject INotificationService NotificationService
 @inject IUserService UserService
 @inject MessageHelper MessageHelper
+@inject IDriverService DriverService
+@inject ICarService CarService
+@inject AuthenticationStateProvider Asp
+
+@if (_isLoggedIn)
+{
+    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" CarId="@_carId" DriverName="@_fixedDriverName" GetCompetitionDayFunc="_getCompetitionDayFunc" />
+}
+else
+{
+    <MudText>Only logged in users can submit results</MudText>
+}
+
+@code {
+
+    private int? _carId;
+    private string? _fixedDriverName;
+    private bool _isLoggedIn;
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int? CompetitionDay { get; set; }
+
+    private Func<int> _getCompetitionDayFunc;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await Asp.GetAuthenticationStateAsync();
+        if (CompetitionDay is not null && Auth.TryAuthorize(auth, "admin"))
+        {
+            _getCompetitionDayFunc = () => CompetitionDay.Value;
+        }
+        else
+        {
+            _getCompetitionDayFunc = Mfmi26Helper.GetCompetitionDay;
+        }
+
+        var current = await UserService.GetCurrentUserName();
+        var currentDriver = await DriverService.GetByName(current);
+        if (currentDriver is null)
+        {
+            _isLoggedIn = false;
+            return;            
+        }
+
+        _isLoggedIn = true;
+        _fixedDriverName = currentDriver.FriendlyName;
+
+        var carName = Mfmi26Helper.GetCar(currentDriver.FriendlyName);
+        Car? car = (await CarService.GetAll()).FirstOrDefault(x => x.Name == carName);
+        _carId = car?.Id;
+    }
+}
