@@ -49,14 +49,14 @@ public class DateTimeMessageMapperTests
             Assert.That(result.Id, Is.EqualTo(message.Id));
             Assert.That(result.Name, Is.EqualTo(message.Name));
             Assert.That(result.Published, Is.EqualTo(message.Published));
-            Assert.That(result.DateTime, Is.EqualTo("2020/12/20 12:00:00Z"));
+            Assert.That(result.DateTime, Is.EqualTo("20/12/2020 12:00:00Z"));
         }
     }
 
     private static MessageModel AnyMessageModel() => new MessageModel()
     {
         Id = Guid.Parse("3258b9d9-43f9-4e00-8605-0d739b5cc791"),
-        DateTime = "2020/12/20 12:00:00Z",
+        DateTime = "20/12/2020 12:00:00Z",
         Message = "MSG",
         Published = false,
         Name = "name",

@@ -32,7 +32,7 @@ public class TimeExtensionsTests
     public void TimeSpanToCentiseconds_GivenTimeOnly_ReturnsCentiseconds()
     {
         //Arrange
-        TimeSpan timeSpan = new(1, 2, 3, 70);
+        TimeSpan timeSpan = new(0, 1, 2, 3, 70);
 
         //Act
         var result = timeSpan.ToCentiseconds();
@@ -45,12 +45,12 @@ public class TimeExtensionsTests
     public void CentisecondsToTimeSpan_GivenCentiseconds_ReturnsTimeSpan()
     {
         //Arrange
-        const int centiseconds = 372_307;
+        const long centiseconds = 372_307L;
 
         //Act
         var result = centiseconds.ToTimeSpan();
 
         //Assert
-        Assert.That(result, Is.EqualTo(new TimeSpan(1, 2, 3, 70)));
+        Assert.That(result, Is.EqualTo(new TimeSpan(0, 1, 2, 3, 70)));
     }
 }

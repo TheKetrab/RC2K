@@ -4,6 +4,7 @@ using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
 using RC2K.Logic.Interfaces.Fillers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace RC2K.Logic.UnitTests;
 
@@ -15,6 +16,7 @@ public class TimeEntryServiceTests
     private Mock<IPointsProvider> _pointsProviderMock;
     private Mock<IFillersBag> _fillersBagMock;
     private Mock<ILogger<TimeEntryService>> _loggerMock;
+    private IMemoryCache _cacheMock;
     private Mock<ITimeEntryFiller> _timeEntryFillerMock;
 
     [SetUp]
@@ -26,11 +28,18 @@ public class TimeEntryServiceTests
         _fillersBagMock = new Mock<IFillersBag>();
         _loggerMock = new Mock<ILogger<TimeEntryService>>();
         _timeEntryFillerMock = new Mock<ITimeEntryFiller>();
+        _cacheMock = new MemoryCache(new MemoryCacheOptions());
 
         _fillersBagMock.Setup(x => x.TimeEntryFiller).Returns(_timeEntryFillerMock.Object);
 
         _sut = new(_timeEntryRepositoryMock.Object, _verifyInfoRepositoryMock.Object, 
-                   _pointsProviderMock.Object, _fillersBagMock.Object, _loggerMock.Object);
+                   _pointsProviderMock.Object, _fillersBagMock.Object, _cacheMock, _loggerMock.Object);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _cacheMock.Dispose();
     }
 
     [Test]
