@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using RC2K.DataAccess.Interfaces.Repositories;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
@@ -14,12 +15,19 @@ public class TimeEntryService : ITimeEntryService
     private readonly IVerifyInfoRepository _verifyInfoRepository;
     private readonly IPointsProvider _pointsProvider;
     private readonly IFillersBag _fillers;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<TimeEntryService> _logger;
 
+    private const string BestTimesForDriverCacheKey = "TimeEntryRepository_BestTimesForDriverKey";
+    private const string ByStageIdCacheKey = "TimeEntryRepository_ByStageId";
+    private const string ByStageIdAndCarIdCacheKey = "TimeEntryRepository_ByStageIdAndCarId";
+    private readonly HashSet<string> _cachedKeys = [];
+    
     public TimeEntryService(ITimeEntryRepository timeEntryRepository,
                             IVerifyInfoRepository verifyInfoRepository,
                             IPointsProvider pointsProvider,
                             IFillersBag fillers,
+                            IMemoryCache cache,
                             ILogger<TimeEntryService> logger)
     {
         _logger = logger;
@@ -27,6 +35,7 @@ public class TimeEntryService : ITimeEntryService
         _verifyInfoRepository = verifyInfoRepository;
         _pointsProvider = pointsProvider;
         _fillers = fillers;
+        _cache = cache;
 
         _timeEntryRepository.RequestUnitsHandler += (s, e) =>
         {
@@ -36,6 +45,16 @@ public class TimeEntryService : ITimeEntryService
 
     public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default, bool hideMfmi26 = true)
     {
+        string cacheKey = carId is not null
+            ? $"{ByStageIdAndCarIdCacheKey}_{stageId}_{carId}"
+            : $"{ByStageIdCacheKey}_{stageId}";
+
+        bool canUseCache = hideMfmi26;
+        if (canUseCache && _cache.TryGetValue<List<TimeEntry>>(cacheKey, out var cachedValue))
+        {
+            return cachedValue!;
+        }
+
         var timeEntries = carId is not null
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value, ct)
             : await _timeEntryRepository.GetByStageId(stageId, ct);
@@ -47,6 +66,11 @@ public class TimeEntryService : ITimeEntryService
         }
 
         await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers, ct);
+
+        if (canUseCache)
+        {
+            SetCachedValue(cacheKey, timeEntries);
+        }
 
         return timeEntries;
     }
@@ -72,6 +96,11 @@ public class TimeEntryService : ITimeEntryService
             {
                 _logger.LogError(ex, "Failed to delete time entry {Id}", timeEntry.Id);
             }
+        }
+
+        foreach (var stageId in timeEntries.Select(x => x.StageId).Distinct())
+        {
+            InvalidateCaches(stageId);
         }
     }
 
@@ -167,6 +196,9 @@ public class TimeEntryService : ITimeEntryService
         }
 
         await _timeEntryRepository.Create(timeEntry);
+
+        InvalidateCaches(timeEntry.StageId);
+
         return new Result() { Success = true };
     }
 
@@ -275,6 +307,41 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId) =>
-        _timeEntryRepository.GetBestTimesForDriver(driverId);
+    public async Task<Dictionary<(int stageId, int carId), long>> GetBestTimesForDriver(Guid driverId)
+    {
+        string cacheKey = $"{BestTimesForDriverCacheKey}_{driverId}";
+        if (_cache.TryGetValue(cacheKey, out Dictionary<(int stageId, int carId), long>? cachedValue))
+        {
+            return cachedValue!;
+        }
+        var res = await _timeEntryRepository.GetBestTimesForDriver(driverId);
+        SetCachedValue(cacheKey, res);
+        return res;
+    }
+        
+
+    private void SetCachedValue<T>(string cacheKey, T value)
+    {
+        _cachedKeys.Add(cacheKey);
+        _cache.Set<T>(cacheKey, value);
+    }
+
+    private void InvalidateCaches(int stageId)
+    {
+        List<string> toRemove = [];
+        foreach (var cachedKey in _cachedKeys)
+        {
+            if (cachedKey.StartsWith(BestTimesForDriverCacheKey) ||
+                cachedKey.StartsWith($"{ByStageIdCacheKey}_{stageId}") ||
+                cachedKey.StartsWith($"{ByStageIdAndCarIdCacheKey}_{stageId}"))
+            {
+                toRemove.Add(cachedKey);
+            }
+        }
+        foreach (var cachedKeyToRemove in toRemove)
+        {
+            _cache.Remove(cachedKeyToRemove);
+        }
+    }
+
 }
