@@ -5,12 +5,15 @@
         <MudButton Href=@($"/contests/{ContestMainLink}/entry-list")>Entry list</MudButton>
         <MudButton Href=@($"/contests/{ContestMainLink}/standings")>Standings</MudButton>
         <MudButton Href=@($"/contests/{ContestMainLink}/summaries")>Rally summaries</MudButton>
-        <MudButton Color="Color.Secondary" Href=@($"/contests/{ContestMainLink}/submit")>Submit</MudButton>
+        <MudButton Disabled="@(!IsContestActive)" Color="Color.Secondary" Href=@($"/contests/{ContestMainLink}/submit")>Submit</MudButton>
     </MudButtonGroup>
 </div>
 @code {
 
     [Parameter]
-    public string ContestMainLink { get; set; }
+    public required string ContestMainLink { get; set; } = default!;
+
+    [Parameter]
+    public bool IsContestActive { get; set; }
 
 }

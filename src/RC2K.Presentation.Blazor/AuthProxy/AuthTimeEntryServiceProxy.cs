@@ -47,8 +47,8 @@ public class AuthTimeEntryServiceProxy(
         await service.Delete(timeEntries);
     }
 
-    public Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default) =>
-        service.Get(stageId, carId, ct);
+    public Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default, bool hideMfmi26 = true) =>
+        service.Get(stageId, carId, ct, hideMfmi26);
 
     public Task<List<TimeEntry>> GetAllNotVerified() =>
         service.GetAllNotVerified();

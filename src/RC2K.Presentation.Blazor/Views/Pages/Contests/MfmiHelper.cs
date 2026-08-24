@@ -1,5 +1,6 @@
 ﻿using RC2K.DomainModel;
 using RC2K.Logic.Interfaces;
+using RC2K.Utils;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
 
@@ -19,6 +20,11 @@ public static class MfmiHelper
         var timeEntries = (await timeEntryService.Get(stage.Id))
             .Where(x => x.Labels?.Contains(labelFilter) ?? false)
             .ToList();
+
+        if (timeEntries.Count == 0)
+        {
+            return [];
+        }
 
         var best = timeEntries.OrderBy(x => x.Time).First();
         List<StandingsInfo> res = timeEntries.Select(te => new StandingsInfo
@@ -87,7 +93,10 @@ public static class MfmiHelper
             info.Time = totalTime;
             res.Add(info);
         }
-
+        if (res.Count == 0)
+        {
+            return [];
+        }
         var best = res.OrderBy(x => x.Time).First();
         res.ForEach(x => x.Gap = x.Time - best.Time);
 
@@ -100,5 +109,64 @@ public static class MfmiHelper
         res = res.OrderBy(x => x.Rank).ToList();
 
         return res;
+    }
+
+    public static HashSet<int> GetStagesCodesForCompetitionDay(int day)
+    {
+        HashSet<int> codesForToday = day switch
+        {
+            1 => [
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 1),
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 2)],
+            2 => [
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 3),
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 4)],
+            3 => [
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 5),
+                LevelHelper.GetStageCode(RallyCode.Vauxhall, 6)],
+            4 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 1)],
+            5 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 2)],
+            6 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 3)],
+            7 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 4)],
+            8 => [
+                LevelHelper.GetStageCode(RallyCode.Pirelli, 5),
+                LevelHelper.GetStageCode(RallyCode.Pirelli, 6)],
+            9 => [
+                LevelHelper.GetStageCode(RallyCode.Scottish, 1),
+                LevelHelper.GetStageCode(RallyCode.Scottish, 2),
+                LevelHelper.GetStageCode(RallyCode.Scottish, 3)],
+            10 => [
+                LevelHelper.GetStageCode(RallyCode.Scottish, 4),
+                LevelHelper.GetStageCode(RallyCode.Scottish, 5)],
+            11 => [LevelHelper.GetStageCode(RallyCode.Scottish, 6)],
+            12 => [
+                LevelHelper.GetStageCode(RallyCode.Seat, 1),
+                LevelHelper.GetStageCode(RallyCode.Seat, 2),
+                LevelHelper.GetStageCode(RallyCode.Seat, 3)],
+            13 => [
+                LevelHelper.GetStageCode(RallyCode.Seat, 4),
+                LevelHelper.GetStageCode(RallyCode.Seat, 5),
+                LevelHelper.GetStageCode(RallyCode.Seat, 6)],
+            14 => [
+                LevelHelper.GetStageCode(RallyCode.Stena, 1),
+                LevelHelper.GetStageCode(RallyCode.Stena, 2)],
+            15 => [
+                LevelHelper.GetStageCode(RallyCode.Stena, 3),
+                LevelHelper.GetStageCode(RallyCode.Stena, 4)],
+            16 => [
+                LevelHelper.GetStageCode(RallyCode.Stena, 5),
+                LevelHelper.GetStageCode(RallyCode.Stena, 6)],
+            17 => [
+                LevelHelper.GetStageCode(RallyCode.Sony, 1),
+                LevelHelper.GetStageCode(RallyCode.Sony, 2),
+                LevelHelper.GetStageCode(RallyCode.Sony, 3)],
+            18 => [
+                LevelHelper.GetStageCode(RallyCode.Sony, 4),
+                LevelHelper.GetStageCode(RallyCode.Sony, 5),
+                LevelHelper.GetStageCode(RallyCode.Sony, 6)],
+            _ => []
+        };
+
+        return codesForToday;
     }
 }

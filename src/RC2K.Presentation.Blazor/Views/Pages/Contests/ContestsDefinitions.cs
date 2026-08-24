@@ -9,6 +9,7 @@ public interface IContest
 {
     string MainLink { get; }
     Dictionary<string, object> CustomProperties { get; }
+    bool IsContestActive { get; }
 }
 
 public interface IContest<TParticipant> : IContest where TParticipant : IParticipant

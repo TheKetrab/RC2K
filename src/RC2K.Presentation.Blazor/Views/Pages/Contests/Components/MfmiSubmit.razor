@@ -1,0 +1,77 @@
+﻿@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+@using RC2K.Utils
+
+@inject ITimeEntryService TimeEntryService
+@inject INotificationService NotificationService
+@inject IUserService UserService
+@inject MessageHelper MessageHelper
+@inject IStageService StageService
+@inject ICarService CarService
+@inject IDriverService DriverService
+
+@if (_day < 0)
+{
+    <MudText Typo="Typo.h2">Competition not started yet!</MudText>    
+}
+else if (_day == 0)
+{
+    <MudText Typo="Typo.h2">Competition paused</MudText>
+}
+else if (_day > 18)
+{
+    <MudText Typo="Typo.h2">Competition ended!</MudText>
+}
+else
+{
+    foreach (var (sent, stage) in _stagesForToday)
+    {
+        <MudText Typo="Typo.h2">@(stage.StageData.Name)</MudText>
+        @if (!sent)
+        {
+            <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" />
+        }
+        else
+        {
+            <MudText>Result sent</MudText>
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public required string Label { get; set; } = default!;
+
+    [Parameter]
+    public required int? CarId { get; set; }
+
+    [Parameter]
+    public required string DriverName { get; set; } = default!;
+
+    [Parameter]
+    public required Func<int> GetCompetitionDayFunc { get; set; } = default!;
+
+    private int _day;
+
+    private List<(bool,Stage)> _stagesForToday = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _day = GetCompetitionDayFunc();
+
+        var codes = MfmiHelper.GetStagesCodesForCompetitionDay(_day);
+        var stagesForToday =
+            (await StageService.GetAll())
+            .Where(x => x.Direction == DomainModel.Direction.Simulation && codes.Contains(x.Code))
+            .ToList();
+
+        Driver? currentDriver = await DriverService.GetByName(DriverName);
+        Guid currentDriverId = currentDriver?.Id ?? Guid.Empty;
+        foreach (var stage in stagesForToday)
+        {
+            bool userAlreadySent = (await TimeEntryService.Get(stage.Id, hideMfmi26: false)).Where(x => x.DriverId == currentDriverId && (x.Labels?.Contains(Label) ?? false)).Any();
+            _stagesForToday.Add((userAlreadySent, stage));
+        }
+    }
+
+}

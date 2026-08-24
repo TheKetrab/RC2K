@@ -6,7 +6,7 @@
 
 @using RC2K.Presentation.Blazor.Views.Pages.Contests.Components
 
-<MfmiNav ContestMainLink="@LayoutState.Contest?.MainLink" />
+<MfmiNav ContestMainLink="@LayoutState.Contest?.MainLink" IsContestActive="@(LayoutState.Contest?.IsContestActive ?? false)" />
 @Body
 
 @code {

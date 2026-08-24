@@ -23,6 +23,8 @@ public class Mfmi24Contest : IContest<Mfmi24Participant>
     {
         { Constants.PdfManualLinkProperty, "" }
     };
+    public bool IsContestActive => Mfmi24Helper.GetCompetitionDay() < 20;
+
     public List<Mfmi24Participant> Participants { get; } =
     [
         new("Ephemeral", "Peugeot 206 WRC", 25, 1, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g1_ephemeral.png" ),

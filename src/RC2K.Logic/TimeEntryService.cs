@@ -34,11 +34,17 @@ public class TimeEntryService : ITimeEntryService
         };
     }
 
-    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default)
+    public async Task<List<TimeEntry>> Get(int stageId, int? carId = null, CancellationToken ct = default, bool hideMfmi26 = true)
     {
         var timeEntries = carId is not null
             ? await _timeEntryRepository.GetByStageIdAndCarId(stageId, carId.Value, ct)
             : await _timeEntryRepository.GetByStageId(stageId, ct);
+
+        // temporary hide MFMI26 labels
+        if (hideMfmi26)
+        {
+            timeEntries = timeEntries.Where(x => !(x.Labels?.Contains("MFMI26") ?? false)).ToList();
+        }
 
         await timeEntries.FillFullData(_fillers.TimeEntryFiller, _fillers, ct);
 

@@ -23,6 +23,8 @@ public class Mfmi23Contest : IContest<Mfmi23Participant>
     {
         { Constants.PdfManualLinkProperty, "" }
     };
+    public bool IsContestActive => Mfmi23Helper.GetCompetitionDay() < 20;
+
     public List<Mfmi23Participant> Participants { get; } =
     [
         new("Ephemeral", "Mitsubishi Lancer Evo IV", 25, 1, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g1_ephemeral.png" ),

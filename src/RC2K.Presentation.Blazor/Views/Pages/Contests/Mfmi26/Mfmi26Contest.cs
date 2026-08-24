@@ -9,6 +9,8 @@ public class Mfmi26Contest : IContest<MfmiParticipant>
     {
         { Constants.PdfManualLinkProperty, "" }
     };
+    public bool IsContestActive => Mfmi26Helper.GetCompetitionDay() < 20;
+
     public List<MfmiParticipant> Participants { get; } =
     [
         new("Ephemeral", "Peugeot 206 WRC", 25),
