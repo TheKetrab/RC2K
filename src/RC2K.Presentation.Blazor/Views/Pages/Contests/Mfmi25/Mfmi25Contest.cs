@@ -23,6 +23,8 @@ public class Mfmi25Contest : IContest<Mfmi25Participant>
     {
         { Constants.PdfManualLinkProperty, "" }
     };
+    public bool IsContestActive => Mfmi25Helper.GetCompetitionDay() < 20;
+
     public List<Mfmi25Participant> Participants { get; } =
     [
         new("Tribell", "Subaru Impreza WRC", 39, 1, "Alliart Rally Team" ),
