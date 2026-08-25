@@ -1,4 +1,8 @@
 
+:root {
+    --main-panel-max-width: 1400px;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -82,7 +86,7 @@ main {
     background: #f8f9ff24;
     min-height: 100vh;
     flex-grow: 1;
-    max-width: 1200px;
+    max-width: var(--main-panel-max-width);
     width: 100%;
     border-radius: 0 0 5px 5px;
     box-shadow: 0px 0.9px 2.3px rgb(0 0 0 / 12%), 0px 2.5px 6.3px rgb(0 0 0 / 15%), 0px 6px 15.1px rgb(0 0 0 / 21%), 0px 20px 50px rgb(0 0 0 / 30%);

@@ -30,7 +30,7 @@
      background-image: url(_content/RC2K.Presentation.Shared/img/home/home{DayTime}.png);
      background-size: cover;
      background-position-x: center;
-     
+     background-position-y: {(DayTime switch { 4 or 3 => "center", _ => "auto"})};
      min-height: clamp(400px, calc(100vh - var(--header-margin-top) - var(--header-height) - var(--bottom-banner-height)), 1000px);
      padding-top: 80px;
      display: flex;

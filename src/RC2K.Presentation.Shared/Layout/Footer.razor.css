@@ -23,7 +23,7 @@ header.sticked {
 
 
 .header-main-box {
-    max-width: 1200px;
+    max-width: var(--main-panel-max-width);
     display: flex;
     width: 100%;
 }
