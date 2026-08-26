@@ -4,8 +4,8 @@
 }
 
 .subtext {
-    margin-top: -20px;
-    font-size: 32pt;
+    margin-top: max(-1rem, -1.5rem);
+    font-size: min(5vw, 32pt);
     -webkit-text-stroke: .5px #2c2c2c;
     font-family: "Viga", sans-serif;
 }
@@ -19,7 +19,7 @@
 
 .aurora-text {
     line-height: 1em;
-    font-size: 120pt;
+    font-size: min(20vw, 120pt);
     -webkit-text-stroke: 1px #2222226e;
     font-family: "Koulen", sans-serif;
     font-weight: 400;
@@ -44,7 +44,7 @@
     box-shadow: 1px 1px 10px #00000066;
     border-radius: 10px;
     content: '';
-    height: 5px;
+    height: .15em;
     width: 40%;
     transition: transform .4s ease, opacity .4s ease;
     transform-origin: right;
@@ -55,7 +55,7 @@
     box-shadow: 1px 1px 10px #00000066;
     border-radius: 10px;
     content: '';
-    height: 5px;
+    height: .15em;
     width: 8%;
     transition: transform .4s ease, opacity .4s ease;
     transition-delay: 0s;
@@ -109,5 +109,12 @@
 
     100% {
         background-position: 0% 0%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .subtext {
+        margin-top: 0;
     }
 }

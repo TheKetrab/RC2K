@@ -136,3 +136,27 @@ h4 {
 .small-card:focus, .small-card:hover {
     opacity: 1;
 }
+
+
+@media (max-width: 768px) {
+    .page-card-3 > h3 {
+        padding: 1em;
+    }
+    .small-card-box {
+        display: none;
+    }
+    .cards {
+        grid-template-columns: 1fr;
+        margin: 1em;
+    }
+
+    .big-cards-box > .big-card {
+        margin-top: 10px;
+        position: static;
+        display: block;
+        opacity: 1;
+        transform: none;
+        height: auto;
+        outline: solid 1px var(--complementary500);
+    }
+}

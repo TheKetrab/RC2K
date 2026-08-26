@@ -2,15 +2,12 @@
 @using System.Reflection
 @inject IConfiguration Config
 
-<PageTitle>Home</PageTitle>
-
 <style>
     .content {
         margin-top: 0 !important;
         padding: 0 !important;
         padding-top: 0 !important;
     }
-
 
     .emph {
         color: var(--primary);
@@ -21,59 +18,19 @@
         color: var(--secondary);
         font-weight: bold;
     }
-
-
-
 </style>
 
-<div style="@($@"
-     background-image: url(_content/RC2K.Presentation.Shared/img/home/home{DayTime}.png);
-     background-size: cover;
-     background-position-x: center;
-     background-position-y: {(DayTime switch { 4 or 3 => "center", _ => "auto"})};
-     min-height: clamp(400px, calc(100vh - var(--header-margin-top) - var(--header-height) - var(--bottom-banner-height)), 1000px);
-     padding-top: 80px;
-     display: flex;
-     flex-direction: column;
-     justify-content: space-between;
-     ")">
+<div class="home-component-background"
+     style="background-image: url('_content/RC2K.Presentation.Shared/img/home/home@(DayTime).png');
+            --bg-pos-y: @(DayTime is 3 or 4 ? "center" : "auto");">
 
     <Banner />
 
-    <div style="align-self: flex-end; color: rgb(255 255 255 / 75%); font-family: Anta; padding-right: 5px;">
+    <div class="app-version">
         @AppVersion
     </div>
 
 </div>
-
-<style>
-
-    .bottom-banner {
-
-        height: var(--bottom-banner-height);
-        padding: 10px 15px;
-        font-size: 12pt;
-        border-radius: 0;
-        font-family: Anta, sans-serif;
-
-        background: linear-gradient(90deg, #272727cf, rgb(37 37 37), rgb(30 30 30), rgb(30 30 30 / 71%));
-        border-top: 1px solid rgba(255, 204, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 204, 0, 0.3);
-    }
-
-    .bottom-banner-content {
-        height: 100%;
-        border-top: 1px solid rgba(255, 204, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 204, 0, 0.3);
-        place-content: center;
-    }
-
-    .bottom-banner-content > p {
-        text-align: center;
-        color: white;
-    }
-
-</style>
 
 <div class="bottom-banner">
     <div class="bottom-banner-content">
