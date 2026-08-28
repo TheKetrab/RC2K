@@ -82,6 +82,10 @@ header.sticked {
 
 @media (max-width: 768px) {
     .header-main-box > img {
-        display: none;
+        /*display: none;*/
+        height: 100%;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        overflow-y: visible;
     }
 }
