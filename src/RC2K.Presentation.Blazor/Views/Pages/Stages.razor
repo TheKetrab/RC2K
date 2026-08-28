@@ -8,25 +8,57 @@
 <style>
     .stage-table .mud-table-cell {
         padding: 2px 8px 2px 8px !important;
-        font-size: .25rem;
+        font-size: clamp(.5rem, 2vw, 1em) !important;
     }
 
     .stage-table .mud-table-cell a.mud-typography-body1 {
         font-size: inherit !important;
     }
+    .stages-content {
+        display: flex;
+        gap: 20px;
+        height: calc(100vh - 200px);
+    }
+    .stages-content-list {
+        flex: 1;
+        overflow-y: auto;
+        min-width: 0;
 
+        
+    }
+    .stages-content-map {
+        flex: 1;
+    }
+    .stages-content-map-wrapper {
+         overflow: hidden;
+         border: 1px solid #ddd;
+         border-radius: 4px;
+    }
+    @@media (max-width: 768px) {
+        .stages-content {
+            flex-direction: column;
+            height: auto;
+        }
+        .stages-content-list {
+            order: 2;
+            height: auto;
+        }
+        .stages-content-map {
+            order: 1;
+        }
+    }
 
 </style>
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
     <MudText Typo="Typo.h4" GutterBottom="true">Stages (@(Name is not null ? GetRallyFullName(Name) : "All"))</MudText>
 
-    <div style="display: flex; gap: 20px; height: calc(100vh - 200px);">
+    <div class="stages-content">
         <!-- Left side: Table -->
-        <div style="flex: 1; overflow-y: auto; min-width: 0;">
+        <div class="stages-content-list">
             <MudTable Items="@_stages"
+                Breakpoint="Breakpoint.None"
                       T="Stage"
                       Hover="true"
-                      Breakpoint="Breakpoint.Sm"
                       Class="stage-table"
                       Elevation="4"
                       Dense="true"
@@ -72,8 +104,8 @@
         </div>
 
         <!-- Right side: Map -->
-        <div style="flex: 1;">
-            <div style=" overflow: hidden; border: 1px solid #ddd; border-radius: 4px;">
+        <div class="stages-content-map">
+            <div class="stages-content-map-wrapper">
             @if (_stages.Any())
             {
                 <MultiMap Waypoints="@_allWaypoints" MultiMapPaths="@_combinedPaths" StartsEnds="@_startsEnds" />
