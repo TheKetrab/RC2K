@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
 
+
 <div>
 @{
     if (!dataLoaded)
@@ -22,7 +23,7 @@
                      T="RankingListItem"
                      Items="@_items"
                      id="ranking-entry-list-table"
-                     
+                     Breakpoint="Breakpoint.None"
                      HorizontalScrollbar="true"
                      Bordered="true"
                      RowsPerPage="100"

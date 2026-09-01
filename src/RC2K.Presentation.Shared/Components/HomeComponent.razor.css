@@ -45,12 +45,16 @@
     place-content: center;
 }
 
-    .bottom-banner-content > p {
-        text-align: center;
-        color: white;
-    }
+.bottom-banner-content > p {
+    text-align: center;
+    color: white;
+}
 
 @media (max-width: 768px) {
+
+    .bottom-banner-content > p {
+        font-size: min(.8em, 3vw);
+    }
 
     .home-component-background {
         min-height: 50vh;

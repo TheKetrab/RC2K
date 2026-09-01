@@ -4,11 +4,13 @@
     display: flex;
     flex-direction: column;
     color: white;
+
+    padding-top: 2em;
 }
 
     .page-card-3 > h1 {
         font-family: "Viga", sans-serif;
-        font-size: 48px;
+        font-size: clamp(.75rem, 5vw, 3em);
         text-align: center;
         --webkit-background-clip: text;
         background: linear-gradient(90deg, white, gray);
@@ -18,7 +20,7 @@
 
     .page-card-3 > h3 {
         font-family: "Roboto", sans-serif;
-        font-size: 16px;
+        font-size: clamp(.75rem, 3vw, 1.5rem);
         text-align: center;
         padding: 0 300px;
         margin-bottom: 50px;
@@ -141,6 +143,7 @@ h4 {
 @media (max-width: 768px) {
     .page-card-3 > h3 {
         padding: 1em;
+        margin-bottom: 0;
     }
     .small-card-box {
         display: none;

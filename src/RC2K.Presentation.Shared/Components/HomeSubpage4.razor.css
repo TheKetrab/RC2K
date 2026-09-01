@@ -3,11 +3,11 @@
     padding-top: 3rem;
     margin-top: 0;
     margin-bottom: 30px;
-    padding-left: 3rem;
-    padding-right: 3rem;
-    font-size: 48px;
+    padding-left: min(4%, 3rem);
+    padding-right: min(4%, 3rem);
+    font-size: clamp(.75rem, 5vw, 3em);
     font-family: "Viga", sans-serif;
-    line-height: 56px;
+    line-height: 1.3;
     background: linear-gradient(#282828, transparent 5%, transparent);
 }
 
@@ -30,7 +30,7 @@ h4 {
 }
 
     .page-card-4 > *:not(:first-child) {
-        margin: auto 3rem;
+        margin: auto min(4%, 3rem);
     }
 
 
@@ -97,6 +97,7 @@ h4 {
 @media (max-width: 768px) {
     #maps-container {
         flex-direction: column;
+        padding: 0;
     }
     #maps-container > * {
         align-self: center;
@@ -105,10 +106,12 @@ h4 {
     #info-box-a {
         position: static;
         order: 2;
+        width: auto;
     }
     #info-box-b {
         position: static;
         order: 4;
+        width: auto;
     }
     .map-original {
         order: 1;

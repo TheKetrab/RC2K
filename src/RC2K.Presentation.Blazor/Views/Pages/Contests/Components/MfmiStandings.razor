@@ -9,6 +9,36 @@
 @inject ICarService CarService
 @inject IMemoryCache Cache
 
+<style>
+
+    .standings-stage-entry {
+        display: grid;
+        grid-template-columns: 1fr 4fr;
+        border-top: solid black 1px;
+        margin-top: 10px;
+    }
+
+    .standings-stage-title {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    @@media (max-width: 768px) {
+
+        .standings-stage-entry {
+            display: flex;
+            flex-direction: column;
+        }
+        .standings-stage-list .mud-table-cell {
+            padding: 1px;
+            font-size: .6rem !important;
+        }
+    }
+
+</style>
+
 <div style="width: 100%; display: flex; justify-content: center;">
     <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
         @foreach (var x in LevelHelper.GetRallyCodesBySimulationOrder())
@@ -30,14 +60,16 @@ else
 {
     @foreach (var stage in _viewModel.Stages)
     {
-        <div style="display: grid; grid-template-columns: 1fr 4fr; border-top: solid black 1px; margin-top: 10px;">
-            <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+        <div class="standings-stage-entry">
+            <div class="standings-stage-title">
                 <h1>@stage.StageName</h1>
                 <img src="@(stage.IsRallySummary ? $"img/rallies/{stage.StageImage}.PNG" : $"img/maps/{stage.StageImage}")" />
             </div>
-            <MudDataGrid T="MfmiStandingsEntryListItemViewModel"
+            <MudDataGrid Class="standings-stage-list"
+                         T="MfmiStandingsEntryListItemViewModel"
                          Items="@stage.Entries"
                          Hover="true"
+                         Breakpoint="Breakpoint.None"
                          ShowColumnOptions="false">
                 <Columns>
                     <PropertyColumn Property="x => x.Rank" Title="Rank" Filterable="false" Sortable="false" />

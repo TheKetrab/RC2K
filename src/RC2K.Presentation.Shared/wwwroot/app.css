@@ -1,4 +1,5 @@
 
+
 :root {
     --main-panel-max-width: 1400px;
 }
@@ -10,12 +11,13 @@ html, body {
 footer {
     background: transparent;
     position: relative;
+    padding: 0 5em;
 }
 
 footer:before {
     content: '';
     position: absolute;
-    inset: 0 -5em;
+    inset: 0;
     background: linear-gradient(90deg, #ffffff00, #ffffff 5em, #ffffff calc(100% - 5em), #ffffff00);
     z-index: -1;
 }
@@ -280,3 +282,18 @@ h1:focus {
     stroke-width: 2 !important;
 }
 
+@media (max-width: 768px) {
+    footer {
+        padding: 1em;
+    }
+
+    .content {
+        margin-top: 0;
+        padding-top: calc(10px + 24px + 10px);
+    }
+
+    .mud-button {
+        font-size: .6rem !important;
+        padding: 3px 8px !important;
+    }
+}

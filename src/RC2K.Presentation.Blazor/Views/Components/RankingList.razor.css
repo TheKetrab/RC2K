@@ -25,3 +25,12 @@
 ::deep .mud-table-container {
     min-width: 100%;
 }
+
+@media (max-width: 768px) {
+    ::deep .mud-table-root .mud-table-body .mud-table-cell {
+        font-size: .65rem;
+    }
+    ::deep .mud-table-cell {
+        padding: 4px 6px !important;
+    }
+}

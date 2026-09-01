@@ -9,6 +9,37 @@
 @inject IStageService StageService
 @inject ICarService CarService
 
+<style>
+
+    
+    .summaries-stage-entry {
+        display: grid;
+        grid-template-columns: 1fr 4fr;
+        border-top: solid black 1px;
+        margin-top: 10px;
+    }
+
+    .summaries-stage-title {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    @@media (max-width: 768px) {
+
+        .summaries-stage-entry {
+            display: flex;
+            flex-direction: column;
+        }
+        .summaries-stage-list .mud-table-cell {
+            padding: 1px;
+            font-size: .6rem !important;
+        }
+    }
+
+</style>
+
 @if (_isLoading)
 {
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="@($"100vh")" />
@@ -20,12 +51,14 @@ else
 {
     @foreach (var rally in _viewModel.Rallies)
     {
-        <div style="display: grid; grid-template-columns: 1fr 4fr; border-top: solid black 1px; margin-top: 10px;">
-            <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+        <div class="summaries-stage-entry">
+            <div class="summaries-stage-title">
                 <h1>@rally.RallyName</h1>
                 <img src="@(rally.IsFinalSummary ? $"img/{rally.RallyImage}.PNG" : $"img/rallies/{rally.RallyImage}.PNG")" />
             </div>
-            <MudDataGrid T="MfmiSummariesEntryListItemViewModel"
+            <MudDataGrid Class="summaries-stage-list"
+                         T="MfmiSummariesEntryListItemViewModel"
+                         Breakpoint="Breakpoint.None"
                          Items="@rally.Entries"
                          Hover="true"
                          ShowColumnOptions="false">
