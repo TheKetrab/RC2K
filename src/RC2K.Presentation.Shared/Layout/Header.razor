@@ -5,13 +5,69 @@
 @inject HeaderViewModel viewModel
 @typeparam TNavMenu where TNavMenu : BaseNavMenu
 
+<style>
+
+    .toggle-content {
+        display: block;
+    }
+    .menu-toggle-wrapper > button {
+        display: none;
+    }
+    .menu-toggle-wrapper {
+        background-color: white;
+        display: flex;
+        align-items: center;
+    }
+
+    @@media (max-width: 768px) {
+        .menu-toggle-wrapper > button {
+            display: block;
+        }
+        .menu-toggle-wrapper > button[aria-pressed="false"] ~ .toggle-content {
+            display: none;
+        }
+        .menu-toggle-wrapper > button[aria-pressed="true"] ~ .toggle-content {
+            display: block;
+        }
+        .toggle-content {
+            padding: 10px;
+            width: 100%;
+            position: absolute;
+            background-color: white;
+            top: var(--header-height);
+            right: 0;
+        }
+        .toggle-content nav {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-button-nav {
+            border-radius: 20px !important;
+        }
+        .menu-item > ul {
+            display: none !important;
+        }
+    }
+
+
+
+        
+</style>
+
 <header @ref=headerElement class="@(NavClass)">
     <div class="header-pre-box"></div>
     <div class="header-main-box">
         <img src="_content/RC2K.Presentation.Shared/img/layout/Logo2.png" alt="logo2" />
         <div class="header-nav-menu">
             <div class="header-nav-fake-gradient" />
-            <DynamicComponent Type="typeof(TNavMenu)" Parameters="_navMenuParams" />
+            <div class="menu-toggle-wrapper">
+                <MudToggleIconButton Icon="@Icons.Material.Filled.Menu" ToggledIcon="@Icons.Material.Filled.MenuOpen"/>
+                <div class="toggle-content">
+                    <DynamicComponent Type="typeof(TNavMenu)" Parameters="_navMenuParams" />
+                </div>
+            </div>
         </div>
     </div>
     <div class="header-post-box"></div>

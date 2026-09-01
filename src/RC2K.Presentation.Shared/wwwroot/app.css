@@ -1,4 +1,9 @@
 
+
+:root {
+    --main-panel-max-width: 1400px;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -6,12 +11,13 @@ html, body {
 footer {
     background: transparent;
     position: relative;
+    padding: 0 5em;
 }
 
 footer:before {
     content: '';
     position: absolute;
-    inset: 0 -5em;
+    inset: 0;
     background: linear-gradient(90deg, #ffffff00, #ffffff 5em, #ffffff calc(100% - 5em), #ffffff00);
     z-index: -1;
 }
@@ -82,7 +88,7 @@ main {
     background: #f8f9ff24;
     min-height: 100vh;
     flex-grow: 1;
-    max-width: 1200px;
+    max-width: var(--main-panel-max-width);
     width: 100%;
     border-radius: 0 0 5px 5px;
     box-shadow: 0px 0.9px 2.3px rgb(0 0 0 / 12%), 0px 2.5px 6.3px rgb(0 0 0 / 15%), 0px 6px 15.1px rgb(0 0 0 / 21%), 0px 20px 50px rgb(0 0 0 / 30%);
@@ -276,3 +282,18 @@ h1:focus {
     stroke-width: 2 !important;
 }
 
+@media (max-width: 768px) {
+    footer {
+        padding: 1em;
+    }
+
+    .content {
+        margin-top: 0;
+        padding-top: calc(10px + 24px + 10px);
+    }
+
+    .mud-button {
+        font-size: .6rem !important;
+        padding: 3px 8px !important;
+    }
+}

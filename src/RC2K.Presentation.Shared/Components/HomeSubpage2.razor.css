@@ -1,0 +1,197 @@
+﻿/* PAGE */
+.page-card-2 {
+    font-size: clamp(.5rem, 2vw, 1rem);
+    min-height: clamp(400px, calc(100vh - var(--header-height)), 1000px);
+    display: flex;
+    flex-direction: column;
+
+    /* BACKGROUND PATTERN */
+    --move-x: 7px;
+    --move-y: -7px;
+
+    background:
+        radial-gradient(ellipse 70% 40% at right top, transparent, white)
+        , radial-gradient(circle, transparent 20%, #e5e5f7 20%, #e5e5f7 80%, transparent 80%, transparent)
+        , radial-gradient(circle, transparent 20%, #e5e5f7 20%, #e5e5f7 80%, transparent 80%, transparent)
+        , linear-gradient(#444cf7 2px, transparent 2px)
+        , linear-gradient(90deg, #444cf7 2px, #e5e5f7 2px);
+    
+    background-size:
+        100% 100%
+        , 50px 50px
+        , 50px 50px
+        , 25px 25px
+        , 25px 25px;
+    
+    background-position:
+        0 0
+        , var(--move-x) var(--move-y)
+        , calc(25px + var(--move-x)) calc(25px + var(--move-y))
+        , var(--move-x) calc(-1px + var(--move-y))
+        , calc(-1px + var(--move-x)) var(--move-y);
+    
+    background-repeat: 
+        no-repeat
+        , repeat
+        , repeat
+        , repeat
+        , repeat;
+}
+
+.page-card-2 > *:not(:last-child) {
+    margin-left: min(4%, 3rem);
+    margin-right: min(4%, 3rem);
+}
+
+.page-card-2 > div > h1 {
+    max-width: 1000px;
+    margin-top: 3rem;
+    margin-bottom: 30px;
+    font-size: clamp(.75rem, 5vw, 3em);
+    font-family: "Viga", sans-serif;
+    line-height: 1.3;
+}
+
+.page-card-2 > h3 {
+    opacity: 0.8;
+}
+
+h3,
+h4 {
+    font-family: "Roboto", sans-serif;
+    font-size: max(.75rem, 1em);
+}
+
+.page-card-2-middle {
+    display: flex;
+    margin-top: clamp(.5rem, 3%, 3rem);
+    margin-bottom: clamp(.5rem, 3%, 3rem);
+    gap: min(5%, 3rem);
+}
+
+.page-card-2-info-card > ul {
+    font-size: max(.8em, .65rem);
+    padding-left: 3ch;
+    padding-right: 10px;
+    margin: 5px;
+}
+
+.page-card-2-info-card:first-child > ul {
+    border-right: solid 1px var(--gray800);
+}
+
+.touched .page-card-2-img {
+    transform: rotate(0deg) scale(1,1);
+    opacity: 1;
+}
+
+li {
+    margin-block: 5px;
+}
+
+.page-card-2 li::marker {
+    content: '>  ';
+}
+
+.page-card-2-info h2 {
+    line-height: 1.3;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size: clamp(1rem, 2.5vw, 2rem);
+    font-family: "Viga", sans-serif;
+}
+
+.page-card-2-info > div {
+    display: flex;
+    gap: 5px;
+}
+
+.page-card-2-info {
+    padding: .5em min(5%, 2em);
+    max-width: 55%;
+    box-shadow: rgb(0 0 0 / 30%) 0px 0px 10px;
+    background-color: #F0F0F0;
+    border-radius: 25px;
+}
+
+.page-card-2-info-card > header {
+    gap: .5em;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.page-card-2-info-card {
+    margin-top: 10px;
+}
+
+.page-card-2-img {
+    flex-grow: 1;
+    border-bottom-left-radius: 1.5rem;
+    overflow: hidden;
+    margin: 20px;
+    transition: transform .75s ease, opacity .5s ease;
+    transition-delay: .25s;
+    opacity: 0;
+    transform: rotate(-360deg) scale(0,0);
+}
+
+.page-card-2-img > img {
+    object-fit: contain;
+    mask-image: linear-gradient(90deg, black 90%, transparent 100%);
+}
+
+.page-card-2-bottom-info {
+    font-size: max(.65rem, 1em);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    background: linear-gradient(transparent, transparent 75%, gray);
+}
+
+.page-card-2-bottom-info > h2 {
+    text-align: center;
+    font-size: 2em;
+}
+
+.page-card-2-bottom-info > p {
+    padding: 0 min(3rem, 5%);
+    margin-bottom: 1em;
+    font-family: 'Roboto';
+    text-align: center;
+}
+
+
+/* --- OVERRIDES --- */
+@media (max-width: 720px) {
+    .page-card-2-middle {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .page-card-2-img {
+        max-width: max(200px, 60%);
+        margin: inherit 0;
+    }
+
+    .page-card-2-info {
+        max-width: 100%;
+    }
+}
+@media (max-width: 400px) {
+    .page-card-2-info > div {
+        flex-wrap: wrap;
+    }
+    .page-card-2-info-card:first-child > ul {
+        border-right: none;
+    }
+    .page-card-2-info h2 {
+        margin-bottom: 0;
+    }
+    .page-card-2-info-card > ul {
+        padding-left: 1ch;
+        padding-right: .5em;
+        margin: 1em;
+    }
+}

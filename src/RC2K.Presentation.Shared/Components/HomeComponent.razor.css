@@ -1,0 +1,66 @@
+﻿
+
+
+.home-component-background {
+
+    background-size: cover;
+    background-position-x: center;
+    background-position-y: var(--bg-pos-y, auto);
+
+    min-height: clamp(
+        400px,
+        calc(100vh - var(--header-margin-top) - var(--header-height) - var(--bottom-banner-height)),
+        1000px
+    );
+    
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+
+.bottom-banner {
+    height: var(--bottom-banner-height);
+    padding: 10px 15px;
+    font-size: 12pt;
+    border-radius: 0;
+    font-family: Anta, sans-serif;
+    background: linear-gradient(90deg, #272727cf, rgb(37 37 37), rgb(30 30 30), rgb(30 30 30 / 71%));
+    border-top: 1px solid rgba(255, 204, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+}
+.app-version {
+    align-self: flex-end;
+    color: rgb(255 255 255 / 75%);
+    font-family: Anta;
+    padding-right: 5px;
+}
+
+.bottom-banner-content {
+    height: 100%;
+    border-top: 1px solid rgba(255, 204, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+    place-content: center;
+}
+
+.bottom-banner-content > p {
+    text-align: center;
+    color: white;
+}
+
+@media (max-width: 768px) {
+
+    .bottom-banner-content > p {
+        font-size: min(.8em, 3vw);
+    }
+
+    .home-component-background {
+        min-height: 50vh;
+    }
+
+    .bottom-banner {
+        height: auto;
+    }
+}
