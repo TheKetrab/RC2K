@@ -107,13 +107,23 @@
         flex-grow: 0;
         width: 200px;
     }
+    .data-and-media {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+    @@media (max-width: 768px) {
+        .data-and-media {
+            flex-wrap: wrap;
+        }
+    }
 
 </style>
 <MyErrorBoundary @ref="_errorBoundaryRef">
     <ChildContent>
         <TrackCaptcha />
         <MudForm Class="gap-5 pa-3">
-            <div style="display: flex; flex-direction: row; gap: 5px;">
+            <div class="data-and-media">
                 <MudCard Style="min-width: 500px; flex-grow: 1; flex-basis: 60%">
                     <MudCardHeader>
                         <MudText Color="Color.Primary">Time entry data:</MudText>
