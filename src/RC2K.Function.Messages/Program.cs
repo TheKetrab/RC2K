@@ -41,6 +41,19 @@ builder.Services.AddScoped<DiscordWebhooksConfiguration>(sp =>
     return new DiscordWebhooksConfiguration(webhookId, webhookToken);
 });
 
+builder.Services.AddHttpClient<Rc2kHubRankingsHttpClient>((sp, client) =>
+{
+    client.BaseAddress = 
+        builder.Configuration["AZURE_FUNCTIONS_ENVIRONMENT"] switch
+        {
+            "Development" => new Uri("https://localhost:7214/"),
+            "Production" => new Uri("https://app.rc2khub.com/"),
+            _ => throw new ArgumentException(
+                $"Unknown environment: {builder.Configuration["AZURE_FUNCTIONS_ENVIRONMENT"]}"
+                + " (Set up proper env var AZURE_FUNCTIONS_ENVIRONMENT")
+        };
+});
+
 var host = builder.Build();
 Console.WriteLine("Azure Functions host for Messages runs.");
 
