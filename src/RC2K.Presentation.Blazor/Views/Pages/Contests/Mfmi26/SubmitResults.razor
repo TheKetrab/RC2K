@@ -31,6 +31,10 @@ else
     [Parameter]
     public int? CompetitionDay { get; set; }
 
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string? FixedDriver { get; set; }
+
     private Func<int> _getCompetitionDayFunc;
 
     protected override async Task OnInitializedAsync()
@@ -46,7 +50,16 @@ else
         }
 
         var current = await UserService.GetCurrentUserName();
-        var currentDriver = await DriverService.GetByName(current);
+        Driver? currentDriver;
+        if (FixedDriver is not null && Auth.TryAuthorize(auth, "admin"))
+        {
+            currentDriver = await DriverService.GetByName(FixedDriver);
+        }
+        else
+        {
+            currentDriver = await DriverService.GetByName(current);
+        }
+
         if (currentDriver is null)
         {
             _isLoggedIn = false;

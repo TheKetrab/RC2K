@@ -27,7 +27,7 @@ public static class Mfmi26Helper
     {
         DateTime nowUtc = DateTime.UtcNow;
 
-        if (nowUtc <= UtcFromPolishTime(2026, 09, 24, 18)) return -1; // not started;
+        if (nowUtc <= UtcFromPolishTime(2026, 09, 25, 20)) return -1; // not started;
         if (nowUtc <= UtcFromPolishTime(2026, 09, 26, 20)) return 1;
         if (nowUtc <= UtcFromPolishTime(2026, 09, 27, 20)) return 2;
         if (nowUtc <= UtcFromPolishTime(2026, 09, 28, 20)) return 3;

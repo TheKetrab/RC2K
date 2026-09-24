@@ -8,36 +8,73 @@
 @inject IStageService StageService
 @inject ICarService CarService
 @inject IDriverService DriverService
+@inject MessageHelper MessageHelper
 
 @if (_day < 0)
 {
-    <MudText Typo="Typo.h2">Competition not started yet!</MudText>    
+    <MudText Typo="Typo.h3">Competition not started yet!</MudText>    
 }
 else if (_day == 0)
 {
-    <MudText Typo="Typo.h2">Competition paused</MudText>
+    <MudText Typo="Typo.h3">Competition paused</MudText>
 }
 else if (_day > 18)
 {
-    <MudText Typo="Typo.h2">Competition ended!</MudText>
+    <MudText Typo="Typo.h3">Competition ended!</MudText>
 }
 else
 {
-    foreach (var (sent, stage) in _stagesForToday)
+    foreach (var (te, stage) in _stagesForToday)
     {
-        <MudText Typo="Typo.h2">@(stage.StageData.Name)</MudText>
-        @if (!sent)
+        <MudText Typo="Typo.h3">@(stage.StageData.Name)</MudText>
+        @if (te is null)
         {
-            <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" />
+            <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" AfterUploadClickFunc="Refresh"/>
         }
         else
         {
-            <MudText>Result sent</MudText>
+            <MudCard Style="min-width: 500px; flex-grow: 1; flex-basis: 60%">
+                <MudCardContent Class="time-entry-data-grid">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <MudText>@($"Result sent (time: {te.Time.ToString("m:ss.ff")})")</MudText>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Remove(stage.Id)">REMOVE</MudButton>         
+                    </div>
+                </MudCardContent>
+            </MudCard>
         }
     }
 }
 
 @code {
+
+    private async Task Refresh()
+    {
+        await OnParametersSetAsync();
+        StateHasChanged();
+    }
+
+    private async Task Remove(int stageId)
+    {
+        Driver? currentDriver = await DriverService.GetByName(DriverName);
+        Guid currentDriverId = currentDriver?.Id ?? Guid.Empty;
+
+        TimeEntry? te = (await TimeEntryService.Get(stageId, hideMfmi26: false)).Where(x => x.DriverId == currentDriverId && (x.Labels?.Contains(Label) ?? false)).FirstOrDefault();
+        if (te is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await TimeEntryService.Delete([te]);
+            MessageHelper.ShowSuccess("Removed");
+            await Refresh(); 
+        }
+        catch (Exception)
+        {
+            MessageHelper.ShowError("Failed to remove");
+        }
+    }
 
     [Parameter]
     public required string Label { get; set; } = default!;
@@ -53,11 +90,12 @@ else
 
     private int _day;
 
-    private List<(bool,Stage)> _stagesForToday = [];
+    private List<(TimeEntry?,Stage)> _stagesForToday = [];
 
     protected override async Task OnParametersSetAsync()
     {
-        _day = GetCompetitionDayFunc();
+       _stagesForToday = [];
+       _day = GetCompetitionDayFunc();
 
         var codes = MfmiHelper.GetStagesCodesForCompetitionDay(_day);
         var stagesForToday =
@@ -67,11 +105,16 @@ else
 
         Driver? currentDriver = await DriverService.GetByName(DriverName);
         Guid currentDriverId = currentDriver?.Id ?? Guid.Empty;
+
         foreach (var stage in stagesForToday)
         {
-            bool userAlreadySent = (await TimeEntryService.Get(stage.Id, hideMfmi26: false)).Where(x => x.DriverId == currentDriverId && (x.Labels?.Contains(Label) ?? false)).Any();
-            _stagesForToday.Add((userAlreadySent, stage));
+            TimeEntry? sentTimeEntry = 
+                (await TimeEntryService.Get(stage.Id, hideMfmi26: false))
+                .Where(x => x.DriverId == currentDriverId && (x.Labels?.Contains(Label) ?? false))
+                .FirstOrDefault();
+            _stagesForToday.Add((sentTimeEntry, stage));
         }
+        
     }
 
 }
