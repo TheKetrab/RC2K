@@ -49,6 +49,18 @@ public class MfmiParticipant : IParticipant
     }
 }
 
+public class Mfmi26Participant : MfmiParticipant
+{
+    public int Group { get; }
+
+    public Mfmi26Participant(string name, string car, int nr, int group)
+        : base(name, car, nr)
+    {
+        Group = group;
+        CustomProperties.Add(Constants.GroupProperty, Group);
+    }
+}
+
 public class ContestsDefinitions
 {
     private static readonly Lock _lock = new();
