@@ -15,6 +15,22 @@ public static class MfmiHelper
         public List<Proof> Proofs { get; set; }
     }
 
+    public async static Task<bool> IsAnyTimeEntryMissing(ITimeEntryService timeEntryService, Guid driverId, List<int> stageIds, string labelFilter)
+    {
+        foreach (var stageId in stageIds)
+        {
+            bool anyTimeEntry = (await timeEntryService.Get(stageId, hideMfmi26: false))
+                .Any(x => (x.Labels?.Contains(labelFilter) ?? false) && x.DriverId == driverId);
+
+            if (!anyTimeEntry)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public async static Task<List<StandingsInfo>> GetStandingsInfo(ITimeEntryService timeEntryService, Stage stage, string labelFilter)
     {
         var timeEntries = (await timeEntryService.Get(stage.Id, hideMfmi26: false))
@@ -122,6 +138,20 @@ public static class MfmiHelper
         }
 
         return stageCodeCompetitionDay < competitionDay;
+    }
+
+    public static List<int> GetCompetitionDaysForRally(RallyCode rallyCode)
+    {
+        return rallyCode switch
+        {
+            RallyCode.Vauxhall => [1, 2, 3],
+            RallyCode.Pirelli => [4,5,6,7,8],
+            RallyCode.Scottish => [9,10,11],
+            RallyCode.Seat => [12,13],
+            RallyCode.Stena => [14,15,16],
+            RallyCode.Sony => [17,18],
+            _ => []
+        };
     }
 
     private static readonly IReadOnlyDictionary<int, List<int>> _competitionDay2StageCodes = new Dictionary<int, List<int>>

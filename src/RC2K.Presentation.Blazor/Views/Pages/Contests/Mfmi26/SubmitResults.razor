@@ -14,7 +14,11 @@
 
 @if (_isLoggedIn)
 {
-    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" CarId="@_carId" DriverName="@_fixedDriverName" GetCompetitionDayFunc="_getCompetitionDayFunc" />
+    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" 
+                CarId="@_carId"
+                DriverName="@_fixedDriverName"
+                GetCompetitionDayFunc="_getCompetitionDayFunc" 
+                ValidatePreviousDaysFromCurrentRally="ValidatePreviousDaysFromCurrentRally" />
 }
 else
 {
@@ -28,12 +32,13 @@ else
     private bool _isLoggedIn;
 
     [SupplyParameterFromQuery]
-    [Parameter]
     public int? CompetitionDay { get; set; }
 
     [SupplyParameterFromQuery]
-    [Parameter]
     public string? FixedDriver { get; set; }
+
+    [SupplyParameterFromQuery]
+    public bool ValidatePreviousDaysFromCurrentRally { get; set; } = false;
 
     private Func<int> _getCompetitionDayFunc;
 
@@ -47,6 +52,11 @@ else
         else
         {
             _getCompetitionDayFunc = Mfmi26Helper.GetCompetitionDay;
+        }
+
+        if (!Auth.TryAuthorize(auth, Auth.AdminRole))
+        {
+            ValidatePreviousDaysFromCurrentRally = true;
         }
 
         var current = await UserService.GetCurrentUserName();

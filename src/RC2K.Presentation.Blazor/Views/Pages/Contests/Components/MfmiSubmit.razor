@@ -1,4 +1,5 @@
-﻿@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
+﻿@using RC2K.Presentation.Blazor.AuthProxy
+@using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions
 @using RC2K.Utils
 
 @inject ITimeEntryService TimeEntryService
@@ -21,6 +22,10 @@ else if (_day == 0)
 else if (_day > 18)
 {
     <MudText Typo="Typo.h3">Competition ended!</MudText>
+}
+else if (_anyPreviousMissing)
+{
+    <MudText Typo="Typo.h3">You cannot continue this rally as you didn't provide time entries from previous days!</MudText>    
 }
 else
 {
@@ -88,31 +93,61 @@ else
     [Parameter]
     public required Func<int> GetCompetitionDayFunc { get; set; } = default!;
 
+    [Parameter]
+    public bool ValidatePreviousDaysFromCurrentRally { get; set; } = true;
+
     private int _day;
 
     private List<(TimeEntry?,Stage)> _stagesForToday = [];
 
+    private bool _anyPreviousMissing;
+
     protected override async Task OnParametersSetAsync()
     {
-       _stagesForToday = [];
-       _day = GetCompetitionDayFunc();
-
-        var codes = MfmiHelper.GetStagesCodesForCompetitionDay(_day);
-        var stagesForToday =
-            (await StageService.GetAll())
-            .Where(x => x.Direction == DomainModel.Direction.Simulation && codes.Contains(x.Code))
-            .ToList();
+        _stagesForToday = [];
+        _day = GetCompetitionDayFunc();
 
         Driver? currentDriver = await DriverService.GetByName(DriverName);
         Guid currentDriverId = currentDriver?.Id ?? Guid.Empty;
 
+        var codesForToday = MfmiHelper.GetStagesCodesForCompetitionDay(_day);
+        var stagesForToday =
+            (await StageService.GetAll())
+            .Where(x => x.Direction == DomainModel.Direction.Simulation && codesForToday.Contains(x.Code))
+            .ToList();
+
         foreach (var stage in stagesForToday)
         {
-            TimeEntry? sentTimeEntry = 
+            TimeEntry? sentTimeEntry =
                 (await TimeEntryService.Get(stage.Id, hideMfmi26: false))
                 .Where(x => x.DriverId == currentDriverId && (x.Labels?.Contains(Label) ?? false))
                 .FirstOrDefault();
             _stagesForToday.Add((sentTimeEntry, stage));
+        }
+
+        _anyPreviousMissing = false;
+        if (!ValidatePreviousDaysFromCurrentRally)
+        {
+            return;
+        }
+        Stage? anyStage = _stagesForToday.Any() ? _stagesForToday.First().Item2 : null;
+        if (anyStage is not null) 
+        {
+            RallyCode currentRallyCode = LevelHelper.GetRallyCodeByStageCode(anyStage.Code);
+            List<int> daysForCurrentRally = MfmiHelper.GetCompetitionDaysForRally(currentRallyCode);
+
+            List<int> stageIdsToVerifyExists = [];
+            for (int i = daysForCurrentRally.First(); i < _day; i++)
+            {
+                var codesForPast = MfmiHelper.GetStagesCodesForCompetitionDay(i);
+                var stagesForPast =
+                    (await StageService.GetAll())
+                    .Where(x => x.Direction == DomainModel.Direction.Simulation && codesForPast.Contains(x.Code))
+                    .ToList();
+                stageIdsToVerifyExists.AddRange(stagesForPast.Select(x => x.Id));
+            }
+
+            _anyPreviousMissing = await MfmiHelper.IsAnyTimeEntryMissing(TimeEntryService, currentDriverId, stageIdsToVerifyExists, Label);
         }
         
     }
