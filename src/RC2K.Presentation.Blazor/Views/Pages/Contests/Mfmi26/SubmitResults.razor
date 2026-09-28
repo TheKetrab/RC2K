@@ -40,7 +40,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var auth = await Asp.GetAuthenticationStateAsync();
-        if (CompetitionDay is not null && Auth.TryAuthorize(auth, "admin"))
+        if (CompetitionDay is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
         {
             _getCompetitionDayFunc = () => CompetitionDay.Value;
         }
@@ -51,7 +51,7 @@ else
 
         var current = await UserService.GetCurrentUserName();
         Driver? currentDriver;
-        if (FixedDriver is not null && Auth.TryAuthorize(auth, "admin"))
+        if (FixedDriver is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
         {
             currentDriver = await DriverService.GetByName(FixedDriver);
         }

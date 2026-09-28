@@ -13,7 +13,7 @@ public class AuthRankingServiceProxy(
     public async Task DoRankingSnapshot()
     {
         var auth = await asp.GetAuthenticationStateAsync();
-        Auth.Authorize(auth, "admin");
+        Auth.Authorize(auth, Auth.AdminRole);
 
         await service.DoRankingSnapshot();
     }

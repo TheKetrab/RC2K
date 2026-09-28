@@ -41,7 +41,7 @@ public class AuthTimeEntryServiceProxy(
         }
         else
         {
-            Auth.Authorize(auth, "admin");
+            Auth.Authorize(auth, Auth.AdminRole);
         }
 
         await service.Delete(timeEntries);
@@ -116,7 +116,7 @@ public class AuthTimeEntryServiceProxy(
     public async Task Verify(List<TimeEntry> timeEntries, Guid verifierId, string comment)
     {
         var auth = await asp.GetAuthenticationStateAsync();
-        Auth.Authorize(auth, "admin");
+        Auth.Authorize(auth, Auth.AdminRole);
 
         await service.Verify(timeEntries, verifierId, comment);
     }
@@ -124,7 +124,7 @@ public class AuthTimeEntryServiceProxy(
     public async Task Verify(List<TimeEntry> timeEntries, string comment)
     {
         var auth = await asp.GetAuthenticationStateAsync();
-        Auth.Authorize(auth, "admin");
+        Auth.Authorize(auth, Auth.AdminRole);
 
         string name = auth.User.Identity!.Name!;
         var user = await userRepository.GetByName(name);
@@ -139,6 +139,6 @@ public class AuthTimeEntryServiceProxy(
             : driver.Name!;
 
         var auth = await asp.GetAuthenticationStateAsync();
-        Auth.AuthorizeSelf(auth, name);
+        Auth.AuthorizeSelf(auth, name, allowAdmin: true);
     }
 }

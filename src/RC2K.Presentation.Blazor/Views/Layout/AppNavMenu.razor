@@ -7,7 +7,7 @@
     {
         if (menuItem.Item == "Admin")
         {
-            <AuthorizeView Roles="admin">
+            <AuthorizeView Roles="Auth.AdminRole">
                 <Authorized>
                     @RenderMenuItem(menuItem)
                 </Authorized>
