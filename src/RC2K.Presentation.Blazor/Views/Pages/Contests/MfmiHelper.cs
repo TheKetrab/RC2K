@@ -17,7 +17,7 @@ public static class MfmiHelper
 
     public async static Task<List<StandingsInfo>> GetStandingsInfo(ITimeEntryService timeEntryService, Stage stage, string labelFilter)
     {
-        var timeEntries = (await timeEntryService.Get(stage.Id))
+        var timeEntries = (await timeEntryService.Get(stage.Id, hideMfmi26: false))
             .Where(x => x.Labels?.Contains(labelFilter) ?? false)
             .ToList();
 
@@ -111,62 +111,74 @@ public static class MfmiHelper
         return res;
     }
 
-    public static HashSet<int> GetStagesCodesForCompetitionDay(int day)
-    {
-        HashSet<int> codesForToday = day switch
-        {
-            1 => [
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 1),
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 2)],
-            2 => [
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 3),
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 4)],
-            3 => [
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 5),
-                LevelHelper.GetStageCode(RallyCode.Vauxhall, 6)],
-            4 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 1)],
-            5 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 2)],
-            6 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 3)],
-            7 => [LevelHelper.GetStageCode(RallyCode.Pirelli, 4)],
-            8 => [
-                LevelHelper.GetStageCode(RallyCode.Pirelli, 5),
-                LevelHelper.GetStageCode(RallyCode.Pirelli, 6)],
-            9 => [
-                LevelHelper.GetStageCode(RallyCode.Scottish, 1),
-                LevelHelper.GetStageCode(RallyCode.Scottish, 2),
-                LevelHelper.GetStageCode(RallyCode.Scottish, 3)],
-            10 => [
-                LevelHelper.GetStageCode(RallyCode.Scottish, 4),
-                LevelHelper.GetStageCode(RallyCode.Scottish, 5)],
-            11 => [LevelHelper.GetStageCode(RallyCode.Scottish, 6)],
-            12 => [
-                LevelHelper.GetStageCode(RallyCode.Seat, 1),
-                LevelHelper.GetStageCode(RallyCode.Seat, 2),
-                LevelHelper.GetStageCode(RallyCode.Seat, 3)],
-            13 => [
-                LevelHelper.GetStageCode(RallyCode.Seat, 4),
-                LevelHelper.GetStageCode(RallyCode.Seat, 5),
-                LevelHelper.GetStageCode(RallyCode.Seat, 6)],
-            14 => [
-                LevelHelper.GetStageCode(RallyCode.Stena, 1),
-                LevelHelper.GetStageCode(RallyCode.Stena, 2)],
-            15 => [
-                LevelHelper.GetStageCode(RallyCode.Stena, 3),
-                LevelHelper.GetStageCode(RallyCode.Stena, 4)],
-            16 => [
-                LevelHelper.GetStageCode(RallyCode.Stena, 5),
-                LevelHelper.GetStageCode(RallyCode.Stena, 6)],
-            17 => [
-                LevelHelper.GetStageCode(RallyCode.Sony, 1),
-                LevelHelper.GetStageCode(RallyCode.Sony, 2),
-                LevelHelper.GetStageCode(RallyCode.Sony, 3)],
-            18 => [
-                LevelHelper.GetStageCode(RallyCode.Sony, 4),
-                LevelHelper.GetStageCode(RallyCode.Sony, 5),
-                LevelHelper.GetStageCode(RallyCode.Sony, 6)],
-            _ => []
-        };
+    public static HashSet<int> GetStagesCodesForCompetitionDay(int day) =>
+        _competitionDay2StageCodes.TryGetValue(day, out var stageCodes) ? stageCodes.ToHashSet() : [];
 
-        return codesForToday;
+    public static bool IsStageAllowedToDisplayForCompetitionDay(int competitionDay, int stageCode)
+    {
+        if (!_stageCode2CompetitionDay.TryGetValue(stageCode, out int stageCodeCompetitionDay))
+        {
+            return false;
+        }
+
+        return stageCodeCompetitionDay < competitionDay;
     }
+
+    private static readonly IReadOnlyDictionary<int, List<int>> _competitionDay2StageCodes = new Dictionary<int, List<int>>
+    {
+        {1, [
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 1),
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 2)] },
+        {2, [
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 3),
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 4)] },
+        {3 , [
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 5),
+            LevelHelper.GetStageCode(RallyCode.Vauxhall, 6)] },
+        {4 , [LevelHelper.GetStageCode(RallyCode.Pirelli, 1)] },
+        {5 , [LevelHelper.GetStageCode(RallyCode.Pirelli, 2)] },
+        {6 , [LevelHelper.GetStageCode(RallyCode.Pirelli, 3)] },
+        {7 , [LevelHelper.GetStageCode(RallyCode.Pirelli, 4)] },
+        {8 , [
+            LevelHelper.GetStageCode(RallyCode.Pirelli, 5),
+            LevelHelper.GetStageCode(RallyCode.Pirelli, 6)] },
+        {9 , [
+            LevelHelper.GetStageCode(RallyCode.Scottish, 1),
+            LevelHelper.GetStageCode(RallyCode.Scottish, 2),
+            LevelHelper.GetStageCode(RallyCode.Scottish, 3)]},
+        {10 , [
+            LevelHelper.GetStageCode(RallyCode.Scottish, 4),
+            LevelHelper.GetStageCode(RallyCode.Scottish, 5)] },
+        {11 , [LevelHelper.GetStageCode(RallyCode.Scottish, 6)] },
+        {12 , [
+            LevelHelper.GetStageCode(RallyCode.Seat, 1),
+            LevelHelper.GetStageCode(RallyCode.Seat, 2),
+            LevelHelper.GetStageCode(RallyCode.Seat, 3)]},
+        {13 , [
+            LevelHelper.GetStageCode(RallyCode.Seat, 4),
+            LevelHelper.GetStageCode(RallyCode.Seat, 5),
+            LevelHelper.GetStageCode(RallyCode.Seat, 6)] },
+        {14 , [
+            LevelHelper.GetStageCode(RallyCode.Stena, 1),
+            LevelHelper.GetStageCode(RallyCode.Stena, 2)]},
+        {15 , [
+            LevelHelper.GetStageCode(RallyCode.Stena, 3),
+            LevelHelper.GetStageCode(RallyCode.Stena, 4)] },
+        {16 , [
+            LevelHelper.GetStageCode(RallyCode.Stena, 5),
+            LevelHelper.GetStageCode(RallyCode.Stena, 6)]},
+        {17 , [
+            LevelHelper.GetStageCode(RallyCode.Sony, 1),
+            LevelHelper.GetStageCode(RallyCode.Sony, 2),
+            LevelHelper.GetStageCode(RallyCode.Sony, 3)]},
+        {18 , [
+            LevelHelper.GetStageCode(RallyCode.Sony, 4),
+            LevelHelper.GetStageCode(RallyCode.Sony, 5),
+            LevelHelper.GetStageCode(RallyCode.Sony, 6)]},
+    };
+
+    private static readonly IReadOnlyDictionary<int, int> _stageCode2CompetitionDay =
+        _competitionDay2StageCodes
+            .SelectMany(kv => kv.Value.Select(val => new { Day = kv.Key, Code = val }))
+            .ToDictionary(x => x.Code, x => x.Day);
 }
