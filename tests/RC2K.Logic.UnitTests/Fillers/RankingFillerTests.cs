@@ -96,7 +96,7 @@ public class RankingFillerTests
     }
 
     [Test]
-    public void FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
+    public async Task FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
         CancellationToken ct = new();
@@ -105,7 +105,7 @@ public class RankingFillerTests
         FillingContext context = new();
 
         //Act-Assert
-        Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _sut.FillRecursive(ranking, context, _fillersBagMock.Object, ct));
     }
 

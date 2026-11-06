@@ -188,7 +188,7 @@ public class TimeEntryFillerTests
     }
 
     [Test]
-    public void FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
+    public async Task FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
         CancellationToken ct = new();
@@ -201,12 +201,12 @@ public class TimeEntryFillerTests
         _carRepositoryMock.Setup(x => x.GetById(car.Id)).ReturnsAsync(car);
 
         //Act-Assert
-        Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct));
     }
 
     [Test]
-    public void FillRecursive_VerifyInfoNotInContextAndUnknownId_ThrowsException()
+    public async Task FillRecursive_VerifyInfoNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
         CancellationToken ct = new();
@@ -224,7 +224,7 @@ public class TimeEntryFillerTests
         _fillersBagMock.Setup(x => x.DriverFiller).Returns(driverFillerMock.Object);
 
         //Act-Assert
-        Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _sut.FillRecursive(timeEntry, context, _fillersBagMock.Object, ct));
     }
 
