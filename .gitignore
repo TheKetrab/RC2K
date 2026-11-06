@@ -53,6 +53,9 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+# Rider
+src/.idea/*
+
 ## ---------- ------ ---------- /
 ## ---------- CUSTOM ---------- /
 ## ---------- ------ ---------- /

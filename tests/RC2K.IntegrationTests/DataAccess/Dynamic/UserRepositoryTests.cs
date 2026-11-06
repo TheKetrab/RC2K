@@ -37,7 +37,7 @@ public class UserRepositoryTests
     }
 
     [Test]
-    public void Create_UserWithNameExists_ThrowsUsersExistsException()
+    public async Task Create_UserWithNameExists_ThrowsUsersExistsException()
     {
         User user = new()
         {
@@ -48,12 +48,12 @@ public class UserRepositoryTests
             Roles = []
         };
 
-        Assert.ThrowsAsync<UserExistsException>(
+        await Assert.ThrowsAsync<UserExistsException>(
             () => _sut.Create(user));
     }
 
     [Test]
-    public void Create_UserWithMailExists_ThrowsUsersExistsException()
+    public async Task Create_UserWithMailExists_ThrowsUsersExistsException()
     {
         User user = new()
         {
@@ -64,7 +64,7 @@ public class UserRepositoryTests
             Roles = []
         };
 
-        Assert.ThrowsAsync<UserExistsException>(
+        await Assert.ThrowsAsync<UserExistsException>(
             () => _sut.Create(user));
     }
 

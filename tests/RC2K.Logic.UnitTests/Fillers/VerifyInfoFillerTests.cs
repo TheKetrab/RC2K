@@ -78,7 +78,7 @@ public class VerifyInfoFillerTests
     }
 
     [Test]
-    public void FillRecursive_VerifierNotInContextAndUnknownId_ThrowsException()
+    public async Task FillRecursive_VerifierNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
         VerifyInfo verifyInfo = AnyVerifyInfo();
@@ -86,7 +86,7 @@ public class VerifyInfoFillerTests
         CancellationToken ct = new();
 
         //Act-Assert
-        Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _sut.FillRecursive(verifyInfo, context, _fillersBagMock.Object, ct));
     }
 

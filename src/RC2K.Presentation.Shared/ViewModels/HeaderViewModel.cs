@@ -36,7 +36,7 @@ public class HeaderViewModel : BaseViewModel
             ("MFMI23","contests/mfmi23"),
             ("MFMI24","contests/mfmi24"),
             ("MFMI25","contests/mfmi25"),
-            //("MFMI26","contests/mfmi26"),
+            ("MFMI26","contests/mfmi26"),
         ] },
         //new MenuItem() { Item = "Mods", ItemLink = "mods", Icon = Icon.Mod, Subitems = [
         //    ("Skins","mods/skins"),

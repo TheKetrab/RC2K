@@ -77,7 +77,7 @@ public class UserFillerTests
     }
 
     [Test]
-    public void FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
+    public async Task FillRecursive_DriverNotInContextAndUnknownId_ThrowsException()
     {
         //Arrange
         User user = AnyUser();
@@ -85,7 +85,7 @@ public class UserFillerTests
         CancellationToken ct = new();
 
         //Act-Assert
-        Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _sut.FillRecursive(user, context, _fillersBagMock.Object, ct));
     }
 
