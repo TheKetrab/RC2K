@@ -17,9 +17,13 @@
                GetCarFunc="Mfmi26Helper.GetCar"
                GetCompetitionDayFunc="Mfmi26Helper.GetCompetitionDay"
                GetCalculatedViewModelFunc="CosmosCacheGet"
-               SetCalculatedViewModelFunc="CosmosCacheSet"/>
+               SetCalculatedViewModelFunc="CosmosCacheSet"
+               IgnoreCacheGet="IgnoreCache"/>
 
 @code {
+
+    [SupplyParameterFromQuery]
+    public bool IgnoreCache { get; set; }
 
     protected override void OnInitialized()
     {

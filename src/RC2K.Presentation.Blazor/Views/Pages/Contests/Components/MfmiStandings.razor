@@ -132,6 +132,12 @@ else
     [Parameter]
     public required Func<string, string> GetCarFunc { get; set; }
 
+    [Parameter]
+    public required Func<int> GetCompetitionDayFunc { get; set; }
+
+    [Parameter]
+    public required bool IgnoreCacheGet { get; set; } = false;
+
     private async Task<Car> ResolveCar(string driverName)
     {
         string carName = GetCarFunc(driverName);
@@ -158,7 +164,7 @@ else
 
         string cacheKey = GetViewModelCacheKey();
         var cachedValue = Cache.Get<List<MfmiStandingsStageContestInfoViewModel>>(cacheKey);
-        if (cachedValue is not null)
+        if (!IgnoreCacheGet && cachedValue is not null)
         {
             _viewModel.Stages = cachedValue;
             return;
@@ -168,11 +174,14 @@ else
             .Where(x => x.Direction == DomainModel.Direction.Simulation)
             .ToList();
 
+        int competitionDay = GetCompetitionDayFunc();
         List<MfmiStandingsStageContestInfoViewModel> stagesViewModel = [];
         Dictionary<int, List<MfmiHelper.StandingsInfo>> standingsByStageId = new();
         foreach (var s in stages)
         {
-            var standings = await MfmiHelper.GetStandingsInfo(TimeEntryService, s, LabelFilter);
+            var standings = MfmiHelper.IsStageAllowedToDisplayForCompetitionDay(competitionDay, s.Code)
+                ? await MfmiHelper.GetStandingsInfo(TimeEntryService, s, LabelFilter)
+                : [];
             var vm = await GetViewModelForStage(s, standings);
 
             stagesViewModel.Add(vm);

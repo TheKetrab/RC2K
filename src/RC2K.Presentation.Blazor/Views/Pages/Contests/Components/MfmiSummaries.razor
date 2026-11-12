@@ -132,6 +132,12 @@ else
     [Parameter]
     public required Func<MfmiSummariesContestInfoViewModel,int,Task> SetCalculatedViewModelFunc { get; set; }
 
+    /// <summary>
+    /// Should ignore cache get?
+    /// </summary>
+    [Parameter]
+    public required bool IgnoreCacheGet { get; set; } = false;
+
 
     private async Task<Car> ResolveCar(string driverName)
     {
@@ -155,9 +161,9 @@ else
 
     private async Task Reload()
     {
-        int day = GetCompetitionDayFunc();
-        var calculatedViewModel = await GetCalculatedViewModelFunc(day);
-        if (calculatedViewModel is not null)
+        int competitionDay = GetCompetitionDayFunc();
+        var calculatedViewModel = await GetCalculatedViewModelFunc(competitionDay);
+        if (!IgnoreCacheGet && calculatedViewModel is not null)
         {
             _viewModel = calculatedViewModel;
             return;
@@ -177,7 +183,9 @@ else
             Dictionary<int, List<MfmiHelper.StandingsInfo>> standingsByStageId = [];
             foreach (var stage in stages) 
             {
-                var standings = await MfmiHelper.GetStandingsInfo(TimeEntryService, stage, LabelFilter);
+                var standings = MfmiHelper.IsStageAllowedToDisplayForCompetitionDay(competitionDay, stage.Code)
+                    ? await MfmiHelper.GetStandingsInfo(TimeEntryService, stage, LabelFilter)
+                    : [];
                 standingsByStageId.Add(stage.Id, standings);
             }
             var rallyStandingsInfo = MfmiHelper.GetRallyStandingsInfo(standingsByStageId);
@@ -196,7 +204,7 @@ else
 
         _viewModel.Rallies = ralliesViewModel;
 
-        await SetCalculatedViewModelFunc(_viewModel, day);
+        await SetCalculatedViewModelFunc(_viewModel, competitionDay);
     }
 
     private async Task<MfmiSummariesRallyContestInfoViewModel> GetViewModelForRally(RallyCode rally, List<MfmiHelper.StandingsInfo> standings)

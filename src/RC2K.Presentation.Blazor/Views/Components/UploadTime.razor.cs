@@ -26,6 +26,9 @@ public partial class UploadTime
     [CascadingParameter]
     public required IMudDialogInstance? MudDialog { get; set; }
 
+    [Parameter]
+    public Func<Task>? AfterUploadClickFunc { get; set; }
+
     protected override void OnParametersSet()
     {
         _errorBoundaryRef?.Recover();
@@ -187,6 +190,11 @@ public partial class UploadTime
         else
         {
             await HandleUserUploadTime(driver.Id);
+        }
+
+        if (AfterUploadClickFunc is not null)
+        {
+            await (AfterUploadClickFunc());
         }
     }
 
