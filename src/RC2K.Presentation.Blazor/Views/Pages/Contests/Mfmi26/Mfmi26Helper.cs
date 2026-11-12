@@ -1,5 +1,4 @@
 ﻿using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26;
 
@@ -25,12 +24,34 @@ public static class Mfmi26Helper
 
     public static int GetCompetitionDay()
     {
-        DateTime nowUtc = DateTime.UtcNow;
+        DateTime utcNow = DateTime.UtcNow;
 
-        if (nowUtc <= UtcFromPolishTime(2026, 09, 25, 20)) return -1; // not started;
-        if (nowUtc <= UtcFromPolishTime(2026, 09, 26, 20)) return 1;
-        if (nowUtc <= UtcFromPolishTime(2026, 09, 27, 20)) return 2;
-        if (nowUtc <= UtcFromPolishTime(2026, 09, 28, 20)) return 3;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 21, 20)) return -1; // not started
+
+        if (utcNow <= UtcFromPolishTime(2026, 11, 22, 20)) return 1;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 23, 20)) return 2;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 24, 20)) return 3;
+
+        if (utcNow <= UtcFromPolishTime(2026, 11, 26, 20)) return 4;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 27, 20)) return 5;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 28, 20)) return 6;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 29, 20)) return 7;
+        if (utcNow <= UtcFromPolishTime(2026, 11, 30, 20)) return 8;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 2, 20)) return 9;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 3, 20)) return 10;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 4, 20)) return 11;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 6, 20)) return 12;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 7, 20)) return 13;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 9, 20)) return 14;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 10, 20)) return 15;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 11, 20)) return 16;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 13, 20)) return 17;
+        if (utcNow <= UtcFromPolishTime(2026, 12, 14, 20)) return 18;
+
         return 20; // competition ended
     }
 
@@ -41,4 +62,5 @@ public static class Mfmi26Helper
         DateTime targetUtc = TimeZoneInfo.ConvertTimeToUtc(targetPolishLocal, polandZone); // handles CET and CEST
         return targetUtc;
     }
+
 }

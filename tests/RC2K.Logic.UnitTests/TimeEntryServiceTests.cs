@@ -275,7 +275,7 @@ public class TimeEntryServiceTests
     }
 
     [Test]
-    public void Verify_ThrowsWhenTimeEntryAlreadyVerified()
+    public async Task Verify_ThrowsWhenTimeEntryAlreadyVerified()
     {
         //Arrange
         Guid verifierId = Guid.NewGuid();
@@ -294,7 +294,7 @@ public class TimeEntryServiceTests
         List<TimeEntry> timeEntries = [te1];
 
         //Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(async () => await _sut.Verify(timeEntries, verifierId, comment));
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.Verify(timeEntries, verifierId, comment));
     }
 
     [Test]

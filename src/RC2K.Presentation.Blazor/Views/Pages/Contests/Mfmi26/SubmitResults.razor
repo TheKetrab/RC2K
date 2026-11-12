@@ -47,7 +47,8 @@ else
         var auth = await Asp.GetAuthenticationStateAsync();
         if (CompetitionDay is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
         {
-            _getCompetitionDayFunc = () => CompetitionDay.Value;
+            int compDay = CompetitionDay.Value;
+            _getCompetitionDayFunc = () => compDay;
         }
         else
         {

@@ -38,7 +38,7 @@ public class DriverRepositoryTests
     }
 
     [Test]
-    public void Create_DriverWithNameAlreadyExists_ThrowsDriverExistsException()
+    public async Task Create_DriverWithNameAlreadyExists_ThrowsDriverExistsException()
     {
         Driver driver = new()
         {
@@ -47,7 +47,7 @@ public class DriverRepositoryTests
             Known = false
         };
 
-        Assert.ThrowsAsync<DriverExistsException>(
+        await Assert.ThrowsAsync<DriverExistsException>(
             () => _sut.Create(driver));
     }
 }
