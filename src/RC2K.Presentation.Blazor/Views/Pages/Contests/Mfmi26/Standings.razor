@@ -18,12 +18,17 @@
                LabelFilter="MFMI26"
                GetGroupFunc="Mfmi26Helper.GetGroup"
                GetNrFunc="Mfmi26Helper.GetNr"
-               GetCarFunc="Mfmi26Helper.GetCar"/>
+               GetCarFunc="Mfmi26Helper.GetCar"
+               GetCompetitionDayFunc="Mfmi26Helper.GetCompetitionDay"
+               IgnoreCacheGet="IgnoreCache"/>
 
 @code {
 
     [Parameter]
     public string? Rally { get; set; }
+
+    [SupplyParameterFromQuery]
+    public bool IgnoreCache { get; set; }
 
     private RallyCode RallyCode => Rally is null
         ? LevelHelper.GetRallyCodesBySimulationOrder().First()

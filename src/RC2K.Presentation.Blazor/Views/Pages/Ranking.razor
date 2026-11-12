@@ -2,6 +2,7 @@
 
 @page "/ranking"
 @page "/ranking/{action}"
+@using RC2K.Presentation.Blazor.AuthProxy
 
 
 @inject IRankingService RankingService;
@@ -21,7 +22,7 @@
         if (Action == "snapshot")
         {
             var authState = await AuthState.GetAuthenticationStateAsync();
-            if (!authState.User.IsInRole("admin"))
+            if (!authState.User.IsInRole(Auth.AdminRole))
             {
                 NavigationManager.NavigateTo("/ranking");
                 return;

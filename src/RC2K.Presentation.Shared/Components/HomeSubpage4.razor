@@ -79,20 +79,26 @@
 
 <script>
     function updateLines() {
-
-        const container = document.getElementById('maps-container').getBoundingClientRect();
-        const img1 = document.getElementById('img1').getBoundingClientRect();
-        const img2 = document.getElementById('img2').getBoundingClientRect();
-        const img3 = document.getElementById('img3').getBoundingClientRect();
+        const containerEl = document.getElementById('maps-container');
+        const img1El = document.getElementById('img1');
+        const img2El = document.getElementById('img2');
+        const img3El = document.getElementById('img3');
         const infoBoxA = document.getElementById('info-box-a');
         const infoBoxB = document.getElementById('info-box-b');
-
         const lineA = document.getElementById('arrow-line-A');
         const lineB = document.getElementById('arrow-line-B');
 
+        if (!containerEl || !img1El || !img2El || !img3El || !infoBoxA || !infoBoxB || !lineA || !lineB) {
+            return;
+        }
+
+        const container = containerEl.getBoundingClientRect();
+        const img1 = img1El.getBoundingClientRect();
+        const img2 = img2El.getBoundingClientRect();
+        const img3 = img3El.getBoundingClientRect();
+
         updateLineA(container, lineA, img1, img2, infoBoxA);
         updateLineB(container, lineB, img2, img3, infoBoxB);
-
     }
 
     function updateLineA(container, line, imgSrc, imgDst, infoBox) {

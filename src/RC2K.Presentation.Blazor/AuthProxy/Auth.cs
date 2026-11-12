@@ -4,6 +4,8 @@ namespace RC2K.Presentation.Blazor.AuthProxy;
 
 public static class Auth
 {
+    public const string AdminRole = "admin";
+
     public static void Authorize(AuthenticationState state)
     {
         if (!TryAuthorize(state))
@@ -20,9 +22,9 @@ public static class Auth
         }
     }
 
-    public static void AuthorizeSelf(AuthenticationState state, string username)
+    public static void AuthorizeSelf(AuthenticationState state, string username, bool allowAdmin = false)
     {
-        if (!TryAuthorizeSelf(state, username))
+        if (!TryAuthorizeSelf(state, username, allowAdmin))
         {
             throw new NotAuthorizedException($"Allowed only for user {username}");
         }
@@ -38,8 +40,13 @@ public static class Auth
         return state.User.IsInRole(role);
     }
 
-    public static bool TryAuthorizeSelf(AuthenticationState state, string username)
+    public static bool TryAuthorizeSelf(AuthenticationState state, string username, bool allowAdmin = false)
     {
+        if (allowAdmin && TryAuthorize(state, AdminRole))
+        {
+            return true;
+        }
+
         return state.User.Identity?.Name == username;
     }
 }

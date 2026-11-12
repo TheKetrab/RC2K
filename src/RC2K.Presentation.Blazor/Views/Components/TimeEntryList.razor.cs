@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using RC2K.DomainModel;
 using RC2K.Logic.Interfaces.Dtos;
+using RC2K.Presentation.Blazor.AuthProxy;
 using RC2K.Presentation.Blazor.Views.Dialogs;
 using RC2K.Presentation.Shared;
 using System.Collections;
@@ -284,7 +285,7 @@ public partial class TimeEntryList
     private bool CanShowContextMenu(TimeEntryListItem item)
     {
         var userName = HttpContextAccessor.HttpContext?.User.Identity?.Name;
-        var isAdmin = HttpContextAccessor.HttpContext?.User.IsInRole("admin") ?? false;
+        var isAdmin = HttpContextAccessor.HttpContext?.User.IsInRole(Auth.AdminRole) ?? false;
 
         if (isAdmin)
         {

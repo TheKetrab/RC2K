@@ -14,7 +14,11 @@
 
 @if (_isLoggedIn)
 {
-    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" CarId="@_carId" DriverName="@_fixedDriverName" GetCompetitionDayFunc="_getCompetitionDayFunc" />
+    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" 
+                CarId="@_carId"
+                DriverName="@_fixedDriverName"
+                GetCompetitionDayFunc="_getCompetitionDayFunc" 
+                ValidatePreviousDaysFromCurrentRally="ValidatePreviousDaysFromCurrentRally" />
 }
 else
 {
@@ -28,15 +32,20 @@ else
     private bool _isLoggedIn;
 
     [SupplyParameterFromQuery]
-    [Parameter]
     public int? CompetitionDay { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? FixedDriver { get; set; }
+
+    [SupplyParameterFromQuery]
+    public bool ValidatePreviousDaysFromCurrentRally { get; set; } = false;
 
     private Func<int> _getCompetitionDayFunc;
 
     protected override async Task OnInitializedAsync()
     {
         var auth = await Asp.GetAuthenticationStateAsync();
-        if (CompetitionDay is not null && Auth.TryAuthorize(auth, "admin"))
+        if (CompetitionDay is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
         {
             _getCompetitionDayFunc = () => CompetitionDay.Value;
         }
@@ -45,8 +54,22 @@ else
             _getCompetitionDayFunc = Mfmi26Helper.GetCompetitionDay;
         }
 
+        if (!Auth.TryAuthorize(auth, Auth.AdminRole))
+        {
+            ValidatePreviousDaysFromCurrentRally = true;
+        }
+
         var current = await UserService.GetCurrentUserName();
-        var currentDriver = await DriverService.GetByName(current);
+        Driver? currentDriver;
+        if (FixedDriver is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
+        {
+            currentDriver = await DriverService.GetByName(FixedDriver);
+        }
+        else
+        {
+            currentDriver = await DriverService.GetByName(current);
+        }
+
         if (currentDriver is null)
         {
             _isLoggedIn = false;

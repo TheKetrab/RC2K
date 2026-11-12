@@ -62,7 +62,7 @@ public static class BuilderConfiguration
         builder.Services.AddIdleCircuitHandler(options => 
         {
             options.IdleTimeout = TimeSpan.FromMinutes(3);
-            options.ForceInvalidateCircuitTimeout = TimeSpan.FromSeconds(10);
+            options.ForceInvalidateCircuitTimeout = TimeSpan.FromMinutes(10);
         });
         builder.Services.AddHostedService<SessionLoggingService>();
 
