@@ -1,5 +1,4 @@
 ﻿using RC2K.Presentation.Blazor.Views.Pages.Contests.Definitions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace RC2K.Presentation.Blazor.Views.Pages.Contests.Mfmi26;
 
