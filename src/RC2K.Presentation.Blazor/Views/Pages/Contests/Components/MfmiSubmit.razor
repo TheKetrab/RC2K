@@ -29,9 +29,14 @@ else if (_anyPreviousMissing)
 }
 else
 {
-    foreach (var (te, stage) in _stagesForToday)
+    @if (_stagesForToday.Any())
     {
-        <MudText Typo="Typo.h3">@(stage.StageData.Name)</MudText>
+        <MudText Typo="Typo.h3">@LevelHelper.StageCodeToRallyName(_stagesForToday.First().Item2.StageData.StageCode)</MudText>
+    }
+    
+    foreach (var (te, stage) in _stagesForToday)
+    {                
+        <MudText Typo="Typo.h4">@(stage.StageData.Name) (Stage no @LevelHelper.GetStageNumberInRallyByStageCode(stage.StageData.StageCode))</MudText>
         @if (te is null)
         {
             <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" AfterUploadClickFunc="Refresh"/>

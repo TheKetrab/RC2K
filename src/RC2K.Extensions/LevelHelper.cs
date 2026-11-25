@@ -70,11 +70,14 @@ public static class LevelHelper
     public static int GetStageCode(int rally, int stage, bool arcade) =>
         stage + 10 * (arcade ? _arcadeId2CodePrefixMap[rally] : rally);
 
-    public static int GetStageCode(RallyCode rallyCode, int stage) =>
-        stage + 10 * _rallyCode2CodePrefixMap[rallyCode];
+    public static int GetStageCode(RallyCode rallyCode, int stageCode) =>
+        stageCode + 10 * _rallyCode2CodePrefixMap[rallyCode];
 
-    public static RallyCode GetRallyCodeByStageCode(int stage) =>
-        _codePrefix2RallyCodeMap[stage / 10];
+    public static int GetStageNumberInRallyByStageCode(int stageCode) =>
+        stageCode % 10;
+
+    public static RallyCode GetRallyCodeByStageCode(int stageCode) =>
+        _codePrefix2RallyCodeMap[stageCode / 10];
 
     public static RallyCode GetRallyCodeByShortName(string shortName) =>
         _shortName2rallyCode[shortName];
