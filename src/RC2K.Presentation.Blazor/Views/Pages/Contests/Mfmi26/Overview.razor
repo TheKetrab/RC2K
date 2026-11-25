@@ -4,8 +4,17 @@
 @page "/contests/mfmi26/overview"
 @inherits BaseMfmi26Page
 
-<div style="width: 100%; display: flex; justify-content: center;">
+<div style="width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;">
     <div style="max-width: 600px; border-radius: 10px; overflow: hidden;">
         <img src="img/mfmi/mfmi2026.png"/>
     </div>
+
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ArrowDownward" Color="Color.Secondary" Href="@DownloadUrl" Style="margin-top: 20px; align-self: center;">
+        Download booklet
+    </MudButton>
 </div>
+
+@code {
+
+    private const string DownloadUrl = "/files/MFMI%202026%20Regulations%20Booklet.pdf";
+}
