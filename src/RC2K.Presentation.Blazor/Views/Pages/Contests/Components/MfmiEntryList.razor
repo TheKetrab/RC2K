@@ -60,7 +60,7 @@
         foreach (var p in Participants)
         {
             var driver = (await DriverService.GetByName(p.Name)) ?? throw new Exception();
-            var car = cars.First(x => x.Name == p.Car);
+            var car = cars.FirstOrDefault(x => x.Name == p.Car) ?? Car.NullObject;
             _items.Add(new MfmiEntryListItemViewModel()
             {
                 Nr = p.Nr,

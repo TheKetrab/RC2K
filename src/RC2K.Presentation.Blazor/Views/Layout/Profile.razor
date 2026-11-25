@@ -18,6 +18,7 @@
                     </div>
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Score)"
                                    Href="score"
+                                   Disabled="true"
                                    Style="padding: 0; margin: auto 10px;" />
                     <MudBadge Content="@_notificationsCount" 
                               Visible="@(_notificationsCount > 0)"
@@ -33,6 +34,7 @@
                                    Style="padding: 0; margin: auto 10px;" />
                     <MudIconButton Icon="@IconMapper.Thin(Icon.Settings)"
                                    Href="settings"
+                                   Disabled="true"
                                    Style="padding: 0; margin: auto 10px;" />
                     <div style="display:flex; flex-direction: column; justify-content: center; align-content: center;" class="tooltip">
                         <ThreeToggle />
