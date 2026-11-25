@@ -7,4 +7,6 @@ public class Car
     public required string Name { get; init; }
     public required int Class { get; init; }
     public override string ToString() => $"{Name} (A{Class})";
+
+    public static readonly Car NullObject = new Car() { Id = 0, Class = 0, Name = "?" };
 }
