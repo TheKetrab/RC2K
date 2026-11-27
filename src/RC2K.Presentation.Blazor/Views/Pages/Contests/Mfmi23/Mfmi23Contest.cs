@@ -39,7 +39,7 @@ public class Mfmi23Contest : IContest<Mfmi23Participant>
         new("Karel Pipa", "Seat Cordoba WRC", 55, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g3_karelpipa.png" ),
         new("Lewsys", "Peugeot 206 WRC", 14, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_lewsys.png" ),
         new("sBinnala", "Subaru Impreza WRC", 16, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_sbinnala.png" ),
-        new("SForman135LS", "Subaru Impreza WRC", 90, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_sforman135ls.png" ),
+        new("SForman135", "Subaru Impreza WRC", 90, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_sforman135ls.png" ),
         new("Certare", "Peugeot 206 WRC", 26, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_certare.png" ),
         new("P. Klima", "Mitsubishi Lancer Evo V", 77, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_p.klima.png" ),
         new("Kryspa7", "Subaru Impreza WRC", 7, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI23/g4_kryspa7.png" ),

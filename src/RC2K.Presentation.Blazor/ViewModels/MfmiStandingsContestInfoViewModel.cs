@@ -23,8 +23,8 @@ public class MfmiStandingsEntryListItemViewModel
     public required string Group { get; init; }
     public required Car Car { get; init; }
     public TimeSpan Time { get; set; }
-    public string TimeDisplay => (Time == TimeSpan.MaxValue) ? "N/A" : Time.ToString(@"m\:ss\.ff");
+    public string TimeDisplay => (Time == TimeSpan.MaxValue) ? "N/A" : Time.ToString(@"h\:mm\:ss\.ff");
     public TimeSpan Gap { get; set; }
-    public string GapDisplay => TimeDisplay == "N/A" ? "N/A" : (Gap == TimeSpan.Zero ? "" : $"- {Gap.ToString(@"m\:ss\.ff")}");
+    public string GapDisplay => TimeDisplay == "N/A" ? "N/A" : (Gap == TimeSpan.Zero ? "" : $"- {(Gap >= TimeSpan.FromHours(1) ? Gap.ToString(@"h\:m\:ss\.ff") : Gap.ToString(@"m\:ss\.ff"))}");
     public List<Proof> Proofs { get; set; } = [];
 }

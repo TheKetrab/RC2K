@@ -40,7 +40,7 @@ public class Mfmi25Contest : IContest<Mfmi25Participant>
         new("Ephemeral", "Proton Wira/Persona", 25, 1, "Kakaové Chlebíčki" ),
         new("Migger", "Mitsubishi Lancer Evo IV", 23, 2, "Kakaové Chlebíčki" ),
         new("Erwto", "Seat Cordoba WRC", 20, 2, "Kakaové Chlebíčki" ),
-        new("SForman135LS", "Proton Wira/Persona", 90, 3, "Kakaové Chlebíčki" ),
+        new("SForman135", "Proton Wira/Persona", 90, 3, "Kakaové Chlebíčki" ),
         new("Noni", "Peugeot 206 WRC", 44, 3, "Kakaové Chlebíčki" ),
     ];
 

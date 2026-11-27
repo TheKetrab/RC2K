@@ -34,7 +34,7 @@ public class Mfmi24Contest : IContest<Mfmi24Participant>
         new("Karel Pipa", "Seat Cordoba WRC", 55, 2, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g2_karelpipa.png" ),
         new("Erwto", "Subaru Impreza WRC", 20, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_erwto.png" ),
         new("Lewsys", "Peugeot 206 WRC", 14, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_lewsys.png" ),
-        new("SForman135LS", "Subaru Impreza WRC", 90, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_sforman135ls.png" ),
+        new("SForman135", "Subaru Impreza WRC", 90, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_sforman135ls.png" ),
         new("Red_T", "Subaru Impreza WRC", 19, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_red_t.png" ),
         new("Pendzior", "Seat Cordoba WRC", 8, 3, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g3_pendzior.png" ),
         new("sBinnala", "Seat Cordoba WRC", 16, 4, "https://redchili385.github.io/RC2K_JanuaryContest_2020/resources/driver_profiles/MFMI24/g4_sbinnala.png" ),

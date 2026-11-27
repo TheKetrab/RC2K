@@ -73,7 +73,9 @@ else
                     </TemplateColumn>
                     <TemplateColumn Title="Nat" >
                         <CellTemplate>
-                            <span class="fi @($"fi-{@context.Item.DriverNationality}")"></span>
+                            <div class="my-flag">
+                                <span class="fi @($"fi-{@context.Item.DriverNationality}")"></span>
+                            </div>
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" Filterable="false" Sortable="false" />
