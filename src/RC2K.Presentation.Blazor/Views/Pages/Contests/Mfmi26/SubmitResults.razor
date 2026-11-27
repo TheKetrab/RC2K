@@ -12,17 +12,30 @@
 @inject ICarService CarService
 @inject AuthenticationStateProvider Asp
 
-@if (_isLoggedIn)
+@if (!dataLoaded)
 {
-    <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" 
-                CarId="@_carId"
-                DriverName="@_fixedDriverName"
-                GetCompetitionDayFunc="_getCompetitionDayFunc" 
-                ValidatePreviousDaysFromCurrentRally="ValidatePreviousDaysFromCurrentRally" />
+    <div style="position: relative;">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100vh" />
+        <MudOverlay Visible="overlayVisible" Absolute="true">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        </MudOverlay>
+    </div>
 }
 else
 {
-    <MudText>Only logged in users can submit results</MudText>
+    
+    @if (_isLoggedIn)
+    {
+        <MfmiSubmit Label="@base.Contest.MainLink.ToUpper()" 
+                    CarId="@_carId"
+                    DriverName="@_fixedDriverName"
+                    GetCompetitionDayFunc="_getCompetitionDayFunc" 
+                    ValidatePreviousDaysFromCurrentRally="ValidatePreviousDaysFromCurrentRally" />
+    }
+    else
+    {
+        <MudText>Only logged in users can submit results</MudText>
+    }
 }
 
 @code {
@@ -42,8 +55,27 @@ else
 
     private Func<int> _getCompetitionDayFunc;
 
+    // async loading
+    private bool overlayVisible;
+    private bool dataLoaded;
+
+    public void OpenLoadingOverlay()
+    {
+        overlayVisible = true;
+        dataLoaded = false;
+        StateHasChanged();
+    }
+
+    private void CloseLoadingOverlay()
+    {
+        overlayVisible = false;
+        dataLoaded = true;
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        OpenLoadingOverlay();
+
         var auth = await Asp.GetAuthenticationStateAsync();
         if (CompetitionDay is not null && Auth.TryAuthorize(auth, Auth.AdminRole))
         {
@@ -74,6 +106,7 @@ else
         if (currentDriver is null)
         {
             _isLoggedIn = false;
+            CloseLoadingOverlay();
             return;            
         }
 
@@ -83,5 +116,7 @@ else
         var carName = Mfmi26Helper.GetCar(currentDriver.FriendlyName);
         Car? car = (await CarService.GetAll()).FirstOrDefault(x => x.Name == carName);
         _carId = car?.Id;
+
+        CloseLoadingOverlay();
     }
 }

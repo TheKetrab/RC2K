@@ -11,30 +11,79 @@
 @inject IDriverService DriverService
 @inject MessageHelper MessageHelper
 
+@if (!dataLoaded)
+{
+    <div style="position: relative;">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100vh" />
+        <MudOverlay Visible="overlayVisible" Absolute="true">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        </MudOverlay>
+    </div>
+}
+else
+{
+    @if (_day < 0)
+    {
+        <MudText Typo="Typo.h3">Competition not started yet!</MudText>    
+    }
     else if (_day == 0 || _day > 100)
-    
-    foreach (var (te, stage) in _stagesForToday)
-    {                
-        <MudText Typo="Typo.h4">@(stage.StageData.Name) (Stage no @LevelHelper.GetStageNumberInRallyByStageCode(stage.StageData.StageCode))</MudText>
-        @if (te is null)
+    {
+        <MudText Typo="Typo.h3">Competition paused</MudText>
+    }
+    else if (_day > 18)
+    {
+        <MudText Typo="Typo.h3">Competition ended!</MudText>
+    }
+    else if (_anyPreviousMissing)
+    {
+        <MudText Typo="Typo.h3">You cannot continue this rally as you didn't provide time entries from previous days!</MudText>    
+    }
+    else
+    {
+        @if (_stagesForToday.Any())
         {
-            <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" AfterUploadClickFunc="Refresh"/>
+            <MudText Typo="Typo.h3">@LevelHelper.StageCodeToRallyName(_stagesForToday.First().Item2.StageData.StageCode)</MudText>
         }
-        else
-        {
-            <MudCard Style="min-width: 500px; flex-grow: 1; flex-basis: 60%">
-                <MudCardContent Class="time-entry-data-grid">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <MudText>@($"Result sent (time: {te.Time.ToString("m:ss.ff")})")</MudText>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Remove(stage.Id)">REMOVE</MudButton>         
-                    </div>
-                </MudCardContent>
-            </MudCard>
+    
+        foreach (var (te, stage) in _stagesForToday)
+        {                
+            <MudText Typo="Typo.h4">@(stage.StageData.Name) (Stage no @LevelHelper.GetStageNumberInRallyByStageCode(stage.StageData.StageCode))</MudText>
+            @if (te is null)
+            {
+                <UploadTime StageId="stage.Id" FixedLabel="@Label" FixedCarId="@CarId" FixedDriverName="@DriverName" AfterUploadClickFunc="Refresh"/>
+            }
+            else
+            {
+                <MudCard Style="min-width: 500px; flex-grow: 1; flex-basis: 60%">
+                    <MudCardContent Class="time-entry-data-grid">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <MudText>@($"Result sent (time: {te.Time.ToString("m:ss.ff")})")</MudText>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Remove(stage.Id)">REMOVE</MudButton>         
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+            }
         }
     }
 }
 
 @code {
+
+    // async loading
+    private bool overlayVisible;
+    private bool dataLoaded;
+
+    public void OpenLoadingOverlay()
+    {
+        overlayVisible = true;
+        dataLoaded = false;
+        StateHasChanged();
+    }
+    private void CloseLoadingOverlay()
+    {
+        overlayVisible = false;
+        dataLoaded = true;
+    }
 
     private async Task Refresh()
     {
@@ -86,7 +135,25 @@
 
     private bool _anyPreviousMissing;
 
+    protected override async Task OnInitializedAsync()
+    {
+        OpenLoadingOverlay();
+    }
+
     protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            OpenLoadingOverlay();
+            await OnParametersSetAsyncImpl();
+        }
+        finally
+        {
+            CloseLoadingOverlay();
+        }
+    }
+
+    private async Task OnParametersSetAsyncImpl()
     {
         _stagesForToday = [];
         _day = GetCompetitionDayFunc();
@@ -133,7 +200,9 @@
 
             _anyPreviousMissing = await MfmiHelper.IsAnyTimeEntryMissing(TimeEntryService, currentDriverId, stageIdsToVerifyExists, Label);
         }
-        
+
     }
+
+
 
 }
