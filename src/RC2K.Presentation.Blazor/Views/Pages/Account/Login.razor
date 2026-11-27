@@ -87,7 +87,18 @@
         {
             _isLoading = true;
             var principal = await AuthService.Login(Model.UserName!, Model.Password!);
-            await HttpContext.SignInAsync(principal);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                authProperties);
+
             HttpContext.Response.Redirect("/");
         }
         catch (Exception ex)
