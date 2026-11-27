@@ -26,7 +26,7 @@ public class Mfmi26Contest : IContest<Mfmi26Participant>
          new("Migger", "Subaru Impreza WRC", 23, 2),
          new("Casey", "Peugeot 206 WRC", 20, 2),
          new("SForman135", "Mitsubishi Lancer Evo V", 92, 3),
-         new("Noni", "Mitsubishi Lancer Evo IV", 44, 3),
+         new("Noni", "Peugeot 206 WRC", 44, 3),
     ];
 
 }
