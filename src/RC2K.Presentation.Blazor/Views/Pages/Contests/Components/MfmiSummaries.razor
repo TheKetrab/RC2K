@@ -78,7 +78,10 @@ else
                     </TemplateColumn>
                     <PropertyColumn Property="@(x => $"G{x.Group}")" Title="Group" Filterable="false" Sortable="false" />
                     <PropertyColumn Property="x => x.TimeDisplay" Title="Time" Filterable="false" Sortable="false" />
-                    <PropertyColumn Property="x => x.TimeWcbDisplay" Title="Time (WCB-adjusted)" Filterable="false" Sortable="false" />
+                    @if (GetCarModifierFunc is not null)
+                    {
+                        <PropertyColumn Property="x => x.TimeWcbDisplay" Title="Time (WCB-adjusted)" Filterable="false" Sortable="false" />                        
+                    }
                     <PropertyColumn Property="x => x.Points" Title="Points" Filterable="false" Sortable="false" /> 
                 </Columns>
             </MudDataGrid>
@@ -119,6 +122,14 @@ else
     /// </summary>
     [Parameter]
     public required Func<int> GetCompetitionDayFunc { get; set; }
+
+    /// <summary>
+    /// Adjust time via car modifier factor. If set to null, WCB column is not displayed and func is an identity by default.
+    /// </summary>
+    [Parameter]
+    public required Func<Car, double>? GetCarModifierFunc { get; set; }
+
+    private Func<Car, double>? InvokeCarModifierFunc => GetCarModifierFunc is null ? ((_) => 1) : GetCarModifierFunc;
 
     /// <summary>
     /// Heavy calculation durable cached in CosmosDb
@@ -232,7 +243,8 @@ else
                 Time = s.Time,                
             };
 
-            var wcbTime = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(s.Time) * Mfmi24Helper.GetCarModifier(car)));
+            double modifier = InvokeCarModifierFunc(car);
+            var wcbTime = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(s.Time) * modifier));
             entry.TimeWcb = wcbTime;
             vm.Entries.Add(entry);
         }
@@ -311,7 +323,8 @@ else
             }
             else
             {
-                timeWcb = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(totalTime) * Mfmi24Helper.GetCarModifier(car)));
+                double modifier = InvokeCarModifierFunc(car);
+                timeWcb = Utils.CentisecondsToTimeSpan((long)(Utils.TimeSpanToCentiseconds(totalTime) * modifier));
                 
             }
             driverVm.Time = totalTime;
