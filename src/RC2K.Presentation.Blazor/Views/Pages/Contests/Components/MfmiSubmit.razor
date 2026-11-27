@@ -11,28 +11,7 @@
 @inject IDriverService DriverService
 @inject MessageHelper MessageHelper
 
-@if (_day < 0)
-{
-    <MudText Typo="Typo.h3">Competition not started yet!</MudText>    
-}
-else if (_day == 0)
-{
-    <MudText Typo="Typo.h3">Competition paused</MudText>
-}
-else if (_day > 18)
-{
-    <MudText Typo="Typo.h3">Competition ended!</MudText>
-}
-else if (_anyPreviousMissing)
-{
-    <MudText Typo="Typo.h3">You cannot continue this rally as you didn't provide time entries from previous days!</MudText>    
-}
-else
-{
-    @if (_stagesForToday.Any())
-    {
-        <MudText Typo="Typo.h3">@LevelHelper.StageCodeToRallyName(_stagesForToday.First().Item2.StageData.StageCode)</MudText>
-    }
+    else if (_day == 0 || _day > 100)
     
     foreach (var (te, stage) in _stagesForToday)
     {                
