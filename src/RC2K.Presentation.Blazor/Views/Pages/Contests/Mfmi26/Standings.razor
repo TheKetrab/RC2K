@@ -30,8 +30,24 @@
     [SupplyParameterFromQuery]
     public bool IgnoreCache { get; set; }
 
-    private RallyCode RallyCode => Rally is null
-        ? LevelHelper.GetRallyCodesBySimulationOrder().First()
-        : LevelHelper.GetRallyCodeByShortName(Rally);
+    private RallyCode RallyCode
+    {
+        get
+        {
+            if (Rally is not null)
+            {
+                return LevelHelper.GetRallyCodeByShortName(Rally);
+            }
 
+            int competitionDay = Mfmi26Helper.GetCompetitionDay();
+            if (new List<int> { 1, 2, 3, 101 }.Contains(competitionDay)) return RallyCode.Vauxhall;
+            if (new List<int> { 4, 5, 6, 7, 8, 102 }.Contains(competitionDay)) return RallyCode.Pirelli;
+            if (new List<int> { 9, 10, 11, 103 }.Contains(competitionDay)) return RallyCode.Scottish;
+            if (new List<int> { 12, 13, 104 }.Contains(competitionDay)) return RallyCode.Seat;
+            if (new List<int> { 14, 15, 16, 105 }.Contains(competitionDay)) return RallyCode.Stena;
+            if (new List<int> { 17, 18, 106 }.Contains(competitionDay)) return RallyCode.Sony;
+
+            return LevelHelper.GetRallyCodesBySimulationOrder().First();
+        }
+    }
 }

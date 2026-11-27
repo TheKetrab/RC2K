@@ -178,8 +178,15 @@ public static class BuilderConfiguration
             {
                 options.Cookie.Name = "auth_token";
                 options.LoginPath = "/login";
-                options.Cookie.MaxAge = TimeSpan.FromDays(30);
                 options.AccessDeniedPath = "/access-denied";
+
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+
+                options.Cookie.MaxAge = TimeSpan.FromDays(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
 
         builder.Services.AddScoped<AuthService>();

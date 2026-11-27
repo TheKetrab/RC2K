@@ -32,25 +32,37 @@ public static class Mfmi26Helper
         if (utcNow <= UtcFromPolishTime(2026, 11, 23, 20)) return 2;
         if (utcNow <= UtcFromPolishTime(2026, 11, 24, 20)) return 3;
 
+        if (utcNow <= UtcFromPolishTime(2026, 11, 25, 20)) return 101;
+
         if (utcNow <= UtcFromPolishTime(2026, 11, 26, 20)) return 4;
         if (utcNow <= UtcFromPolishTime(2026, 11, 27, 20)) return 5;
         if (utcNow <= UtcFromPolishTime(2026, 11, 28, 20)) return 6;
         if (utcNow <= UtcFromPolishTime(2026, 11, 29, 20)) return 7;
         if (utcNow <= UtcFromPolishTime(2026, 11, 30, 20)) return 8;
 
+        if (utcNow <= UtcFromPolishTime(2026, 12, 1, 20)) return 102;
+
         if (utcNow <= UtcFromPolishTime(2026, 12, 2, 20)) return 9;
         if (utcNow <= UtcFromPolishTime(2026, 12, 3, 20)) return 10;
         if (utcNow <= UtcFromPolishTime(2026, 12, 4, 20)) return 11;
 
+        if (utcNow <= UtcFromPolishTime(2026, 12, 5, 20)) return 103;
+
         if (utcNow <= UtcFromPolishTime(2026, 12, 6, 20)) return 12;
         if (utcNow <= UtcFromPolishTime(2026, 12, 7, 20)) return 13;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 8, 20)) return 104;
 
         if (utcNow <= UtcFromPolishTime(2026, 12, 9, 20)) return 14;
         if (utcNow <= UtcFromPolishTime(2026, 12, 10, 20)) return 15;
         if (utcNow <= UtcFromPolishTime(2026, 12, 11, 20)) return 16;
 
+        if (utcNow <= UtcFromPolishTime(2026, 12, 12, 20)) return 105;
+
         if (utcNow <= UtcFromPolishTime(2026, 12, 13, 20)) return 17;
         if (utcNow <= UtcFromPolishTime(2026, 12, 14, 20)) return 18;
+
+        if (utcNow <= UtcFromPolishTime(2026, 12, 12, 20)) return 106;
 
         return 20; // competition ended
     }

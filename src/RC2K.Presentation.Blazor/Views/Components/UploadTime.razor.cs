@@ -85,7 +85,9 @@ public partial class UploadTime
         _isLoading = true;
         try
         {
-            var userName = await UserService.GetCurrentUserName();
+            var userName = !string.IsNullOrWhiteSpace(FixedDriverName)
+                ? FixedDriverName
+                : await UserService.GetCurrentUserName();
             List<ProofItem> toRemove = _proofItems.Where(x => string.IsNullOrEmpty(x.Url)).ToList();
             toRemove.ForEach(x => _proofItems.Remove(x));
 

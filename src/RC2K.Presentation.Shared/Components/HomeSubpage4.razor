@@ -175,6 +175,28 @@
 
     }
 
+    function setupUpdatingLinesOnSubpageIntersect() {
+
+        const cardEl = document.querySelector('.page-card-4');
+
+        if (cardEl && typeof IntersectionObserver !== 'undefined') {
+            const cardObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            requestAnimationFrame(updateLines);
+                        }
+                    });
+                },
+                { threshold: 0.05 }
+            );
+
+            cardObserver.observe(cardEl);
+        }
+    }
+
     window.addEventListener('resize', updateLines);
     updateLines(); // init
+    setupUpdatingLinesOnSubpageIntersect();
+    
 </script>

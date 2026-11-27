@@ -59,7 +59,7 @@
 
         foreach (var p in Participants)
         {
-            var driver = (await DriverService.GetByName(p.Name)) ?? throw new Exception();
+            var driver = (await DriverService.GetByName(p.Name)) ?? throw new Exception($"Not found driver instance for participant named: {p.Name}");
             var car = cars.FirstOrDefault(x => x.Name == p.Car) ?? Car.NullObject;
             _items.Add(new MfmiEntryListItemViewModel()
             {

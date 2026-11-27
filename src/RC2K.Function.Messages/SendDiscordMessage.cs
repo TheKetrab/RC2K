@@ -24,7 +24,7 @@ public class SendDiscordMessage(
     /// </summary>
     [Function(nameof(SendDiscordMessage_CheckAndStart))]
     public async Task SendDiscordMessage_CheckAndStart(
-        [TimerTrigger("0 0 6 * * *")] TimerInfo myTimer,
+        [TimerTrigger("0 30 18 * * *")] TimerInfo myTimer, // UPDATE: 18:30 UTC = 19:30 CET (winter)
         [DurableClient] DurableTaskClient client)
     {
         string todayIdBase = $"{nameof(SendDiscordMessage_CheckAndStart)}_{DateTime.UtcNow:yyyyMMdd}_0";

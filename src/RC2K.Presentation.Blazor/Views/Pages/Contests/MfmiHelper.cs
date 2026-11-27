@@ -124,7 +124,7 @@ public static class MfmiHelper
         res.ForEach(entry => entry.Rank = ranks[entry] + 1);
         res = res.OrderBy(x => x.Rank).ToList();
 
-        return res;
+        return res;                                                            
     }
 
     public static HashSet<int> GetStagesCodesForCompetitionDay(int day) =>
@@ -132,6 +132,11 @@ public static class MfmiHelper
 
     public static bool IsStageAllowedToDisplayForCompetitionDay(int competitionDay, int stageCode)
     {
+        if (competitionDay > 100) // intermission
+        {
+            competitionDay = IntermissionDayToFakeCompetitionDay(competitionDay);
+        }
+
         if (!_stageCode2CompetitionDay.TryGetValue(stageCode, out int stageCodeCompetitionDay))
         {
             return false;
@@ -151,6 +156,20 @@ public static class MfmiHelper
             RallyCode.Stena => [14,15,16],
             RallyCode.Sony => [17,18],
             _ => []
+        };
+    }
+
+    private static int IntermissionDayToFakeCompetitionDay(int intermissionDay)
+    {
+        return intermissionDay switch
+        {
+            101 => 3,
+            102 => 8,
+            103 => 11,
+            104 => 13,
+            105 => 16,
+            106 => 18,
+            _ => 0
         };
     }
 
